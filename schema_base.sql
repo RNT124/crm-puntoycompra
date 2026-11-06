@@ -1,7 +1,7 @@
 -- ════════════════════════════════════════════════════════════════════
 -- schema_base.sql — Esquema completo del CRM (SIN datos de ninguna clienta)
 -- Cómo usarlo: Supabase → SQL Editor → pegar TODO → Run.
--- Antes de correrlo: cambia 'PED' (más abajo) por 3 letras de tu marca.
+-- Punto y Compra: prefijo de pedidos PYC (ya aplicado más abajo).
 -- ════════════════════════════════════════════════════════════════════
 
 -- ── 1. TABLAS ──────────────────────────────────────────────────────
@@ -332,11 +332,11 @@ CREATE INDEX IF NOT EXISTS idx_pedidos_estado ON public.pedidos USING btree (est
 CREATE INDEX IF NOT EXISTS idx_variantes_prenda ON public.prenda_variantes USING btree (prenda_id);
 
 -- ── 5. FUNCIONES Y TRIGGERS (cálculos automáticos) ─────────────────
--- Número de pedido automático: PED-2026-0001. CAMBIA 'PED' por 3 letras de tu marca.
+-- Número de pedido automático: PYC-2026-0001 (Punto y Compra).
 CREATE OR REPLACE FUNCTION public.generar_numero_pedido()
  RETURNS trigger LANGUAGE plpgsql AS $function$
 declare
-  prefijo text := 'PED';
+  prefijo text := 'PYC';
   ultimo integer;
 begin
   select coalesce(max(cast(substring(numero from '^[A-Z]+-\d{4}-(\d+)') as integer)), 0)
