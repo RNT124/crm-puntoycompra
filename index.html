@@ -328,6 +328,7 @@ td.empty-state{padding:20px;text-align:center}
 .f5-input:focus{border-color:#014590}
 .f5-select{width:100%;padding:10px 13px;border:1px solid #E8E6E0;border-radius:8px;font-size:13px;color:#1A1A18;background:#fff;outline:none;margin-bottom:12px;font-family:inherit}
 .f5-courier-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.f5-courier-grid .f5-courier-opt{min-width:0}
 .f5-courier-opt{border:1.5px solid #E8E6E0;border-radius:12px;padding:14px 12px;cursor:pointer;text-align:center;transition:all .2s}
 .f5-courier-opt:hover{border-color:#014590;background:#E0F7F6}
 .f5-courier-opt.selected{border-color:#014590;background:#E0F7F6}
@@ -381,24 +382,42 @@ td.empty-state{padding:20px;text-align:center}
         <div class="f5-title">¿Cómo quieres recibir tu pedido?</div>
         <div class="f5-desc">Elige el método de envío que más te convenga</div>
         <div class="f5-courier-grid">
-          <div class="f5-courier-opt" id="opt-shalom" onclick="selCourier('shalom')">
-            <div class="f5-courier-icon">🚛</div>
-            <div class="f5-courier-name">Shalom</div>
-            <div class="f5-courier-desc">Envío a nivel nacional — recojo en agencia</div>
-            <div class="f5-courier-price gratis">Sin costo adicional</div>
-          </div>
           <div class="f5-courier-opt" id="opt-motorizado" onclick="selCourier('motorizado')">
             <div class="f5-courier-icon">🏍️</div>
             <div class="f5-courier-name">Motorizado</div>
-            <div class="f5-courier-desc">Entrega a domicilio en Lima Metropolitana</div>
-            <div class="f5-courier-price pago">S/ 14.00</div>
+            <div class="f5-courier-desc">Entrega a domicilio en Lima y Callao</div>
+            <div class="f5-courier-price pago">Según distrito</div>
+          </div>
+          <div class="f5-courier-opt" id="opt-shalom" onclick="selCourier('shalom')">
+            <div class="f5-courier-icon">🚛</div>
+            <div class="f5-courier-name">Shalom</div>
+            <div class="f5-courier-desc">Envío a provincias — recojo en agencia</div>
+            <div class="f5-courier-price pago">Por confirmar</div>
+          </div>
+          <div class="f5-courier-opt" id="opt-marvisur" onclick="selCourier('marvisur')">
+            <div class="f5-courier-icon">🚌</div>
+            <div class="f5-courier-name">Marvisur</div>
+            <div class="f5-courier-desc">Envío a provincias — recojo en agencia</div>
+            <div class="f5-courier-price pago">Por confirmar</div>
+          </div>
+          <div class="f5-courier-opt" id="opt-recojo" onclick="selCourier('recojo')">
+            <div class="f5-courier-icon">🏬</div>
+            <div class="f5-courier-name">Recojo en showroom</div>
+            <div class="f5-courier-desc">Recoges tu pedido en nuestro showroom</div>
+            <div class="f5-courier-price gratis">Sin costo</div>
           </div>
         </div>
         <div id="f5-shalom-info" style="display:none" class="f5-info-box green">
-          ✓ Con Shalom <strong>no pagas envío</strong> — solo recoge tu paquete en la agencia más cercana. El envío sale en 48 horas hábiles.
+          🚛 Recoges tu paquete en la agencia Shalom que elijas. <strong>Te confirmaremos el costo del envío por WhatsApp</strong>; se paga antes de despachar.
         </div>
         <div id="f5-motor-info" style="display:none" class="f5-info-box">
-          🏍️ El motorizado llega a tu puerta en Lima Metropolitana. Costo fijo de <strong>S/ 14</strong> para todos los distritos. Pagas al programar.
+          🏍️ El motorizado llega a tu puerta en Lima y Callao. El costo va de S/ 10 a S/ 25 según tu distrito y el tamaño de la caja. <strong>Te lo confirmaremos por WhatsApp</strong>; se paga antes de despachar.
+        </div>
+        <div id="f5-marvisur-info" style="display:none" class="f5-info-box">
+          🚌 Recoges tu paquete en la agencia Marvisur de tu ciudad. <strong>Te confirmaremos el costo del envío por WhatsApp</strong>; se paga antes de despachar.
+        </div>
+        <div id="f5-recojo-info" style="display:none" class="f5-info-box green">
+          🏬 Recoges tu pedido en nuestro showroom, sin costo de envío. Te avisaremos por WhatsApp cuando esté listo.
         </div>
       </div>
       <div class="f5-nav" style="justify-content:flex-end">
@@ -442,6 +461,13 @@ td.empty-state{padding:20px;text-align:center}
           </div>
         </div>
 
+        <!-- campos marvisur -->
+        <div id="f5-campos-marvisur" style="display:none">
+          <label class="f5-label">Ciudad / Provincia *</label>
+          <input class="f5-input" id="f5-mv-ciudad" placeholder="ej. Arequipa">
+          <label class="f5-label">Agencia Marvisur de recojo *</label>
+          <input class="f5-input" id="f5-mv-agencia" placeholder="ej. Marvisur Arequipa - Terminal">
+        </div>
         <!-- campos motorizado -->
         <div id="f5-campos-motor" style="display:none">
           <label class="f5-label">Distrito *</label>
@@ -488,24 +514,32 @@ td.empty-state{padding:20px;text-align:center}
             <li>Despachamos de <strong>lunes a sábado</strong>. No trabajamos domingos ni feriados.</li>
           </ul>
           <br>
-          <h4>🏷️ Acumulación de prendas</h4>
+          <h4>🏷️ Acumulación de productos</h4>
           <ul>
             <li>Plazo máximo de acumulación: <strong>15 días calendario</strong> desde la fecha de compra.</li>
             <li>Pasado el plazo se cobrará una penalidad de <strong>S/ 5.00 por día</strong>.</li>
           </ul>
           <br>
-          <h4>🏍️ Motorizado — S/ 14</h4>
+          <h4>💳 Pago del envío</h4>
           <ul>
-            <li>Precio fijo de S/ 14 para todos los distritos de Lima.</li>
-            <li>Debes adjuntar el comprobante de pago al programar.</li>
-            <li>Si el paquete es grande se coordinará un monto adicional.</li>
+            <li>Te confirmaremos el costo del envío por WhatsApp.</li>
+            <li>El pedido y el envío se pagan <strong>antes de despachar</strong>.</li>
+          </ul>
+          <br>
+          <h4>🏍️ Motorizado</h4>
+          <ul>
+            <li>Entrega en Lima y Callao. Costo de S/ 10 a S/ 25 según distrito y tamaño de caja.</li>
             <li>Rango de entrega: lunes a sábado de 10am a 9pm.</li>
           </ul>
           <br>
-          <h4>🚛 Shalom — Sin costo adicional</h4>
+          <h4>🚛 Shalom y 🚌 Marvisur</h4>
           <ul>
-            <li>Recoge tu paquete en la agencia Shalom que indicaste.</li>
-            <li>No debes pagar ningún monto de envío al programar.</li>
+            <li>Recoge tu paquete en la agencia que indicaste.</li>
+          </ul>
+          <br>
+          <h4>🏬 Recojo en showroom</h4>
+          <ul>
+            <li>Sin costo de envío. Te avisaremos cuando tu pedido esté listo.</li>
           </ul>
           <br>
           <h4>⚠️ Responsabilidades</h4>
@@ -531,10 +565,10 @@ td.empty-state{padding:20px;text-align:center}
       <!-- SHALOM: sin pago -->
       <div id="f5-shalom-confirm" style="display:none">
         <div class="f5-body">
-          <div class="f5-title">¡Todo listo! 🌸</div>
-          <div class="f5-desc">Tu pedido será enviado a la agencia Shalom que indicaste.</div>
+          <div class="f5-title">¡Todo listo! 👑</div>
+          <div class="f5-desc" id="f5-confirm-desc">Revisamos tus datos y te escribimos por WhatsApp.</div>
           <div class="f5-info-box green" style="margin-bottom:0">
-            ✓ <strong>No debes pagar nada ahora.</strong> El envío es sin costo adicional con Shalom. Solo recoge tu paquete en la agencia cuando te avisemos.
+            ✓ <strong>No debes pagar nada en este paso.</strong> Te confirmaremos el total con el envío por WhatsApp; se paga antes de despachar.
           </div>
         </div>
         <div class="f5-nav">
@@ -628,8 +662,8 @@ td.empty-state{padding:20px;text-align:center}
       <!-- PASO 0: buscar por teléfono -->
       <div id="rg-buscar-wrap">
         <div class="f5-body">
-          <div class="f5-title" id="rg-buscar-title">Tus datos de envío 🌸</div>
-          <div class="f5-desc" id="rg-buscar-desc">Ingresa tu número para ver si ya estás registrada, o crear tus datos por primera vez.</div>
+          <div class="f5-title" id="rg-buscar-title">Tus datos de envío 👋</div>
+          <div class="f5-desc" id="rg-buscar-desc">Ingresa tu número para ver si ya tienes tus datos registrados, o crearlos por primera vez.</div>
           <label class="f5-label" id="rg-buscar-label">Tu número WhatsApp *</label>
           <input class="f5-input" id="rg-buscar-tel" placeholder="987 654 321" type="tel" maxlength="12">
           <div class="f5-error" id="rg-buscar-error"></div>
@@ -798,7 +832,7 @@ td.empty-state{padding:20px;text-align:center}
     </div>
     <div class="sb-item" onclick="nav('live',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
-      Registro — live
+      Registrar venta
     </div>
 
     <div class="sb-section">Operación</div>
@@ -807,7 +841,7 @@ td.empty-state{padding:20px;text-align:center}
       Solicitudes urgentes
       <span id="badge-urgentes" style="margin-left:auto;background:var(--pink);color:#fff;font-size:10px;padding:1px 7px;border-radius:20px;display:none">0</span>
     </div>
-    <div class="sb-item" onclick="nav('compras',this)">
+    <div class="sb-item" id="sb-compras" onclick="nav('compras',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       Compras y Gastos
     </div>
@@ -820,7 +854,7 @@ td.empty-state{padding:20px;text-align:center}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg>
       Cortes de pago
     </div>
-    <div class="sb-item" id="sb-item-asistencia" onclick="nav('asistencia',this)">
+    <div class="sb-item" id="sb-item-asistencia" onclick="nav('asistencia',this)" style="display:none">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>
       Control de Asistencia
     </div>
@@ -830,7 +864,7 @@ td.empty-state{padding:20px;text-align:center}
     </div>
     <div class="sb-item" onclick="nav('clientes',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a7 7 0 0 1 12-4.9M16 11a4 4 0 1 1 5 5.9M21 21l-4.35-4.35"/></svg>
-      Clientas
+      Clientes
     </div>
     <div class="sb-item" id="sb-despacho" onclick="nav('despacho',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
@@ -846,7 +880,7 @@ td.empty-state{padding:20px;text-align:center}
       Inventario
     </div>
 
-    <div class="sb-item" id="sb-item-brasil" onclick="nav('brasil',this)">
+    <div class="sb-item" id="sb-item-brasil" onclick="nav('brasil',this)" style="display:none">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
       Brasil
     </div>
@@ -1021,7 +1055,7 @@ td.empty-state{padding:20px;text-align:center}
           <!-- LEFT: buscar clienta -->
           <div style="display:flex;flex-direction:column;gap:12px">
             <div class="card">
-              <div class="card-title">1. Buscar clienta</div>
+              <div class="card-title">1. Buscar cliente</div>
               <div class="search-wrap" style="margin-bottom:8px">
                 <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                 <input type="text" id="live-search" placeholder="Número WhatsApp..." oninput="liveSearch(this.value)" autocomplete="off">
@@ -1051,33 +1085,34 @@ td.empty-state{padding:20px;text-align:center}
           <!-- RIGHT: carrito -->
           <div style="display:flex;flex-direction:column;gap:12px">
             <div class="card" id="live-cart-card" style="display:none">
-              <div class="card-title">3. Agregar prenda</div>
+              <div class="card-title">3. Agregar producto</div>
               <div class="form-row">
-                <label class="form-label">Buscar prenda</label>
-                <input type="text" id="lv-search" placeholder="Escribe para buscar... ej: pant" oninput="filtrarPrendas(this.value)" autocomplete="off">
+                <label class="form-label">Canal de venta</label>
+                <select id="lv-canal">
+                  <option>TikTok</option><option>WhatsApp</option><option>Web</option><option>Showroom</option>
+                </select>
               </div>
               <div class="form-row">
-                <label class="form-label">Prenda</label>
+                <label class="form-label">Buscar producto</label>
+                <input type="text" id="lv-search" placeholder="Escanea el código de barras o escribe el nombre" oninput="filtrarPrendas(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();pycEnterBuscador();}" autocomplete="off">
+              </div>
+              <div class="form-row">
+                <label class="form-label">Producto</label>
                 <select id="lv-prenda" onchange="updateColorTalla()">
                   <option value="">— seleccionar —</option>
                 </select>
               </div>
-              <div class="grid-2">
-                <div class="form-row">
-                  <label class="form-label">Talla</label>
-                  <select id="lv-talla"><option value="">— talla —</option></select>
-                </div>
-                <div class="form-row">
-                  <label class="form-label">Color</label>
-                  <select id="lv-color"><option value="">— color —</option></select>
-                </div>
+              <div id="lv-info" style="display:none;background:var(--primary-light);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;margin-bottom:10px"></div>
+              <div class="form-row">
+                <label class="form-label">Especificación <span class="text-hint">(opcional, texto libre)</span></label>
+                <input type="text" id="lv-espec" placeholder="ej. caja dañada, edición especial..." autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addToCart();}">
               </div>
-              <button class="btn btn-primary w-full" onclick="addToCart()">+ Agregar al carrito</button>
+              <button class="btn btn-primary w-full" id="lv-btn-agregar" onclick="addToCart()">+ Agregar al carrito</button>
             </div>
 
             <div class="card" id="live-resumen-card" style="display:none">
               <div class="card-title">Carrito abierto</div>
-              <div id="live-cart-items"><div class="text-hint text-sm">Sin prendas aún</div></div>
+              <div id="live-cart-items"><div class="text-hint text-sm">Sin productos aún</div></div>
               <div class="cart-total mt-8">
                 <span>Total acumulado</span>
                 <span id="live-cart-total">S/ 0</span>
@@ -1261,7 +1296,7 @@ td.empty-state{padding:20px;text-align:center}
       <div id="pg-catalogo" class="page">
         <div class="sec-header">
           <div class="sec-title">Catálogo</div>
-          <button class="btn btn-primary btn-sm" onclick="openModalPrenda()">+ Agregar prenda</button>
+          <button class="btn btn-primary btn-sm" onclick="openModalPrenda()">+ Agregar producto</button>
         </div>
         <div style="padding:0 0 12px 0;display:flex;gap:8px;flex-wrap:wrap">
           <input id="catalogo-search" type="text" placeholder="🔍 Buscar por nombre o código..." style="flex:1;min-width:220px;max-width:320px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarCatalogo()">
@@ -1271,7 +1306,7 @@ td.empty-state{padding:20px;text-align:center}
         </div>
         <div class="tbl-wrap">
           <table class="tbl">
-            <thead><tr><th>Prenda</th><th>Código</th><th>Precio</th><th>Tallas</th><th>Categoría</th><th>Stock</th><th>Estado</th><th></th></tr></thead>
+            <thead><tr><th>Producto</th><th>Código de barras</th><th>Precio</th><th>Especificaciones</th><th>Categoría</th><th>Stock</th><th>Estado</th><th></th></tr></thead>
             <tbody id="catalogo-tbody"></tbody>
           </table>
         </div>
@@ -1456,6 +1491,9 @@ td.empty-state{padding:20px;text-align:center}
             <div class="tab active" onclick="filterDespacho('todos',this)">Todos</div>
             <div class="tab" onclick="filterDespacho('shalom',this)">Shalom</div>
             <div class="tab" onclick="filterDespacho('motorizado',this)">Motorizado</div>
+            <div class="tab" onclick="filterDespacho('marvisur',this)">Marvisur</div>
+            <div class="tab" onclick="filterDespacho('recojo',this)">Recojo</div>
+            <div class="tab" onclick="filterDespacho('programados',this)">📅 Programados</div>
           </div>
           <div style="display:flex;gap:8px;align-items:center">
             <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text2);cursor:pointer;user-select:none">
@@ -1536,33 +1574,44 @@ td.empty-state{padding:20px;text-align:center}
 <!-- Modal: generar pedido envío -->
 <div class="modal-overlay" id="modal-envio">
   <div class="modal">
-    <div class="modal-title">Generar pedido de envío</div>
+    <div class="modal-title">Generar pedido</div>
     <div style="background:var(--blue-light);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--blue-dark);margin-bottom:14px">
-      La clienta completará su dirección y distrito desde el link de seguimiento.
+      El cliente completará sus datos de envío desde el link. El envío se paga antes de despachar.
+    </div>
+    <div class="grid-2">
+      <div class="form-row">
+        <label class="form-label">Tipo de envío</label>
+        <select id="env-tipo" onchange="updateEnvCosto()">
+          <option value="motorizado">🏍️ Motorizado (Lima)</option>
+          <option value="shalom">🚚 Shalom</option>
+          <option value="marvisur">🚌 Marvisur</option>
+          <option value="recojo">🏬 Recojo en showroom</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Costo de envío (S/)</label>
+        <input type="number" id="env-costo-input" min="0" step="0.5" placeholder="ej. 15" oninput="updateEnvCosto()">
+        <div class="form-hint" id="env-costo-hint">Motorizado: entre S/ 10 y S/ 25 según distrito y tamaño de caja</div>
+      </div>
     </div>
     <div class="form-row">
-      <label class="form-label">Tipo de envío estimado</label>
-      <select id="env-tipo" onchange="updateEnvCosto()">
-        <option value="motorizado_13">Motorizado Lima — S/ 13</option>
-        <option value="motorizado_14">Motorizado Lima (zona media) — S/ 14</option>
-        <option value="motorizado_15">Motorizado Lima (zona lejana) — S/ 15</option>
-        <option value="shalom">Shalom (provincias) — S/ 20</option>
-      </select>
+      <label class="form-label">Fecha programada de envío <span class="text-hint">(opcional)</span></label>
+      <input type="date" id="env-fecha">
     </div>
     <div class="card" style="background:var(--gray-light);border:none;padding:10px 14px">
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px">
-        <span>Subtotal prendas</span><span id="env-subtotal">S/ 0</span>
+        <span>Subtotal productos</span><span id="env-subtotal">S/ 0</span>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px">
-        <span>Costo envío estimado</span><span id="env-costo">S/ 13</span>
+        <span>Costo de envío</span><span id="env-costo">S/ 0</span>
       </div>
       <div style="display:flex;justify-content:space-between;font-weight:600;font-size:14px">
-        <span>Total estimado</span><span id="env-total">S/ 0</span>
+        <span>Total</span><span id="env-total">S/ 0</span>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-sm" onclick="closeModal('modal-envio')">Cancelar</button>
-      <button class="btn btn-primary btn-sm" onclick="confirmarPedido()">Generar link para clienta →</button>
+      <button class="btn btn-sm" onclick="closeModal('modal-envio');if(pycEditandoEnvio){pycEditandoEnvio=false;liveCart=[];currentPedidoActivo=null;renderLiveCart();}document.querySelector('#modal-envio .modal-title').textContent='Generar pedido';">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmarPedido()">Generar link para el cliente →</button>
     </div>
   </div>
 </div>
@@ -1692,34 +1741,26 @@ td.empty-state{padding:20px;text-align:center}
 <!-- Modal: nueva prenda -->
 <div class="modal-overlay" id="modal-prenda">
   <div class="modal">
-    <div class="modal-title" id="modal-prenda-title">Nueva prenda</div>
+    <div class="modal-title" id="modal-prenda-title">Nuevo producto</div>
     <div class="grid-2">
-      <div class="form-row"><label class="form-label">Nombre</label><input type="text" id="pr-nombre" placeholder="Vestido lino manga larga"></div>
-      <div class="form-row"><label class="form-label">Código</label><input type="text" id="pr-codigo" placeholder="VES-001"></div>
+      <div class="form-row"><label class="form-label">Nombre</label><input type="text" id="pr-nombre" placeholder="Nombre del producto"></div>
+      <div class="form-row"><label class="form-label">Código de barras</label><input type="text" id="pr-codigo" placeholder="Escanea o escribe el código"></div>
     </div>
     <div class="grid-2">
       <div class="form-row"><label class="form-label">Precio venta (S/)</label><input type="number" id="pr-precio" placeholder="89"></div>
       <div class="form-row"><label class="form-label">Costo (S/) <span class="text-hint">solo admin</span></label><input type="number" id="pr-costo" placeholder="45"></div>
     </div>
-    <div class="grid-2">
-      <div class="form-row">
-        <label class="form-label">Categoría</label>
-        <select id="pr-cat" onchange="updateTallasModal()">
-          <option>Vestido</option><option>Blusa</option><option>Pantalon</option><option>Jean</option><option>Conjunto</option><option>Top</option><option>Falda</option><option>Otro</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label class="form-label">Tallas disponibles</label>
-        <div id="pr-tallas-wrap" class="pill-row" style="gap:4px;margin-top:4px"></div>
-      </div>
+    <div class="form-row">
+      <label class="form-label">Categoría</label>
+      <input type="text" id="pr-cat" list="pr-cat-lista" placeholder="ej. Figuras, Funko, Cartas..." autocomplete="off">
+      <datalist id="pr-cat-lista"></datalist>
     </div>
     <div class="form-row">
-      <label class="form-label">Colores disponibles <span class="text-hint">(separados por coma)</span></label>
-      <input type="text" id="pr-colores" placeholder="ej. Azul, Celeste, Negro, Blanco">
-      <div style="font-size:11px;color:var(--text3);margin-top:3px">Estos colores aparecerán al registrar ventas de esta prenda</div>
+      <label class="form-label">Especificaciones <span class="text-hint">(texto libre)</span></label>
+      <textarea id="pr-espec" rows="3" placeholder="ej. Edición limitada 2024, caja original, 15 cm..."></textarea>
     </div>
     <div class="form-row" id="pr-stock-wrap">
-      <label class="form-label">Stock inicial <span class="text-hint">(unidades totales, todas las tallas/colores juntos)</span></label>
+      <label class="form-label">Stock <span class="text-hint">(unidades)</span></label>
       <input type="number" id="pr-stock" placeholder="10" min="0">
     </div>
     <!-- Stock por talla/color (solo al editar) -->
@@ -1744,7 +1785,7 @@ td.empty-state{padding:20px;text-align:center}
     </div>
     <div class="modal-footer">
       <button class="btn btn-sm" onclick="closeModal('modal-prenda')">Cancelar</button>
-      <button class="btn btn-primary btn-sm" onclick="guardarPrenda()">Guardar prenda</button>
+      <button class="btn btn-primary btn-sm" onclick="guardarPrenda()">Guardar producto</button>
     </div>
   </div>
 </div>
@@ -1804,7 +1845,7 @@ td.empty-state{padding:20px;text-align:center}
     <div class="form-row"><label class="form-label">Total de esta prenda (S/) <span class="text-hint">— edítalo si hubo descuento en el live</span></label><input type="number" id="mpc-total" placeholder="0.00" step="0.01" oninput="mpcRecalcularFalta()"></div>
     <div class="form-row"><label class="form-label" id="mpc-monto-label">Monto recibido (S/)</label><input type="number" id="mpc-monto" placeholder="0.00" step="0.01"></div>
     <div class="form-row"><label class="form-label">Método</label>
-      <select id="mpc-metodo"><option>Yape</option><option>Plin</option><option>Transferencia</option></select>
+      <select id="mpc-metodo"><option>Yape</option><option>Plin</option><option>Transferencia</option><option>Tarjeta de crédito</option></select>
     </div>
     <div class="form-row"><label class="form-label">Nota <span class="text-hint">(opcional)</span></label>
       <input type="text" id="mpc-nota" placeholder="ej. Yape llegó a las 9:15pm">
@@ -1823,7 +1864,7 @@ td.empty-state{padding:20px;text-align:center}
     <div id="mpcli-info" style="background:var(--gray-light);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:12px;font-size:12px"></div>
     <div class="form-row"><label class="form-label">Monto recibido (S/)</label><input type="number" id="mpcli-monto" placeholder="0.00" step="0.01"></div>
     <div class="form-row"><label class="form-label">Método</label>
-      <select id="mpcli-metodo"><option>Yape</option><option>Plin</option><option>Transferencia</option></select>
+      <select id="mpcli-metodo"><option>Yape</option><option>Plin</option><option>Transferencia</option><option>Tarjeta de crédito</option></select>
     </div>
     <div class="form-row"><label class="form-label">Nota <span class="text-hint">(opcional)</span></label>
       <input type="text" id="mpcli-nota" placeholder="ej. Yape llegó a las 9:15pm">
@@ -2188,9 +2229,9 @@ let trackingPedidoData = null;
 let currentPedidoIdx = null;
 let editingPrendaIdx = null;
 
-const DISTRITOS_COSTO = {
-  'motorizado_13': 13, 'motorizado_14': 14, 'motorizado_15': 15, 'shalom': 20
-};
+const DISTRITOS_COSTO = {};  // Punto y Compra: el costo de envío se escribe a mano en cada pedido
+const PYC_ENVIOS = { motorizado:'🏍️ Motorizado', shalom:'🚚 Shalom', marvisur:'🚌 Marvisur', recojo:'🏬 Recojo en showroom' };
+function pycEnvioLabel(t){ t=String(t||'').toLowerCase(); for(const k in PYC_ENVIOS){ if(t.startsWith(k)) return PYC_ENVIOS[k]; } return t?t:'Sin definir'; }
 
 let DB = {
   clientes: [
@@ -2226,9 +2267,8 @@ const ESTADOS_NEXT = { acumulando:'', listo_envio:'', pago_pendiente:'', pago_pa
 function montoRequeridoPedido(ped){
   if(!ped) return 0;
   const subtotal = ped.subtotal!=null ? ped.subtotal : (ped.total-(ped.costo_envio||0));
-  const esMotorizado = (ped.tipo_envio||'').startsWith('motorizado');
-  if(esMotorizado && ped.envio_pagado) return subtotal + (ped.costo_envio||0);
-  return subtotal;
+  // Punto y Compra: el envío (cualquier tipo) se paga antes de despachar
+  return subtotal + (ped.costo_envio||0);
 }
 
 // ═══════════════════════════ AUTH ═══════════════════════════
@@ -2252,13 +2292,16 @@ async function doLogin(){
   document.getElementById('sb-uname').textContent=currentUser.nombre;
   document.getElementById('sb-urole').textContent=currentUser.rol==='admin'?'Administrador':(currentUser.rol==='trabajador'?'Trabajador':'Operario');
   if(currentUser.rol!=='admin') document.getElementById('sb-catalogo').style.display='none';
+  if(currentUser.rol!=='admin') document.getElementById('sb-compras').style.display='none';
+  if(currentUser.rol!=='admin') document.getElementById('db-tab-btn-finanzas').style.display='none';
   if(currentUser.rol!=='admin') document.getElementById('sb-stock').style.display='none';
   if(currentUser.rol!=='admin') document.getElementById('sb-config').style.display='none';
   if(currentUser.rol!=='admin') document.getElementById('sb-item-brasil').style.display='none';
   if(currentUser.rol!=='admin') document.getElementById('sb-admin-section').style.display='none';
   if(currentUser.rol==='trabajador') document.getElementById('sb-item-dashboard').style.display='none';
   if(currentUser.rol==='trabajador') document.getElementById('btn-nuevo-corte').style.display='none';
-  if(currentUser.rol==='operador') document.getElementById('sb-item-asistencia').style.display='none';
+  document.getElementById('sb-item-asistencia').style.display='none';
+  document.getElementById('sb-item-brasil').style.display='none';
   if(currentUser.rol==='operador') document.getElementById('sb-item-inventario').style.display='none';
   initApp();
   if(currentUser.rol==='trabajador') nav('asistencia', document.getElementById('sb-item-asistencia'));
@@ -2297,10 +2340,10 @@ function nav(page, el){
   document.getElementById('pg-'+page).classList.add('active');
   if(el) el.classList.add('active');
   toggleSidebarMobile(false); // cerrar el menú en celular al navegar
-  const titles={dashboard:'Dashboard',live:'Registro — live',carritos:'Carritos abiertos',cortes:'Cortes de pago',pedidos:'Pedidos',clientes:'Clientas',catalogo:'Catálogo',stock:'Stock',urgentes:'Solicitudes urgentes',compras:'Compras y Gastos',config:'Configuración',despacho:'Despacho',asistencia:'Control de Asistencia',inventario:'Inventario',brasil:'Brasil',boletas:'Boletas Shalom'};
+  const titles={dashboard:'Dashboard',live:'Registrar venta',carritos:'Carritos abiertos',cortes:'Cortes de pago',pedidos:'Pedidos',clientes:'Clientes',catalogo:'Catálogo',stock:'Stock',urgentes:'Solicitudes urgentes',compras:'Compras y Gastos',config:'Configuración',despacho:'Despacho',asistencia:'Control de Asistencia',inventario:'Inventario',brasil:'Brasil',boletas:'Boletas Shalom'};
   const subtitles={
     dashboard:'Resumen de tu negocio, hoy',
-    live:'Busca a tu clienta y agrega las prendas que va llevando',
+    live:'Busca al cliente, escanea o busca el producto y agrégalo',
     carritos:'Bolsas activas — pendientes de generar su pedido de envío',
     cortes:'Valida los pagos de lo vendido en tus lives',
     pedidos:'Todos los pedidos generados y su estado actual',
@@ -2410,7 +2453,7 @@ async function loadDashboard(){
 
     document.getElementById('db-metrics').innerHTML=`
       <div class="metric"><div class="metric-val">S/ ${vendidoPeriodo.toFixed(0)}</div><div class="metric-lbl">Vendido ${rangoLabel}</div><div class="metric-delta ${deltaPeriodo>=0?'delta-up':''}" style="${deltaPeriodo<0?'color:var(--red)':''}">${deltaPeriodo>=0?'↑':'↓'} ${Math.abs(deltaPeriodo)}% ${deltaTxt}</div></div>
-      <div class="metric"><div class="metric-val" style="color:var(--green)">S/ ${gananciaBruta.toFixed(0)}</div><div class="metric-lbl">Ganancia bruta ${rangoLabel}</div><div class="metric-delta text-hint">${margenPct}% de margen</div></div>
+      ${currentUser?.rol==='admin'?`<div class="metric"><div class="metric-val" style="color:var(--green)">S/ ${gananciaBruta.toFixed(0)}</div><div class="metric-lbl">Ganancia bruta ${rangoLabel}</div><div class="metric-delta text-hint">${margenPct}% de margen</div></div>`:''}
       <div class="metric"><div class="metric-val">S/ ${porCobrar.toFixed(0)}</div><div class="metric-lbl">Por cobrar</div><div class="metric-delta text-hint">en pedidos activos</div></div>
       <div class="metric"><div class="metric-val">${activos.length}</div><div class="metric-lbl">Pedidos activos</div><div class="metric-delta text-hint">${nuevosPeriodo} nuevo${nuevosPeriodo!==1?'s':''} ${rangoLabel}</div></div>
       <div class="metric"><div class="metric-val">S/ ${ticketProm}</div><div class="metric-lbl">Ticket promedio</div></div>
@@ -3657,7 +3700,6 @@ async function loadUrgentes(){
         `Nombre: ${cl.nombre||'—'}`,
         `Teléfono: ${cl.telefono||'—'}`,
         `DNI: ${cl.dni||'—'}`,
-        `Talla: ${cl.talla||'—'}`,
         esShalom ? `Envío: Shalom` : `Envío: Motorizado`,
         esShalom ? `Agencia: ${cl.direccion||'—'}` : `Dirección: ${cl.direccion||'—'}`,
         esShalom ? `Ciudad/Departamento: ${cl.distrito||'—'}` : `Distrito: ${cl.distrito||'—'}`,
@@ -3690,7 +3732,7 @@ async function loadUrgentes(){
           ${ped.estado==='empaquetado'?`<input type="checkbox" class="urg-check" data-id="${ped.id}" onchange="actualizarBulkUrgentes()" style="width:16px;height:16px;flex-shrink:0;cursor:pointer">`:''}
           <div>
             <div style="font-weight:600;font-size:13.5px">${cl.nombre} <span style="font-weight:400;color:var(--text3);font-size:11.5px">· solicitado ${tiempo}</span></div>
-            <div style="font-size:12px;color:var(--text2)">📱 ${cl.telefono} · 🪪 DNI ${cl.dni||'—'} · Talla ${cl.talla||'—'}</div>
+            <div style="font-size:12px;color:var(--text2)">📱 ${cl.telefono} · 🪪 DNI ${cl.dni||'—'}</div>
             <div style="font-size:12px;color:var(--text2)">${etiqueta}</div>
             <div style="font-size:11.5px;color:var(--text3);margin-top:2px">Pedido ${ped.numero||'(sin generar)'} · <strong>${estadoLbl}</strong></div>
           </div>
@@ -3834,9 +3876,16 @@ async function generarPedidoDesdeCarrito(pedidoId, clienteId, subtotal){
     const items = await dbGet(`carrito_items?carrito_id=eq.${currentPedidoActivo.carrito_id}&estado_bolsa=neq.eliminado&select=*,prendas(nombre)`);
     liveCart = items.map(it=>({id:it.id, prenda_id:it.prenda_id, nombre:it.prendas?.nombre||'Prenda', talla:it.talla, color:it.color||'', precio:it.precio_unitario, estado_pago:it.estado_pago, estado_bolsa:it.estado_bolsa}));
     document.getElementById('env-subtotal').textContent = 'S/ '+subtotal;
-    updateEnvCosto();
+    pycPrepararModalEnvio(currentPedidoActivo);
     document.getElementById('modal-envio').classList.add('open');
   } catch(e){ alert('Error: '+e.message); }
+}
+
+let pycEditandoEnvio = false;
+async function pycEditarEnvio(pedidoId, clienteId, subtotal){
+  pycEditandoEnvio = true;
+  await generarPedidoDesdeCarrito(pedidoId, clienteId, subtotal);
+  document.querySelector('#modal-envio .modal-title').textContent='Envío y fecha programada';
 }
 
 function irAlLiveConCliente(clienteId){
@@ -3857,11 +3906,11 @@ function renderPrendasSelect(prendas){
   const sel=document.getElementById('lv-prenda');
   if(!sel) return;
   const current = sel.value;
-  sel.innerHTML='<option value="">— seleccionar prenda —</option>';
+  sel.innerHTML='<option value="">— seleccionar producto —</option>';
   prendas.forEach(p=>{
     const opt = document.createElement('option');
     opt.value = p.id;
-    opt.textContent = `${p.nombre} — S/${p.precio}`;
+    opt.textContent = `${p.codigo?p.codigo+' · ':''}${p.nombre} — S/${p.precio}`;
     sel.appendChild(opt);
   });
   if(current) sel.value = current;
@@ -3874,29 +3923,46 @@ function filtrarPrendas(texto){
                     (p.codigo||'').toLowerCase().includes(texto.toLowerCase()) ||
                     (p.categoria||'').toLowerCase().includes(texto.toLowerCase()));
   renderPrendasSelect(filtradas);
-  // Limpiar talla y color al filtrar
-  document.getElementById('lv-talla').innerHTML='<option value="">— talla —</option>';
-  document.getElementById('lv-color').innerHTML='<option value="">— color —</option>';
+  // Si queda un solo producto, se elige solo
+  if(texto.trim() && filtradas.length===1){ document.getElementById('lv-prenda').value=filtradas[0].id; }
+  updateColorTalla();
 }
 
-function updateColorTalla(){
-  const prendaId = document.getElementById('lv-prenda').value;
-  const tallasSel = document.getElementById('lv-talla');
-  const colorSel = document.getElementById('lv-color');
-  tallasSel.innerHTML='<option value="">— talla —</option>';
-  colorSel.innerHTML='<option value="">— color —</option>';
-  if(!prendaId) return;
-  const p = DB.prendas.find(x=>x.id===prendaId);
-  if(!p) return;
-  // Tallas dinámicas según prenda
-  (p.tallas||[]).forEach(t=>{ tallasSel.innerHTML+=`<option>${t}</option>`; });
-  // Colores dinámicos según prenda
-  const colores = (p.colores||'').split(',').map(c=>c.trim()).filter(c=>c);
-  if(colores.length){
-    colores.forEach(c=>{ colorSel.innerHTML+=`<option>${c}</option>`; });
-  } else {
-    colorSel.innerHTML='<option value="">Sin colores registrados</option>';
+// Pistola USB: escribe el código y manda "Enter"
+function pycEnterBuscador(){
+  const q=(document.getElementById('lv-search').value||'').trim().toLowerCase();
+  if(!q) return;
+  const todas=DB.prendas||[];
+  const exacto=todas.find(p=>(p.codigo||'').trim().toLowerCase()===q);
+  if(exacto){
+    renderPrendasSelect(todas.filter(p=>p.id===exacto.id));
+    document.getElementById('lv-prenda').value=exacto.id;
+    updateColorTalla();
+    document.getElementById('lv-espec').focus();
+    return;
   }
+  const sel=document.getElementById('lv-prenda');
+  if(sel.value){ updateColorTalla(); document.getElementById('lv-espec').focus(); }
+  else toast('⚠️ No encontré un producto con ese código');
+}
+function pycEsc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function updateColorTalla(){
+  // Punto y Compra: muestra precio, stock, costo (solo admin) y especificaciones del producto elegido
+  const prendaId = document.getElementById('lv-prenda').value;
+  const box = document.getElementById('lv-info');
+  if(!box) return;
+  const p = prendaId ? (DB.prendas||[]).find(x=>x.id===prendaId) : null;
+  if(!p){ box.style.display='none'; box.innerHTML=''; return; }
+  const stock = p.stock||0;
+  box.innerHTML = `<div style="font-weight:600;margin-bottom:4px">${pycEsc(p.nombre)}</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      <span>💰 Precio: <strong>S/ ${p.precio}</strong></span>
+      ${currentUser?.rol==='admin'?`<span>🔒 Costo: <strong>S/ ${p.costo||0}</strong></span>`:''}
+      <span style="color:${stock<=0?'var(--red)':'inherit'}">📦 Stock: <strong>${stock}</strong></span>
+    </div>
+    ${p.especificaciones?`<div class="text-hint" style="margin-top:4px">${pycEsc(p.especificaciones)}</div>`:''}`;
+  box.style.display='block';
 }
 
 async function liveSearch(val){
@@ -3981,9 +4047,10 @@ async function registrarNuevaEnLive(tel){
 
 async function addToCart(){
   const prendaId=document.getElementById('lv-prenda').value;
-  const talla=document.getElementById('lv-talla').value;
-  const color=document.getElementById('lv-color').value;
-  if(!prendaId||!talla){ toast('Selecciona prenda y talla'); return; }
+  const talla='';  // Punto y Compra: sin tallas
+  const color=(document.getElementById('lv-espec').value||'').trim();  // la especificación se muestra donde antes iba el color
+  const canal=document.getElementById('lv-canal')?.value||null;
+  if(!prendaId){ toast('Selecciona un producto'); return; }
   const prenda = DB.prendas.find(p=>p.id===prendaId);
   if(!prenda) return;
   try {
@@ -3991,14 +4058,12 @@ async function addToCart(){
     let esPreventa = false;
     let stockActual = null;
     try {
-      const stockRows = await dbGet(`prenda_stock?prenda_id=eq.${prendaId}&talla=eq.${talla}&color=eq.${color||''}`);
-      stockActual = stockRows.length ? stockRows[0].cantidad : null;
-      esPreventa = stockActual !== null && stockActual <= 0;
+      esPreventa = (prenda.stock||0) <= 0;  // Punto y Compra: stock por producto
     } catch(e){ /* stock check opcional */ }
 
     let preventaFechaEstimada = null;
     if(esPreventa){
-      const dias = prompt('⚠️ "'+prenda.nombre+'" T-'+talla+(color?' · '+color:'')+' está sin stock.\n\n¿En cuántos días aprox. te llega? (déjalo vacío si no sabes aún)\n\nSe marcará como Pre-venta hasta que registres la compra.', '');
+      const dias = prompt('⚠️ "'+prenda.nombre+'"'+(color?' · '+color:'')+' está sin stock.\n\n¿En cuántos días aprox. te llega? (déjalo vacío si no sabes aún)\n\nSe marcará como Pre-venta hasta que registres la compra.', '');
       if(dias===null){ toast('Cancelado — no se agregó'); return; } // canceló el prompt
       const diasNum = parseInt(dias);
       if(!isNaN(diasNum) && diasNum>0){
@@ -4015,17 +4080,18 @@ async function addToCart(){
       carritoId = carrito.id;
       const pedRows = await dbPost('pedidos', {
         numero:'', cliente_id:currentLiveClient.id, carrito_id:carritoId,
-        subtotal:0, costo_envio:0, total:0, monto_pagado:0, estado:'acumulando'
+        subtotal:0, costo_envio:0, total:0, monto_pagado:0, estado:'acumulando', canal
       });
       currentPedidoActivo = Array.isArray(pedRows)?pedRows[0]:pedRows;
       currentCarritoId = currentPedidoActivo.id;
     } else {
       carritoId = currentPedidoActivo.carrito_id;
+      if(!currentPedidoActivo.canal && canal){ try{ await dbPatch(`pedidos?id=eq.${currentPedidoActivo.id}`,{canal}); currentPedidoActivo.canal=canal; }catch(e){} }
     }
     const itemRows = await dbPost('carrito_items', {
       carrito_id:carritoId,
       prenda_id:prendaId,
-      talla, color: color||'',
+      talla, color: color||'', especificacion: color||null,
       precio_unitario:prenda.precio,
       estado_bolsa:'sin_agregar',
       estado_pago:'pendiente',
@@ -4041,7 +4107,7 @@ async function addToCart(){
       if(esPreventa) toast('🕒 Agregado como Pre-venta — pendiente de reponer');
     } catch(e){ /* stock check opcional */ }
     const item = Array.isArray(itemRows)?itemRows[0]:itemRows;
-    if(!item || !item.id){ toast('Error guardando prenda — intenta de nuevo'); return; }
+    if(!item || !item.id){ toast('Error guardando producto — intenta de nuevo'); return; }
     liveCart.push({id:item.id, prenda_id:prendaId, nombre:prenda.nombre, talla, color:color||'', precio:prenda.precio, estado_pago:'pendiente', estado_bolsa:'sin_agregar', preventa:esPreventa});
     // Descontar 1 unidad de stock del modelo (best-effort, no bloquea la venta)
     let avisoStock = '';
@@ -4067,12 +4133,13 @@ async function addToCart(){
     currentPedidoActivo.total = nuevoTotal;
     if(patchPedido.estado) currentPedidoActivo.estado = patchPedido.estado;
     document.getElementById('lv-prenda').value='';
-    document.getElementById('lv-talla').innerHTML='<option value="">— talla —</option>';
-    document.getElementById('lv-color').innerHTML='<option value="">— color —</option>';
+    document.getElementById('lv-espec').value='';
     document.getElementById('lv-search').value='';
     renderPrendasSelect(DB.prendas);
+    updateColorTalla();
     renderLiveCart();
-    toast('✓ Prenda agregada'+avisoStock);
+    document.getElementById('lv-search').focus();
+    toast('✓ Producto agregado'+avisoStock);
   } catch(e){ toast('Error: '+e.message); }
 }
 
@@ -4096,7 +4163,7 @@ function renderLiveCart(){
         <span class="badge ${it.estado_bolsa==='en_bolsa'?'badge-info':'badge-gray'}" style="font-size:10px;cursor:pointer" onclick="toggleBolsaItem(${i},this)">${it.estado_bolsa==='en_bolsa'?'📦 En bolsa':'Sin agregar'}</span>
         ${it.preventa?`<span class="badge" style="font-size:10px;background:#FFE8CC;color:#B3541E">🕒 Pre-venta</span>`:''}
       </div>
-    </div>`).join(''):`<div class="text-hint text-sm">Sin prendas aún</div>`;
+    </div>`).join(''):`<div class="text-hint text-sm">Sin productos aún</div>`;
   document.getElementById('live-cart-total').textContent='S/ '+total;
 }
 
@@ -4203,18 +4270,38 @@ async function removeCarritoItem(itemId, precio, pedidoId, pagado, prendaId){
 }
 
 function openEnvioModal(){
-  if(!liveCart.length){ alert('Agrega al menos una prenda'); return; }
+  if(!liveCart.length){ alert('Agrega al menos un producto'); return; }
   const sub=liveCart.reduce((a,i)=>a+i.precio,0);
   document.getElementById('env-subtotal').textContent='S/ '+sub;
-  updateEnvCosto();
+  pycPrepararModalEnvio(currentPedidoActivo);
   document.getElementById('modal-envio').classList.add('open');
-  if(currentLiveClient?.distrito) document.getElementById('env-distrito').value=currentLiveClient.distrito;
-  if(currentLiveClient?.direccion) document.getElementById('env-dir').value=currentLiveClient.direccion;
+}
+
+function pycPrepararModalEnvio(ped){
+  const tipo = ped?.tipo_envio || currentLiveClient?.tipo_envio_preferido || 'motorizado';
+  const sel = document.getElementById('env-tipo');
+  sel.value = PYC_ENVIOS[tipo] ? tipo : 'motorizado';
+  const costo = ped?.costo_envio;
+  document.getElementById('env-costo-input').value = (costo || costo===0 && ped?.tipo_envio) ? costo : '';
+  document.getElementById('env-fecha').value = ped?.fecha_programada || '';
+  updateEnvCosto();
+}
+
+function pycCostoEnvio(){
+  const tipo=document.getElementById('env-tipo').value;
+  if(tipo==='recojo') return 0;
+  const v=document.getElementById('env-costo-input').value;
+  return v==='' ? null : (parseFloat(v)||0);
 }
 
 function updateEnvCosto(){
   const tipo=document.getElementById('env-tipo').value;
-  const costo=DISTRITOS_COSTO[tipo]||13;
+  const inp=document.getElementById('env-costo-input');
+  inp.disabled = tipo==='recojo';
+  if(tipo==='recojo') inp.value='0';
+  document.getElementById('env-costo-hint').textContent = tipo==='motorizado' ? 'Motorizado: entre S/ 10 y S/ 25 según distrito y tamaño de caja'
+    : tipo==='recojo' ? 'Sin costo: el cliente recoge en el showroom' : 'Escribe el costo que cobrarás al cliente';
+  const costo=pycCostoEnvio()||0;
   const sub=liveCart.reduce((a,i)=>a+i.precio,0);
   document.getElementById('env-costo').textContent='S/ '+costo;
   document.getElementById('env-total').textContent='S/ '+(sub+costo);
@@ -4222,7 +4309,10 @@ function updateEnvCosto(){
 
 async function confirmarPedido(){
   const tipo=document.getElementById('env-tipo').value;
-  const costo=DISTRITOS_COSTO[tipo]||13;
+  const costo=pycCostoEnvio();
+  if(costo===null){ toast('Escribe el costo de envío (S/)'); document.getElementById('env-costo-input').focus(); return; }
+  const fechaProg=document.getElementById('env-fecha').value||null;
+  const canal=document.getElementById('lv-canal')?.value||null;
   const sub=liveCart.reduce((a,i)=>a+i.precio,0);
   const total=sub+costo;
   let numPedido='';
@@ -4230,10 +4320,14 @@ async function confirmarPedido(){
     if(currentPedidoActivo){
       // Pedido ya existe — solo actualizar a listo_envio y agregar costo envío
       const pagado = currentPedidoActivo.monto_pagado||0;
-      const estadoPago = pagado>=total?'pago_completo': pagado>0?'pago_parcial':'listo_envio';
+      let estadoPago = pagado>=total?'pago_completo': pagado>0?'pago_parcial':'listo_envio';
+      // Si ya estaba empaquetado o en camino y sigue pagado completo, no retrocede
+      if(['empaquetado','en_camino','entregado'].includes(currentPedidoActivo.estado) && pagado>=total) estadoPago = currentPedidoActivo.estado;
       await dbPatch(`pedidos?id=eq.${currentPedidoActivo.id}`,{
         estado: estadoPago,
-        subtotal:sub, costo_envio:costo, total
+        subtotal:sub, costo_envio:costo, total,
+        tipo_envio: tipo, fecha_programada: fechaProg,
+        ...(currentPedidoActivo.canal ? {} : {canal})
       });
       numPedido = currentPedidoActivo.numero;
     } else {
@@ -4241,11 +4335,12 @@ async function confirmarPedido(){
       const carritoRows = await dbPost('carritos',{cliente_id:currentLiveClient.id,estado:'en_pedido',total:sub});
       const carrito = Array.isArray(carritoRows)?carritoRows[0]:carritoRows;
       for(const item of liveCart){
-        await dbPost('carrito_items',{carrito_id:carrito.id,prenda_id:item.prenda_id,talla:item.talla,color:item.color||'',precio_unitario:item.precio,estado_bolsa:'sin_agregar',estado_pago:'pendiente',monto_pagado:0});
+        await dbPost('carrito_items',{carrito_id:carrito.id,prenda_id:item.prenda_id,talla:item.talla||'',color:item.color||'',especificacion:item.color||null,precio_unitario:item.precio,estado_bolsa:'sin_agregar',estado_pago:'pendiente',monto_pagado:0});
       }
       const pedRows = await dbPost('pedidos',{
         numero:'',cliente_id:currentLiveClient.id,carrito_id:carrito.id,
-        subtotal:sub,costo_envio:costo,total,monto_pagado:0,estado:'listo_envio'
+        subtotal:sub,costo_envio:costo,total,monto_pagado:0,estado:'listo_envio',
+        tipo_envio:tipo, fecha_programada:fechaProg, canal
       });
       const ped = Array.isArray(pedRows)?pedRows[0]:pedRows;
       numPedido = ped.numero;
@@ -4253,6 +4348,13 @@ async function confirmarPedido(){
     }
   } catch(e){ alert('Error: '+e.message); return; }
   closeModal('modal-envio');
+  document.querySelector('#modal-envio .modal-title').textContent='Generar pedido';
+  if(pycEditandoEnvio){
+    pycEditandoEnvio=false; liveCart=[]; currentCarritoId=null; currentPedidoActivo=null; renderLiveCart(); currentLiveClient=null; hideClientCard();
+    toast('✓ Envío actualizado · Total S/ '+total);
+    if(document.getElementById('pg-despacho')?.classList.contains('active')) loadDespacho();
+    return;
+  }
   liveCart=[]; currentCarritoId=null; currentPedidoActivo=null; renderLiveCart();
   currentLiveClient=null; hideClientCard();
   document.getElementById('live-search').value='';
@@ -4417,7 +4519,9 @@ async function openPedidoModal(id){
         <div><div class="text-xs text-hint">Clienta</div><div class="font-500">${p.clientes?.nombre||'—'}</div></div>
         <div><div class="text-xs text-hint">Fecha</div><div>${p.creado_en?.slice(0,10)||'—'}</div></div>
         <div><div class="text-xs text-hint">Estado</div><div><span class="badge ${ESTADOS_BADGE[p.estado]}">${ESTADOS_LABEL[p.estado]}</span></div></div>
-        <div><div class="text-xs text-hint">Envío</div><div>${p.distrito||'Sin dirección'} · S/${p.costo_envio||0}${esMotorizado?(p.envio_pagado?' <span style="color:var(--green)">✓ pagado</span>':' <span style="color:var(--text3)">(se cobra al entregar)</span>'):''}</div></div>
+        <div><div class="text-xs text-hint">Canal</div><div>${p.canal||'—'}</div></div>
+        <div><div class="text-xs text-hint">Fecha programada</div><div>${p.fecha_programada?p.fecha_programada.split('-').reverse().join('/'):'—'}</div></div>
+        <div><div class="text-xs text-hint">Envío</div><div>${pycEnvioLabel(p.tipo_envio)} · ${p.distrito||'Sin dirección'} · S/${p.costo_envio||0}${esMotorizado?(p.envio_pagado?' <span style="color:var(--green)">✓ pagado</span>':' <span style="color:var(--text3)">(se cobra al entregar)</span>'):''}</div></div>
         <div><div class="text-xs text-hint">Total</div><div class="font-600">S/ ${p.total}</div></div>
         <div><div class="text-xs text-hint">Pagado</div><div class="${falta>0?'delta-dn':'delta-up'} font-500">S/${p.monto_pagado||0}${falta>0?' <span style="color:var(--red)">(falta S/'+falta+')</span>':' ✓'}</div></div>
       </div>
@@ -4450,6 +4554,7 @@ async function openPedidoModal(id){
         </div>`:''}
       <div style="display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
         <button class="btn btn-sm" onclick="verHistorialPedido('${p.id}','${p.numero}')">📜 Historial</button>
+        ${['entregado','cancelado'].includes(p.estado)?'':`<button class="btn btn-sm" onclick="closeModal('modal-pedido');pycEditarEnvio('${p.id}','${p.cliente_id}',${p.subtotal||0})">🚚 Envío y fecha</button>`}
         ${currentUser?.rol==='admin' && ESTADOS_ANTERIOR[p.estado] ? `<button class="btn btn-sm" style="color:var(--red);border-color:var(--red)" onclick="retrocederEstado('${p.id}','${p.estado}')">⏪ Retroceder estado</button>` : ''}
       </div>`;
     document.getElementById('modal-pedido').classList.add('open');
@@ -4919,16 +5024,16 @@ function renderCatalogoTabla(prendas){
       <td class="font-500">${p.nombre}</td>
       <td class="text-muted">${p.codigo||'—'}</td>
       <td>S/ ${p.precio}${currentUser?.rol==='admin'?` <span class="text-hint">(costo S/${p.costo||0})</span>`:''}</td>
-      <td>${(p.tallas||[]).join(', ')}</td>
+      <td class="text-hint" style="max-width:220px;white-space:normal">${pycEsc(p.especificaciones||'')}</td>
       <td>${p.categoria||'—'}</td>
       <td><span class="badge ${(p.stock||0)<=STOCK_BAJO_LIMITE?'badge-warn':'badge-ok'}">${p.stock||0}</span></td>
       <td><span class="badge ${p.activo?'badge-ok':'badge-gray'}">${p.activo?'Activo':'Inactivo'}</span></td>
       <td style="display:flex;gap:4px">
         <button class="btn btn-xs" onclick="openModalPrenda('${p.id}')">Editar</button>
         <button class="btn btn-xs" onclick="togglePrenda('${p.id}',${p.activo})">${p.activo?'Desactivar':'Activar'}</button>
-        <button class="btn btn-xs" onclick="abrirDesgloseVentas('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}')" title="Ver ventas por talla/color">📊</button>
+        <button class="btn btn-xs" onclick="abrirDesgloseVentas('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}')" title="Ver ventas">📊</button>
       </td>
-    </tr>`).join(''):'<tr><td colspan="8" class="empty-state">Sin prendas aún</td></tr>';
+    </tr>`).join(''):'<tr><td colspan="8" class="empty-state">Sin productos aún</td></tr>';
 
   // Poblar filtro de categorías (una sola vez)
   const catSel = document.getElementById('catalogo-cat-filtro');
@@ -4949,48 +5054,38 @@ function filtrarCatalogo(){
 }
 
 function updateTallasModal(){
-  const cat = document.getElementById('pr-cat').value;
-  const wrap = document.getElementById('pr-tallas-wrap');
-  const esPantalon = ['Pantalon','Jean'].includes(cat);
-  const opciones = esPantalon
-    ? ['28','30','32','34','S','M','L','XL']
-    : ['S','M','L','XL','XXL'];
-  wrap.innerHTML = opciones.map(t=>`
-    <label style="display:flex;align-items:center;gap:3px;font-size:12px">
-      <input type="checkbox" value="${t}" class="talla-chk" style="width:auto" ${['M','L'].includes(t)&&!esPantalon?'checked':['30','32'].includes(t)&&esPantalon?'checked':''}> ${t}
-    </label>`).join('');
+  // Punto y Compra: sin tallas. Solo sugiere las categorías ya usadas.
+  const cats = [...new Set((DB.prendas||[]).map(p=>p.categoria).filter(Boolean))].sort();
+  const dl = document.getElementById('pr-cat-lista');
+  if(dl) dl.innerHTML = cats.map(c=>`<option value="${pycEsc(c)}">`).join('');
 }
 
 async function guardarPrenda(){
-  const tallas=[...document.querySelectorAll('.talla-chk:checked')].map(c=>c.value);
-  if(!tallas.length){ toast('Selecciona al menos una talla'); return; }
   const nombre=document.getElementById('pr-nombre').value.trim();
   if(!nombre){ toast('El nombre es obligatorio'); return; }
-  const colores=document.getElementById('pr-colores').value.trim();
   const data={
     nombre,
-    codigo:document.getElementById('pr-codigo').value.trim(),
+    codigo:document.getElementById('pr-codigo').value.trim()||null,
     precio:parseFloat(document.getElementById('pr-precio').value)||0,
     costo:parseFloat(document.getElementById('pr-costo').value)||0,
-    categoria:document.getElementById('pr-cat').value,
-    tallas, colores, activo:true
+    categoria:document.getElementById('pr-cat').value.trim()||null,
+    especificaciones:document.getElementById('pr-espec').value.trim()||null,
+    tallas:[], colores:'', activo:true
   };
-  if(!editingPrendaIdx){
-    // Solo al crear: fija el stock inicial. Al editar no se toca (usa Stock para reponer).
-    data.stock = parseInt(document.getElementById('pr-stock').value)||0;
-  }
+  const stockTxt = document.getElementById('pr-stock').value;
+  if(stockTxt!=='') data.stock = parseInt(stockTxt)||0;
   try {
     if(editingPrendaIdx){
       await dbPatch(`prendas?id=eq.${editingPrendaIdx}`,data);
-      toast('✓ Prenda actualizada');
+      toast('✓ Producto actualizado');
     } else {
       await dbPost('prendas',data);
-      toast('✓ Prenda agregada al catálogo');
+      toast('✓ Producto agregado al catálogo');
     }
     closeModal('modal-prenda');
     await loadCatalogo();
     await loadCatalogoLive();
-  } catch(e){ toast('Error guardando prenda: '+e.message); }
+  } catch(e){ toast(/prendas_codigo_key/.test(e.message)?'⚠️ Ya existe un producto con ese código de barras':'Error guardando producto: '+e.message); }
 }
 
 async function togglePrenda(id, activo){
@@ -5144,30 +5239,23 @@ async function guardarStock(){
 
 function openModalPrenda(id){
   editingPrendaIdx = id || null;
+  updateTallasModal();
+  document.getElementById('pr-stock-detalle').style.display='none';
+  document.getElementById('pr-stock-wrap').style.display='block';
   if(id){
     const p=DB.prendas.find(x=>x.id===id);
     if(!p) return;
-    document.getElementById('modal-prenda-title').textContent='Editar prenda';
+    document.getElementById('modal-prenda-title').textContent='Editar producto';
     document.getElementById('pr-nombre').value=p.nombre;
     document.getElementById('pr-codigo').value=p.codigo||'';
     document.getElementById('pr-precio').value=p.precio;
     document.getElementById('pr-costo').value=p.costo||'';
-    document.getElementById('pr-cat').value=p.categoria||'Vestido';
-    document.getElementById('pr-colores').value=p.colores||'';
-    document.getElementById('pr-stock-wrap').style.display='none';
-    document.getElementById('pr-stock-detalle').style.display='block';
-    updateTallasModal();
-    setTimeout(()=>{
-      document.querySelectorAll('.talla-chk').forEach(chk=>{chk.checked=(p.tallas||[]).includes(chk.value);});
-    },50);
-    cargarTablaStock(id);
+    document.getElementById('pr-cat').value=p.categoria||'';
+    document.getElementById('pr-espec').value=p.especificaciones||'';
+    document.getElementById('pr-stock').value=p.stock||0;
   } else {
-    document.getElementById('modal-prenda-title').textContent='Nueva prenda';
-    ['pr-nombre','pr-codigo','pr-precio','pr-costo','pr-colores','pr-stock'].forEach(fid=>document.getElementById(fid).value='');
-    document.getElementById('pr-cat').value='Vestido';
-    document.getElementById('pr-stock-wrap').style.display='block';
-    document.getElementById('pr-stock-detalle').style.display='none';
-    updateTallasModal();
+    document.getElementById('modal-prenda-title').textContent='Nuevo producto';
+    ['pr-nombre','pr-codigo','pr-precio','pr-costo','pr-cat','pr-espec','pr-stock'].forEach(fid=>document.getElementById(fid).value='');
   }
   document.getElementById('modal-prenda').classList.add('open');
 }
@@ -5192,9 +5280,9 @@ async function loadDespacho(){
   document.getElementById('despacho-courier').innerHTML='<div class="loading">Cargando...</div>';
   try {
     // Listos para empaquetar: pago_completo
-    const empaquetar = await dbGet('pedidos?estado=eq.pago_completo&select=id,numero,total,monto_pagado,tipo_envio,courier_codigo,notas,creado_en,etiqueta_en,carrito_id,cliente_id,clientes(nombre,telefono,dni,distrito,direccion,referencia,tipo_envio_preferido,envio_urgente_en)&order=creado_en.asc');
+    const empaquetar = await dbGet('pedidos?estado=eq.pago_completo&select=id,numero,total,monto_pagado,tipo_envio,fecha_programada,canal,courier_codigo,notas,creado_en,etiqueta_en,carrito_id,cliente_id,clientes(nombre,telefono,dni,distrito,direccion,referencia,tipo_envio_preferido,envio_urgente_en)&order=creado_en.asc');
     // Empaquetados listos para courier
-    const courier = await dbGet('pedidos?estado=eq.empaquetado&select=id,numero,total,monto_pagado,tipo_envio,courier_codigo,notas,creado_en,etiqueta_en,carrito_id,cliente_id,clientes(nombre,telefono,dni,distrito,direccion,referencia,tipo_envio_preferido,envio_urgente_en)&order=creado_en.asc');
+    const courier = await dbGet('pedidos?estado=eq.empaquetado&select=id,numero,total,monto_pagado,tipo_envio,fecha_programada,canal,courier_codigo,notas,creado_en,etiqueta_en,carrito_id,cliente_id,clientes(nombre,telefono,dni,distrito,direccion,referencia,tipo_envio_preferido,envio_urgente_en)&order=creado_en.asc');
 
     despachoActual = [...empaquetar,...courier];
     despachoActual.forEach(p=>{ p._tipo = empaquetar.includes(p) ? 'empaquetar' : 'courier'; });
@@ -5221,13 +5309,17 @@ async function loadDespacho(){
 function despachoPasaFiltro(p){
   if(despachoFiltro==='shalom' && !esTipoEnvio(p,'shalom')) return false;
   if(despachoFiltro==='motorizado' && !esTipoEnvio(p,'motorizado')) return false;
+  if(despachoFiltro==='marvisur' && !esTipoEnvio(p,'marvisur')) return false;
+  if(despachoFiltro==='recojo' && !esTipoEnvio(p,'recojo')) return false;
+  if(despachoFiltro==='programados' && !p.fecha_programada) return false;
   if(despachoSoloUrgentes && !p.clientes?.envio_urgente_en) return false;
   return true;
 }
 
 function renderDespachoListas(){
-  const empaquetar = despachoActual.filter(p=>p._tipo==='empaquetar' && despachoPasaFiltro(p));
-  const courier = despachoActual.filter(p=>p._tipo==='courier' && despachoPasaFiltro(p));
+  const porFecha = (a,b)=> despachoFiltro==='programados' ? String(a.fecha_programada||'').localeCompare(String(b.fecha_programada||'')) : 0;
+  const empaquetar = despachoActual.filter(p=>p._tipo==='empaquetar' && despachoPasaFiltro(p)).sort(porFecha);
+  const courier = despachoActual.filter(p=>p._tipo==='courier' && despachoPasaFiltro(p)).sort(porFecha);
 
   document.getElementById('badge-empaquetar-cnt').textContent = empaquetar.length;
   document.getElementById('badge-courier-cnt').textContent = courier.length;
@@ -5244,8 +5336,8 @@ function renderDespachoListas(){
 }
 
 function esTipoEnvio(p, tipo){
-  const t = (p.clientes?.tipo_envio_preferido||p.tipo_envio||'').toLowerCase();
-  return t===tipo;
+  const t = (p.tipo_envio||p.clientes?.tipo_envio_preferido||'').toLowerCase();
+  return t.startsWith(tipo);
 }
 
 function actualizarBulkDespacho(){
@@ -5516,11 +5608,12 @@ async function bulkImprimirEtiquetas(){
 
 function renderDespachoCard(p, tipo){
   const c = p.clientes||{};
-  const envio = c.tipo_envio_preferido||p.tipo_envio||'—';
-  const esShalom = envio==='shalom'||envio==='Shalom';
-  const esMoto = envio==='motorizado'||envio==='Motorizado';
+  const envio = (p.tipo_envio||c.tipo_envio_preferido||'').toLowerCase();
+  const esShalom = envio.startsWith('shalom');
+  const esMoto = envio.startsWith('motorizado');
   const colorEnvio = esShalom?'badge-info':esMoto?'badge-purple':'badge-gray';
-  const labelEnvio = esShalom?'🚚 Shalom':esMoto?'🏍 Motorizado':'📦 '+envio;
+  const labelEnvio = pycEnvioLabel(envio);
+  const fechaProgBadge = p.fecha_programada ? '<span class="badge badge-warn" style="font-size:11px">📅 '+p.fecha_programada.split('-').reverse().join('/')+'</span>' : '';
   const falta = (p.total||0)-(p.monto_pagado||0);
   const preventaBadge = p._preventaPendiente>0 ? '<span class="badge" style="font-size:11px;background:#FFE8CC;color:#B3541E">🕒 '+p._preventaPendiente+' en pre-venta</span>' : '';
   const urgenteBadge = c.envio_urgente_en ? '<span class="badge" style="font-size:11px;background:var(--primary-light);color:var(--primary-hover)">🚀 Urgente</span>' : '';
@@ -5537,6 +5630,7 @@ function renderDespachoCard(p, tipo){
       + '</div>'
       + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'
         + '<span class="badge '+colorEnvio+'" style="font-size:11px">'+labelEnvio+'</span>'
+        + fechaProgBadge
         + urgenteBadge
         + preventaBadge
         + '<span style="font-size:12px;font-weight:600">S/ '+(p.total||0)+'</span>'
@@ -5835,7 +5929,7 @@ function renderTrackingPage(ped){
   const cl = ped.clientes;
   document.getElementById('trk-num').textContent='Pedido #'+ped.numero;
   document.getElementById('trk-name').textContent=cl?.nombre||'Clienta';
-  document.getElementById('trk-meta').innerHTML=`<span>${ped.creado_en?.slice(0,10)||''}</span><span>${ped.tipo_envio==='shalom'?'Shalom':'Motorizado'}</span><span>${ped.distrito||''}</span>`;
+  document.getElementById('trk-meta').innerHTML=`<span>${ped.creado_en?.slice(0,10)||''}</span><span>${pycEnvioLabel(ped.tipo_envio)}</span><span>${ped.distrito||''}</span>`;
   const banners={
     pago_pendiente:{bg:'#FAEEDA',c:'#633806',lbl:'Pendiente de pago',sub:`Coordina tu pago por WhatsApp al 914 036 405 · Total S/${ped.total}`},
     pago_parcial:{bg:'#FAEEDA',c:'#633806',lbl:'Pago parcial recibido',sub:`Abono S/${ped.monto_pagado} · faltan S/${ped.total-ped.monto_pagado}`},
@@ -5862,7 +5956,7 @@ function renderTrackingPage(ped){
     {key:'pago_pendiente',lbl:'Pedido creado'},
     {key:'pago_completo',lbl:'Pago confirmado'},
     {key:'empaquetado',lbl:'Empaquetado'},
-    {key:'en_camino',lbl:ped.tipo_envio==='shalom'?'Entregado a Shalom':'Entregado a motorizado'},
+    {key:'en_camino',lbl:(ped.tipo_envio||'').startsWith('recojo')?'Listo para recoger':'Entregado a '+pycEnvioLabel(ped.tipo_envio).replace(/^\S+\s/,'')},
     {key:'entregado',lbl:'Entregado'}
   ];
   const curIdx=ORDEN.indexOf(ped.estado);
@@ -5882,7 +5976,7 @@ function renderTrackingPage(ped){
   }).join('');
   const items = ped.carrito_items||[];
   document.getElementById('trk-items').innerHTML=
-    items.map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12.5px"><span>${it.prendas?.nombre||'Prenda'} <span style="color:var(--text3)">T-${it.talla}</span></span><span style="font-weight:500">S/${it.precio_unitario}</span></div>`).join('')+
+    items.map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12.5px"><span>${it.prendas?.nombre||'Producto'} ${it.color?`<span style="color:var(--text3)">· ${it.color}</span>`:''}</span><span style="font-weight:500">S/${it.precio_unitario}</span></div>`).join('')+
     `<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:6px 0;border-bottom:0.5px solid var(--border)"><span>Envío ${ped.tipo_envio==='shalom'?'Shalom':'Motorizado'}</span><span>${ped.costo_envio===0?'Gratis':'S/'+ped.costo_envio}</span></div>`+
     `<div style="display:flex;justify-content:space-between;margin-top:8px;font-weight:600;font-size:14px"><span>Total</span><span>S/${ped.total}</span></div>`;
 }
@@ -5901,7 +5995,7 @@ let f5PagoMetodo = null;
 let f5CapturaBase64 = null;
 let f5PedidoData = null;
 
-const F5_PASOS = ['Envío','Datos','Resumen','Términos','Pago'];
+const F5_PASOS = ['Envío','Datos','Resumen','Términos','Confirmar'];
 
 // Agencias Shalom — compiladas de directorios públicos (no oficiales de Shalom), Lima y Callao.
 // Formato: [distrito, nombre de agencia]. Faltan las 23 regiones restantes del país — se pueden ir agregando.
@@ -6321,13 +6415,15 @@ function f5ShowPaso(n){
 
 function selCourier(tipo){
   f5Courier = tipo;
-  document.getElementById('opt-shalom').classList.toggle('selected', tipo==='shalom');
-  document.getElementById('opt-motorizado').classList.toggle('selected', tipo==='motorizado');
+  ['shalom','motorizado','marvisur','recojo'].forEach(k=>document.getElementById('opt-'+k).classList.toggle('selected', tipo===k));
   document.getElementById('f5-shalom-info').style.display = tipo==='shalom'?'block':'none';
   document.getElementById('f5-motor-info').style.display = tipo==='motorizado'?'block':'none';
+  document.getElementById('f5-marvisur-info').style.display = tipo==='marvisur'?'block':'none';
+  document.getElementById('f5-recojo-info').style.display = tipo==='recojo'?'block':'none';
   // Mostrar/ocultar campos según courier
   document.getElementById('f5-campos-shalom').style.display = 'none';
   document.getElementById('f5-campos-motor').style.display = 'none';
+  document.getElementById('f5-campos-marvisur').style.display = 'none';
 }
 
 function selPago(metodo){
@@ -6371,6 +6467,7 @@ function f5Next(){
     // Mostrar campos según courier
     document.getElementById('f5-campos-shalom').style.display = f5Courier==='shalom'?'block':'none';
     document.getElementById('f5-campos-motor').style.display = f5Courier==='motorizado'?'block':'none';
+    document.getElementById('f5-campos-marvisur').style.display = f5Courier==='marvisur'?'block':'none';
     f5ShowPaso(2);
 
   } else if(f5Paso === 2){
@@ -6393,6 +6490,10 @@ function f5Next(){
       if(!distrito){ errEl.textContent='Selecciona tu distrito.'; errEl.style.display='block'; return; }
       if(!dir){ errEl.textContent='Ingresa tu dirección exacta.'; errEl.style.display='block'; return; }
     }
+    if(f5Courier==='marvisur'){
+      if(!document.getElementById('f5-mv-ciudad').value.trim()){ errEl.textContent='Ingresa tu ciudad o provincia.'; errEl.style.display='block'; return; }
+      if(!document.getElementById('f5-mv-agencia').value.trim()){ errEl.textContent='Ingresa la agencia Marvisur de recojo.'; errEl.style.display='block'; return; }
+    }
     errEl.style.display='none';
     f5BuildResumen();
     f5ShowPaso(3);
@@ -6406,14 +6507,12 @@ function f5Next(){
       document.getElementById('f5-err-4').style.display='block'; return;
     }
     document.getElementById('f5-err-4').style.display='none';
-    // Mostrar paso 5 según courier
-    if(f5Courier==='shalom'){
-      document.getElementById('f5-shalom-confirm').style.display='block';
-      document.getElementById('f5-motor-pago').style.display='none';
-    } else {
-      document.getElementById('f5-shalom-confirm').style.display='none';
-      document.getElementById('f5-motor-pago').style.display='block';
-    }
+    // Punto y Compra: no se paga en el link; se confirma y se coordina el pago por WhatsApp
+    document.getElementById('f5-shalom-confirm').style.display='block';
+    document.getElementById('f5-motor-pago').style.display='none';
+    document.getElementById('f5-confirm-desc').textContent = f5Courier==='recojo'
+      ? 'Te avisaremos por WhatsApp cuando tu pedido esté listo para recoger en el showroom.'
+      : 'Revisamos tus datos y te escribimos por WhatsApp con el total y el costo del envío.';
     f5ShowPaso(5);
   }
 }
@@ -6422,41 +6521,47 @@ function f5Back(){
   if(f5Paso > 1) f5ShowPaso(f5Paso - 1);
 }
 
+function f5DatosEntrega(){
+  if(f5Courier==='motorizado') return { distrito: document.getElementById('f5-distrito').value, dir: document.getElementById('f5-direccion').value, ref: document.getElementById('f5-referencia')?.value||'' };
+  if(f5Courier==='shalom'){ const a=f5GetAgenciaShalom(); return { distrito:a.ciudad, dir:a.agencia, ref:'' }; }
+  if(f5Courier==='marvisur') return { distrito: document.getElementById('f5-mv-ciudad').value.trim(), dir: document.getElementById('f5-mv-agencia').value.trim(), ref:'' };
+  return { distrito:'', dir:'Recojo en showroom', ref:'' };
+}
+function f5CostoEnvioActual(){
+  const ped = trackingPedidoData;
+  if(f5Courier==='recojo') return 0;
+  // Si el negocio ya fijó el costo para este mismo tipo de envío, se respeta; si no, queda por confirmar
+  if(ped && ped.tipo_envio===f5Courier && ped.costo_envio>0) return ped.costo_envio;
+  return null;
+}
 function f5BuildResumen(){
   const ped = trackingPedidoData;
   const items = ped?.carrito_items || [];
   const subtotal = ped?.subtotal || 0;
-  const costoEnvio = f5Courier==='motorizado' ? 14 : 0;
-  const total = subtotal + costoEnvio;
+  const costoEnvio = f5CostoEnvioActual();
+  const total = subtotal + (costoEnvio||0);
 
   document.getElementById('f5-resumen-prendas').innerHTML = `
-    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#9C9A92;margin-bottom:8px">Prendas</div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#9C9A92;margin-bottom:8px">Productos</div>
     <div style="border:0.5px solid #E8E6E0;border-radius:8px;overflow:hidden">
-      ${items.map(it=>`<div class="f5-resumen-item" style="padding:7px 12px"><span>${it.prendas?.nombre||'Prenda'} <span style="color:#9C9A92">T-${it.talla}</span></span><span style="font-weight:500">S/ ${it.precio_unitario}</span></div>`).join('')}
-      <div class="f5-resumen-item" style="padding:7px 12px"><span>Envío ${f5Courier==='motorizado'?'Motorizado':'Shalom'}</span><span style="font-weight:500;color:${costoEnvio===0?'#1D9E75':'#1A1A18'}">${costoEnvio===0?'Gratis':'S/ '+costoEnvio}</span></div>
-      <div class="f5-total-row" style="padding:10px 12px"><span>Total</span><span>S/ ${total}</span></div>
+      ${items.map(it=>`<div class="f5-resumen-item" style="padding:7px 12px"><span>${it.prendas?.nombre||'Producto'} ${it.color?`<span style="color:#9C9A92">· ${it.color}</span>`:''}</span><span style="font-weight:500">S/ ${it.precio_unitario}</span></div>`).join('')}
+      <div class="f5-resumen-item" style="padding:7px 12px"><span>Envío ${pycEnvioLabel(f5Courier)}</span><span style="font-weight:500;color:${costoEnvio===0?'#1D9E75':'#1A1A18'}">${costoEnvio===0?'Gratis':costoEnvio===null?'Por confirmar':'S/ '+costoEnvio}</span></div>
+      <div class="f5-total-row" style="padding:10px 12px"><span>Total${costoEnvio===null?' (sin envío)':''}</span><span>S/ ${total}</span></div>
     </div>`;
 
   const nombre = document.getElementById('f5-nombre').value;
   const tel = document.getElementById('f5-tel').value;
-  const distrito = f5Courier==='motorizado' ? document.getElementById('f5-distrito').value : '';
-  const dir = f5Courier==='motorizado' ? document.getElementById('f5-direccion').value : '';
-  const agencia = f5Courier==='shalom' ? f5GetAgenciaShalom().agencia : '';
-  const ciudad = f5Courier==='shalom' ? f5GetAgenciaShalom().ciudad : '';
+  const {distrito, dir} = f5DatosEntrega();
 
   document.getElementById('f5-resumen-envio').innerHTML = `
     <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#9C9A92;margin-bottom:8px">Datos de entrega</div>
     <div style="line-height:1.7;font-size:12.5px;color:#1A1A18">
       <strong>${nombre}</strong> · ${tel}<br>
-      ${f5Courier==='motorizado' ? `${dir}${distrito?', '+distrito:''}` : `Agencia: ${agencia}, ${ciudad}`}
+      ${pycEnvioLabel(f5Courier)}<br>${f5Courier==='motorizado' ? `${dir}${distrito?', '+distrito:''}` : f5Courier==='recojo' ? 'Recojo en showroom' : `Agencia: ${dir}, ${distrito}`}
     </div>`;
 }
 
 async function f5Confirmar(){
-  if(f5Courier==='motorizado'){
-    if(!f5PagoMetodo){ document.getElementById('f5-err-5').textContent='Selecciona Yape o Plin.'; document.getElementById('f5-err-5').style.display='block'; return; }
-    if(!f5CapturaBase64){ document.getElementById('f5-err-5').textContent='Sube la captura de tu pago.'; document.getElementById('f5-err-5').style.display='block'; return; }
-  }
 
   const ped = trackingPedidoData;
   if(!ped) return;
@@ -6464,16 +6569,14 @@ async function f5Confirmar(){
   const nombre = document.getElementById('f5-nombre').value.trim();
   const tel = document.getElementById('f5-tel').value.replace(/\s/g,'');
   const dni = document.getElementById('f5-dni').value.trim();
-  const costoEnvio = f5Courier==='motorizado' ? 14 : 0;
-  const distrito = f5Courier==='motorizado' ? document.getElementById('f5-distrito').value : f5GetAgenciaShalom().ciudad;
-  const dir = f5Courier==='motorizado' ? document.getElementById('f5-direccion').value : f5GetAgenciaShalom().agencia;
-  const ref = f5Courier==='motorizado' ? (document.getElementById('f5-referencia')?.value||'') : '';
+  const costoEnvio = f5CostoEnvioActual()||0;
+  const {distrito, dir, ref} = f5DatosEntrega();
 
   try {
     // Actualizar clienta
     await dbPatch(`clientes?id=eq.${ped.cliente_id}`, {
       nombre, dni, distrito, direccion:dir, referencia:ref,
-      costo_envio:costoEnvio
+      costo_envio:costoEnvio, tipo_envio_preferido:f5Courier
     });
     // Actualizar pedido
     await dbPatch(`pedidos?id=eq.${ped.id}`, {
@@ -6482,16 +6585,6 @@ async function f5Confirmar(){
       costo_envio:costoEnvio,
       total: ped.subtotal + costoEnvio
     });
-    // Si motorizado, registrar pago pendiente
-    if(f5Courier==='motorizado'){
-      await dbPost('pagos', {
-        pedido_id: ped.id,
-        metodo: f5PagoMetodo==='yape'?'Yape':'Plin',
-        monto: 14,
-        estado: 'pendiente',
-        captura_url: f5CapturaBase64?.slice(0,500)||''
-      });
-    }
     // Mostrar éxito
     document.querySelectorAll('.f5-paso').forEach(p=>p.style.display='none');
     document.getElementById('f5-paso-ok').style.display='block';
@@ -6522,6 +6615,7 @@ function showFormEnvio(ped){
   document.querySelectorAll('.f5-paso').forEach(p=>p.style.display='none');
   document.getElementById('f5-paso-ok').style.display='none';
   document.getElementById('f5-paso-1').style.display='block';
+  if(ped.tipo_envio && PYC_ENVIOS[ped.tipo_envio]) selCourier(ped.tipo_envio);
   document.getElementById('f5-paso-4').querySelector('#f5-acepto').checked=false;
   document.getElementById('f5-btn-4').disabled=true;
   f5InitProgress();
@@ -6717,7 +6811,7 @@ async function rgGuardar(){
     distrito = document.getElementById('rg-distrito').value;
     dir = document.getElementById('rg-direccion').value.trim();
     ref = document.getElementById('rg-referencia').value.trim();
-    costoEnv = 14;
+    costoEnv = 0;  // Punto y Compra: el costo se confirma por WhatsApp
     tipoEnvio = 'motorizado';
     if(!distrito){ errEl.textContent='Selecciona tu distrito.'; errEl.style.display='block'; return; }
     if(!dir){ errEl.textContent='Ingresa tu dirección de entrega.'; errEl.style.display='block'; return; }
@@ -6756,7 +6850,7 @@ async function rgGuardar(){
   document.getElementById('rg-confirm-wrap').style.display='block';
   document.getElementById('rg-confirm-detalle').innerHTML = rgCourier==='shalom'
     ? `<strong>${nombre}</strong><br>Shalom: ${dir}<br>${distrito}<br><span style="color:var(--text3)">WA: ${tel}</span>`
-    : `<strong>${nombre}</strong><br>${dir}${ref?', '+ref:''}<br>${distrito} · Envío S/${costoEnv}<br><span style="color:var(--text3)">WA: ${tel}</span>`;
+    : `<strong>${nombre}</strong><br>${dir}${ref?', '+ref:''}<br>${distrito} · 🏍️ Motorizado (costo por confirmar)<br><span style="color:var(--text3)">WA: ${tel}</span>`;
 
   // ¿Ya tiene pedidos acumulados/activos? Si sí, ofrecer solicitar envío urgente
   const urgenteWrap = document.getElementById('rg-confirm-urgente-wrap');
