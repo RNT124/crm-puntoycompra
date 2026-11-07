@@ -1296,7 +1296,13 @@ td.empty-state{padding:20px;text-align:center}
       <div id="pg-catalogo" class="page">
         <div class="sec-header">
           <div class="sec-title">Catálogo</div>
-          <button class="btn btn-primary btn-sm" onclick="openModalPrenda()">+ Agregar producto</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-sm" onclick="impDescargarPlantilla()">📄 Descargar plantilla</button>
+            <label class="btn btn-sm" style="cursor:pointer;background:var(--green-light);color:var(--green);border-color:var(--green)">📥 Importar Excel
+              <input type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="impLeerArchivo(this)">
+            </label>
+            <button class="btn btn-primary btn-sm" onclick="openModalPrenda()">+ Agregar producto</button>
+          </div>
         </div>
         <div style="padding:0 0 12px 0;display:flex;gap:8px;flex-wrap:wrap">
           <input id="catalogo-search" type="text" placeholder="🔍 Buscar por nombre o código..." style="flex:1;min-width:220px;max-width:320px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarCatalogo()">
@@ -1790,6 +1796,34 @@ td.empty-state{padding:20px;text-align:center}
   </div>
 </div>
 
+<!-- Modal importar catálogo (Punto y Compra) -->
+<div class="modal-overlay" id="modal-importar">
+  <div class="modal" style="max-width:820px;max-height:92vh;overflow-y:auto">
+    <div class="modal-title">📥 Importar catálogo desde Excel</div>
+    <div id="imp-archivo" class="text-hint" style="font-size:12px;margin-bottom:10px"></div>
+    <div class="card-title" style="margin-bottom:6px">1. Columnas</div>
+    <div class="text-hint" style="font-size:12px;margin-bottom:8px">Revisa qué columna del Excel corresponde a cada dato. Las marcadas con * son obligatorias.</div>
+    <div id="imp-mapeo" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px 12px;margin-bottom:12px"></div>
+    <div class="form-row" style="max-width:420px">
+      <label class="form-label">Si el producto ya existe, el stock…</label>
+      <select id="imp-modo-stock" onchange="impAnalizar()">
+        <option value="reemplazar">Reemplazar con el del Excel</option>
+        <option value="sumar">Sumar al stock actual</option>
+        <option value="nada">No tocar el stock</option>
+      </select>
+    </div>
+    <div class="card-title" style="margin:6px 0">2. Vista previa</div>
+    <div id="imp-resumen" style="margin-bottom:10px"></div>
+    <div id="imp-avisos"></div>
+    <div class="tbl-wrap" style="max-height:300px;overflow:auto"><table class="tbl" id="imp-preview"></table></div>
+    <div id="imp-progreso" style="display:none;margin-top:10px;font-size:13px;font-weight:500"></div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" onclick="closeModal('modal-importar')">Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="imp-btn-confirmar" onclick="impConfirmar()">Confirmar importación</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal stock -->
 <div class="modal-overlay" id="modal-stock">
   <div class="modal">
@@ -2161,7 +2195,20 @@ async function supaFetch(path, method='GET', body=null, prefer='return=represent
   const t = await res.text();
   return t ? JSON.parse(t) : null;
 }
-const dbGet   = p => supaFetch(p, 'GET');
+// Supabase devuelve como máximo 1000 filas por consulta: se piden en bloques hasta traer todo
+const dbGet   = async p => {
+  if(/[?&](limit|offset)=/.test(p)) return supaFetch(p, 'GET');
+  const sep = p.includes('?') ? '&' : '?';
+  let out = [], off = 0;
+  for(;;){
+    const part = await supaFetch(`${p}${sep}limit=1000&offset=${off}`, 'GET');
+    if(!Array.isArray(part)) return part;
+    out = out.concat(part);
+    if(part.length < 1000) break;
+    off += 1000;
+  }
+  return out;
+};
 const dbPost  = (p,b) => supaFetch(p, 'POST', JSON.stringify(b), 'return=representation');
 const dbPatch = (p,b) => supaFetch(p, 'PATCH', JSON.stringify(b), 'return=representation');
 const dbDelete = p => supaFetch(p, 'DELETE');
@@ -2316,7 +2363,7 @@ function nav(page, el){
     cortes:'Valida los pagos de lo vendido en tus lives',
     pedidos:'Todos los pedidos generados y su estado actual',
     clientes:'Datos de contacto, envío e historial de cada clienta',
-    catalogo:'Tus prendas — precios, tallas y categorías',
+    catalogo:'Tus productos — precios, códigos de barras y categorías',
     stock:'Cantidad disponible por prenda, talla y color',
     urgentes:'Clientas que pidieron prioridad en el próximo reparto',
     compras:'Registra reposición de mercadería y gastos del negocio',
@@ -4863,6 +4910,192 @@ async function loadCatalogo(){
   } catch(e){ console.error('loadCatalogo error:',e); }
 }
 function renderCatalogo(){ loadCatalogo(); }
+
+// ═══════════════ IMPORTADOR DE CATÁLOGO (Punto y Compra) ═══════════════
+const IMP_CAMPOS = [
+  {k:'codigo', lbl:'Código de barras', req:false, alias:['codigo de barras','cod barras','cod. barras','codigo barras','codigobarras','barcode','ean','upc','sku','codigo','cod','cod.','codigo producto','cod producto','referencia']},
+  {k:'nombre', lbl:'Nombre *', req:true, alias:['nombre','producto','descripcion','nombre producto','articulo','item','detalle','descripcion producto']},
+  {k:'precio', lbl:'Precio venta *', req:true, alias:['precio venta','precio de venta','pvp','precio','p. venta','p venta','precio unitario','venta','precio publico']},
+  {k:'costo', lbl:'Costo', req:false, alias:['costo','costo unitario','precio compra','precio de compra','p. compra','compra','costo promedio','precio costo']},
+  {k:'stock', lbl:'Stock', req:false, alias:['stock','cantidad','existencia','existencias','stock actual','saldo','inventario','unidades','cant','cant.']},
+  {k:'categoria', lbl:'Categoría', req:false, alias:['categoria','familia','linea','grupo','tipo','marca','clase','subcategoria']},
+  {k:'especificaciones', lbl:'Especificaciones', req:false, alias:['especificaciones','especificacion','observaciones','observacion','notas','caracteristicas','detalle adicional','descripcion larga']}
+];
+let impFilas = [], impEncab = [], impFilaEncab = 0, impPlan = null;
+
+function impNorm(t){ return String(t==null?'':t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[_\-]+/g,' ').replace(/\s+/g,' ').trim(); }
+
+function impDescargarPlantilla(){
+  const datos = [IMP_CAMPOS.map(c=>c.lbl.replace(' *','')),
+    ['7501234567890','Ejemplo: Funko Pop Goku',120,70,5,'Funko','Caja original, 10 cm']];
+  const ws = XLSX.utils.aoa_to_sheet(datos);
+  ws['!cols'] = [{wch:18},{wch:34},{wch:13},{wch:10},{wch:8},{wch:16},{wch:34}];
+  // La columna de código como texto para no perder ceros iniciales
+  for(let r=0;r<datos.length;r++){ const ref=XLSX.utils.encode_cell({r,c:0}); if(ws[ref]){ ws[ref].t='s'; ws[ref].v=String(ws[ref].v); ws[ref].z='@'; } }
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Catalogo');
+  XLSX.writeFile(wb, 'plantilla-catalogo-punto-y-compra.xlsx');
+}
+
+function impLeerArchivo(input){
+  const file = input.files && input.files[0]; input.value='';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const filas = XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:''});
+      // La fila de encabezados: la primera (de las 15 primeras) con 2 o más columnas reconocidas
+      let mejor = -1, mejorCount = 0;
+      for(let i=0;i<Math.min(15,filas.length);i++){
+        const n = filas[i].filter(c=>IMP_CAMPOS.some(f=>f.alias.includes(impNorm(c)))).length;
+        if(n>mejorCount){ mejor=i; mejorCount=n; }
+      }
+      impFilaEncab = mejor>=0 && mejorCount>=2 ? mejor : 0;
+      impEncab = (filas[impFilaEncab]||[]).map((c,i)=>String(c||'').trim()||('Columna '+(i+1)));
+      impFilas = filas.slice(impFilaEncab+1).filter(f=>f.some(c=>String(c).trim()!==''));
+      document.getElementById('imp-archivo').textContent = `Archivo: ${file.name} · hoja "${wb.SheetNames[0]}" · ${impFilas.length} filas con datos`;
+      impRenderMapeo();
+      document.getElementById('imp-progreso').style.display='none';
+      document.getElementById('imp-btn-confirmar').disabled=false;
+      document.getElementById('modal-importar').classList.add('open');
+      impAnalizar();
+    }catch(err){ toast('No pude leer el archivo: '+err.message); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function impRenderMapeo(){
+  const usados = new Set();
+  document.getElementById('imp-mapeo').innerHTML = IMP_CAMPOS.map(c=>{
+    let idx = impEncab.findIndex((h,i)=>!usados.has(i) && c.alias.includes(impNorm(h)));
+    if(idx>=0) usados.add(idx);
+    return `<div class="form-row" style="margin:0"><label class="form-label">${c.lbl}</label>
+      <select id="imp-col-${c.k}" onchange="impAnalizar()"><option value="-1">— no viene en el Excel —</option>
+      ${impEncab.map((h,i)=>`<option value="${i}" ${i===idx?'selected':''}>${pycEsc(h)}</option>`).join('')}</select></div>`;
+  }).join('');
+}
+
+function impNumero(v){
+  if(v===null||v===undefined||v==='') return null;
+  if(typeof v==='number') return isFinite(v)?v:null;
+  let t = String(v).replace(/s\/\.?/i,'').replace(/[^\d,.\-]/g,'');
+  if(!t) return null;
+  const c = t.lastIndexOf(','), d = t.lastIndexOf('.');
+  if(c>=0 && d>=0){ t = c>d ? t.replace(/\./g,'').replace(',', '.') : t.replace(/,/g,''); }
+  else if(c>=0){ const dec=t.length-c-1; t = dec<=2 ? t.replace(',', '.') : t.replace(/,/g,''); }
+  const n = parseFloat(t); return isNaN(n)?null:n;
+}
+function impCodigo(v){
+  if(v===null||v===undefined||v==='') return {cod:null};
+  if(typeof v==='number'){
+    if(Number.isInteger(v) && Math.abs(v)<9e15) return {cod:v.toFixed(0)};
+    return {cod:String(v), danado:true};
+  }
+  let t = String(v).trim().replace(/\.0+$/,'');
+  if(/^\d+([.,]\d+)?e\+?\d+$/i.test(t)) return {cod:t, danado:true};
+  return {cod:t||null};
+}
+
+async function impAnalizar(){
+  const col = {}; IMP_CAMPOS.forEach(c=>{ col[c.k] = parseInt(document.getElementById('imp-col-'+c.k).value); });
+  const modo = document.getElementById('imp-modo-stock').value;
+  const avisos = [];
+  if(col.nombre<0 || col.precio<0){
+    document.getElementById('imp-resumen').innerHTML = '<div style="color:var(--red);font-weight:600">Elige qué columna es el Nombre y cuál es el Precio venta.</div>';
+    document.getElementById('imp-preview').innerHTML=''; document.getElementById('imp-avisos').innerHTML='';
+    impPlan=null; return;
+  }
+  let existentes;
+  try{ existentes = await dbGet('prendas?select=id,nombre,codigo,stock'); }
+  catch(e){ toast('Error leyendo el catálogo actual: '+e.message); return; }
+  const porCodigo = {}, porNombre = {};
+  existentes.forEach(p=>{ if(p.codigo) porCodigo[p.codigo.trim().toLowerCase()] = p; porNombre[impNorm(p.nombre)] = p; });
+
+  const nuevos = [], actualizar = [], errores = [], vistosCod = new Set(), danados = [];
+  impFilas.forEach((f, i)=>{
+    const nFila = impFilaEncab + i + 2;  // número de fila como en Excel
+    const get = k => col[k]>=0 ? f[col[k]] : '';
+    const nombre = String(get('nombre')||'').trim();
+    const precio = impNumero(get('precio'));
+    const {cod, danado} = impCodigo(get('codigo'));
+    if(danado) danados.push(nFila);
+    if(!nombre){ errores.push(`Fila ${nFila}: sin nombre`); return; }
+    if(precio===null){ errores.push(`Fila ${nFila} (${nombre}): sin precio`); return; }
+    if(cod){
+      const kc = cod.toLowerCase();
+      if(vistosCod.has(kc)){ errores.push(`Fila ${nFila} (${nombre}): código ${cod} repetido en el archivo`); return; }
+      vistosCod.add(kc);
+    }
+    const costo = impNumero(get('costo'));
+    const stockX = impNumero(get('stock'));
+    const cat = String(get('categoria')||'').trim();
+    const esp = String(get('especificaciones')||'').trim();
+    const dato = { nombre, precio, codigo:cod||null };
+    if(col.costo>=0) dato.costo = costo||0;
+    if(col.categoria>=0) dato.categoria = cat||null;
+    if(col.especificaciones>=0) dato.especificaciones = esp||null;
+    const existe = cod ? porCodigo[cod.toLowerCase()] : porNombre[impNorm(nombre)];
+    if(existe){
+      if(col.stock>=0 && modo==='reemplazar') dato.stock = Math.round(stockX||0);
+      if(col.stock>=0 && modo==='sumar') dato.stock = (existe.stock||0) + Math.round(stockX||0);
+      actualizar.push({id:existe.id, dato, fila:nFila, antes:existe});
+    } else {
+      dato.stock = col.stock>=0 ? Math.round(stockX||0) : 0;
+      if(!('costo' in dato)) dato.costo = 0;
+      dato.tallas = []; dato.colores=''; dato.activo = true;
+      nuevos.push({dato, fila:nFila});
+    }
+  });
+  if(danados.length) avisos.push(`⚠️ ${danados.length} código(s) de barras vienen en notación científica (ej. 7.5E+12) y ya están dañados en el archivo — filas ${danados.slice(0,10).join(', ')}${danados.length>10?'…':''}. En Excel, pon esa columna en formato Texto y vuelve a exportar.`);
+  if(col.codigo<0) avisos.push('ℹ️ No hay columna de código de barras: los productos se reconocerán por el nombre.');
+  if(col.stock<0) avisos.push('ℹ️ No hay columna de stock: los productos nuevos empezarán con stock 0.');
+  impPlan = {nuevos, actualizar, errores};
+
+  document.getElementById('imp-resumen').innerHTML = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <span class="badge badge-ok" style="font-size:13px;padding:6px 10px">✅ ${nuevos.length} nuevos</span>
+      <span class="badge badge-info" style="font-size:13px;padding:6px 10px">🔄 ${actualizar.length} se actualizan</span>
+      <span class="badge ${errores.length?'badge-warn':'badge-gray'}" style="font-size:13px;padding:6px 10px">⚠️ ${errores.length} con errores (se saltan)</span>
+    </div>`;
+  document.getElementById('imp-avisos').innerHTML = avisos.map(a=>`<div style="background:var(--amber-light);color:var(--amber-dark);border-radius:var(--radius-sm);padding:8px 12px;font-size:12px;margin-bottom:6px">${a}</div>`).join('')
+    + (errores.length?`<details style="font-size:12px;margin-bottom:8px"><summary style="cursor:pointer;color:var(--red)">Ver filas con errores</summary><div style="max-height:140px;overflow:auto;margin-top:4px">${errores.map(pycEsc).join('<br>')}</div></details>`:'');
+  const muestra = [...nuevos.map(n=>({...n.dato, _t:'Nuevo'})), ...actualizar.map(a=>({...a.dato, stock: ('stock' in a.dato)?a.dato.stock:a.antes.stock, _t:'Actualiza'}))].slice(0,25);
+  document.getElementById('imp-preview').innerHTML = `<thead><tr><th></th><th>Código de barras</th><th>Nombre</th><th>Precio</th><th>Costo</th><th>Stock</th><th>Categoría</th></tr></thead><tbody>`
+    + muestra.map(m=>`<tr><td><span class="badge ${m._t==='Nuevo'?'badge-ok':'badge-info'}" style="font-size:10px">${m._t}</span></td><td style="font-family:monospace">${pycEsc(m.codigo||'—')}</td><td>${pycEsc(m.nombre)}</td><td>S/ ${m.precio}</td><td>${m.costo!=null?'S/ '+m.costo:'—'}</td><td>${m.stock}</td><td>${pycEsc(m.categoria||'—')}</td></tr>`).join('')
+    + `</tbody>`;
+  document.getElementById('imp-btn-confirmar').disabled = !(nuevos.length||actualizar.length);
+}
+
+async function impConfirmar(){
+  if(!impPlan) return;
+  const {nuevos, actualizar} = impPlan;
+  if(!confirm(`Se crearán ${nuevos.length} productos y se actualizarán ${actualizar.length}. ¿Continuar?`)) return;
+  const btn = document.getElementById('imp-btn-confirmar'); btn.disabled = true;
+  const prog = document.getElementById('imp-progreso'); prog.style.display='block';
+  let hechos = 0; const total = nuevos.length + actualizar.length; const fallas = [];
+  const avanzar = () => { prog.textContent = `⏳ Guardando… ${hechos} de ${total}`; };
+  avanzar();
+  try{
+    for(let i=0;i<nuevos.length;i+=500){
+      const bloque = nuevos.slice(i,i+500).map(n=>n.dato);
+      try{ await dbPost('prendas', bloque); }
+      catch(e){
+        // Si el bloque falla (ej. código ya usado), se intenta uno por uno para no perder los demás
+        for(const d of bloque){ try{ await dbPost('prendas', d); }catch(e2){ fallas.push(`${d.nombre}: ${/prendas_codigo_key/.test(e2.message)?'código de barras ya existe':e2.message.slice(0,80)}`); } }
+      }
+      hechos += bloque.length; avanzar();
+    }
+    for(let i=0;i<actualizar.length;i+=20){
+      await Promise.all(actualizar.slice(i,i+20).map(a=>dbPatch(`prendas?id=eq.${a.id}`, a.dato).catch(e=>fallas.push(`${a.dato.nombre}: ${e.message.slice(0,80)}`))));
+      hechos = nuevos.length + Math.min(i+20, actualizar.length); avanzar();
+    }
+    prog.innerHTML = `✅ Listo: ${total-fallas.length} de ${total} productos guardados.` + (fallas.length?`<div style="color:var(--red);font-weight:400;font-size:12px;margin-top:6px">No se pudieron guardar ${fallas.length}:<br>${fallas.slice(0,30).map(pycEsc).join('<br>')}</div>`:'');
+    toast('✓ Catálogo importado');
+    await loadCatalogo();
+    await loadCatalogoLive();
+  }catch(e){ prog.textContent = 'Error: '+e.message; btn.disabled=false; }
+}
 
 function renderCatalogoTabla(prendas){
   document.getElementById('catalogo-tbody').innerHTML=prendas.length?prendas.map(p=>`
