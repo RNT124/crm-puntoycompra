@@ -882,6 +882,10 @@ td.empty-state{padding:20px;text-align:center}
     </div>
 
     <div class="sb-section" id="sb-admin-section">Administración</div>
+    <div class="sb-item" id="sb-subir" onclick="nav('subir',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Subir inventario
+    </div>
     <div class="sb-item" id="sb-catalogo" onclick="nav('catalogo',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>
       Catálogo
@@ -1288,6 +1292,27 @@ td.empty-state{padding:20px;text-align:center}
         </div>
       </div>
 
+      <!-- ── SUBIR INVENTARIO (SmartClic) ── -->
+      <div id="pg-subir" class="page">
+        <div class="card" style="max-width:640px">
+          <div class="card-title">📥 Subir inventario de SmartClic</div>
+          <ol style="font-size:13.5px;line-height:1.8;padding-left:20px;margin:6px 0 14px">
+            <li>Descarga de SmartClic el Excel de inventario (hoja <strong>"Inventario"</strong>). Hazlo justo antes de subirlo.</li>
+            <li>Toca <strong>📥 Elegir archivo Excel</strong> y elige ese archivo.</li>
+            <li>Revisa la vista previa: nuevos, actualizados, sin precio y errores.</li>
+            <li>Toca <strong>Confirmar importación</strong>.</li>
+          </ol>
+          <div style="background:var(--amber-light);color:var(--amber-dark);border-radius:var(--radius-sm);padding:10px 12px;font-size:12.5px;margin-bottom:14px">
+            ⚠️ El stock de cada producto se <strong>reemplaza</strong> por el del Excel. Las ventas hechas en el CRM deben estar anotadas también en SmartClic antes de descargar el archivo.
+          </div>
+          <label class="btn btn-primary" style="cursor:pointer;display:inline-flex;font-size:15px;padding:12px 22px">📥 Elegir archivo Excel
+            <input type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="impLeerArchivo(this)">
+          </label>
+          <div id="subir-ultimo" class="text-hint" style="font-size:12px;margin-top:12px"></div>
+          <div class="text-hint" style="font-size:12px;margin-top:6px">Link directo para esta pantalla: <strong>rnt124.github.io/crm-puntoycompra/#subir-stock</strong></div>
+        </div>
+      </div>
+
       <!-- ── CATALOGO ── -->
       <div id="pg-catalogo" class="page">
         <div class="sec-header">
@@ -1301,14 +1326,19 @@ td.empty-state{padding:20px;text-align:center}
           </div>
         </div>
         <div style="padding:0 0 12px 0;display:flex;gap:8px;flex-wrap:wrap">
-          <input id="catalogo-search" type="text" placeholder="🔍 Buscar por nombre o código..." style="flex:1;min-width:220px;max-width:320px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarCatalogo()">
+          <input id="catalogo-search" type="text" placeholder="🔍 Buscar por nombre, código interno o de barras..." style="flex:1;min-width:220px;max-width:320px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarCatalogo()">
           <select id="catalogo-cat-filtro" style="padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;max-width:200px" onchange="filtrarCatalogo()">
             <option value="">Todas las categorías</option>
+          </select>
+          <select id="catalogo-estado-filtro" style="padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;max-width:220px" onchange="filtrarCatalogo()">
+            <option value="">Todos los productos</option>
+            <option value="sinprecio">💲 Sin precio</option>
+            <option value="sincodigo">🏷️ Sin código de barras</option>
           </select>
         </div>
         <div class="tbl-wrap">
           <table class="tbl">
-            <thead><tr><th>Producto</th><th>Código de barras</th><th>Precio</th><th>Especificaciones</th><th>Categoría</th><th>Stock</th><th>Estado</th><th></th></tr></thead>
+            <thead><tr><th>Producto</th><th>Código de barras</th><th>Precio</th><th>Especificaciones</th><th>Marca</th><th>Stock</th><th>Estado</th><th></th></tr></thead>
             <tbody id="catalogo-tbody"></tbody>
           </table>
         </div>
@@ -1340,7 +1370,7 @@ td.empty-state{padding:20px;text-align:center}
         </div>
         <div class="tbl-wrap">
           <table class="tbl">
-            <thead><tr><th>Producto</th><th>Código de barras</th><th>Categoría</th><th>Stock</th><th>Ajuste rápido</th></tr></thead>
+            <thead><tr><th>Producto</th><th>Códigos</th><th>Marca</th><th>Stock</th><th>Ajuste rápido</th></tr></thead>
             <tbody id="stock-tbody"></tbody>
           </table>
         </div>
@@ -1747,6 +1777,7 @@ td.empty-state{padding:20px;text-align:center}
     <div class="grid-2">
       <div class="form-row"><label class="form-label">Nombre</label><input type="text" id="pr-nombre" placeholder="Nombre del producto"></div>
       <div class="form-row"><label class="form-label">Código de barras</label><input type="text" id="pr-codigo" placeholder="Escanea o escribe el código"></div>
+      <div class="form-row"><label class="form-label">Código interno <span class="text-hint">(SmartClic, ej. P00001)</span></label><input type="text" id="pr-codint" placeholder="P00001"></div>
     </div>
     <div class="grid-2">
       <div class="form-row"><label class="form-label">Precio venta (S/)</label><input type="number" id="pr-precio" placeholder="89"></div>
@@ -2316,6 +2347,10 @@ async function doLogin(){
   if(currentUser.rol==='operador') document.getElementById('sb-item-inventario').style.display='none';
   initApp();
   if(currentUser.rol==='trabajador') nav('asistencia', document.getElementById('sb-item-asistencia'));
+  if(location.hash==='#subir-stock'){
+    if(currentUser.rol==='admin') nav('subir', document.getElementById('sb-subir'));
+    else toast('Solo el administrador puede subir el inventario');
+  }
 
   // Verificar con Supabase en background (para obtener datos actualizados del usuario)
   try {
@@ -2351,7 +2386,7 @@ function nav(page, el){
   document.getElementById('pg-'+page).classList.add('active');
   if(el) el.classList.add('active');
   toggleSidebarMobile(false); // cerrar el menú en celular al navegar
-  const titles={dashboard:'Dashboard',live:'Registrar venta',carritos:'Carritos abiertos',cortes:'Cortes de pago',pedidos:'Pedidos',clientes:'Clientes',catalogo:'Catálogo',stock:'Stock',urgentes:'Solicitudes urgentes',compras:'Compras y Gastos',config:'Configuración',despacho:'Despacho',asistencia:'Control de Asistencia',inventario:'Inventario',brasil:'Brasil',boletas:'Boletas Shalom'};
+  const titles={dashboard:'Dashboard',live:'Registrar venta',carritos:'Carritos abiertos',cortes:'Cortes de pago',pedidos:'Pedidos',clientes:'Clientes',catalogo:'Catálogo',subir:'Subir inventario',stock:'Stock',urgentes:'Solicitudes urgentes',compras:'Compras y Gastos',config:'Configuración',despacho:'Despacho',asistencia:'Control de Asistencia',inventario:'Inventario',brasil:'Brasil',boletas:'Boletas Shalom'};
   const subtitles={
     dashboard:'Resumen de tu negocio, hoy',
     live:'Busca al cliente, escanea o busca el producto y agrégalo',
@@ -2892,7 +2927,7 @@ let mcStockActual = {};     // `${talla}|${color}` -> cantidad actual (solo exis
 function abrirModalCompra(){
   document.getElementById('mc-prenda-buscar').value='';
   document.getElementById('mc-prenda-id').value='';
-  document.getElementById('mc-prenda-datalist').innerHTML = (DB.prendas||[]).map(p=>`<option value="${pycEsc(p.nombre)}">${pycEsc(p.codigo||'')}</option>`).join('');
+  document.getElementById('mc-prenda-datalist').innerHTML = (DB.prendas||[]).map(p=>`<option value="${pycEsc(p.nombre)}">${pycEsc([p.codigo_interno,p.codigo].filter(Boolean).join(' · '))}</option>`).join('');
   const cats = [...new Set((DB.prendas||[]).map(p=>p.categoria).filter(Boolean))].sort();
   document.getElementById('mc-cat-lista').innerHTML = cats.map(c=>`<option value="${pycEsc(c)}">`).join('');
   document.getElementById('mc-prenda-nueva-hint').style.display='none';
@@ -2908,7 +2943,13 @@ function abrirModalCompra(){
 function mcBuscarPrenda(enter){
   const txt = document.getElementById('mc-prenda-buscar').value.trim();
   const t = txt.toLowerCase();
-  const prenda = (DB.prendas||[]).find(p=>(p.nombre||'').toLowerCase()===t || (p.codigo && p.codigo.trim().toLowerCase()===t));
+  const grupoMc = pycVariantesCodigo(t);
+  let prenda = (DB.prendas||[]).find(p=>(p.nombre||'').toLowerCase()===t || (grupoMc.length<=1 && p.codigo && p.codigo.trim().toLowerCase()===t) || (p.codigo_interno && p.codigo_interno.trim().toLowerCase()===t));
+  if(!prenda && enter){
+    const vs = pycVariantesCodigo(t);
+    if(vs.length===1) prenda = vs[0];
+    else if(vs.length>1){ document.getElementById('mc-prenda-datalist').innerHTML = vs.map(p=>`<option value="${pycEsc(p.nombre)}">${pycEsc(p.codigo)}</option>`).join(''); document.getElementById('mc-prenda-buscar').value=''; toast(`Este código es de ${vs.length} productos — escribe o elige el nombre`); return; }
+  }
   const hint = document.getElementById('mc-prenda-nueva-hint');
   if(prenda){
     hint.style.display='none';
@@ -3807,7 +3848,7 @@ function renderPrendasSelect(prendas){
   prendas.forEach(p=>{
     const opt = document.createElement('option');
     opt.value = p.id;
-    opt.textContent = `${p.codigo?p.codigo+' · ':''}${p.nombre} — S/${p.precio}`;
+    opt.textContent = `${p.codigo_interno?p.codigo_interno+' · ':''}${p.nombre} — ${p.precio?'S/'+p.precio:'⚠️ sin precio'}`;
     sel.appendChild(opt);
   });
   if(current) sel.value = current;
@@ -3818,6 +3859,7 @@ function filtrarPrendas(texto){
   const filtradas = texto.trim()==='' ? todas :
     todas.filter(p=>p.nombre.toLowerCase().includes(texto.toLowerCase()) ||
                     (p.codigo||'').toLowerCase().includes(texto.toLowerCase()) ||
+                    (p.codigo_interno||'').toLowerCase().includes(texto.toLowerCase()) ||
                     (p.categoria||'').toLowerCase().includes(texto.toLowerCase()));
   renderPrendasSelect(filtradas);
   // Si queda un solo producto, se elige solo
@@ -3830,7 +3872,8 @@ function pycEnterBuscador(){
   const q=(document.getElementById('lv-search').value||'').trim().toLowerCase();
   if(!q) return;
   const todas=DB.prendas||[];
-  const exacto=todas.find(p=>(p.codigo||'').trim().toLowerCase()===q);
+  const grupo = pycVariantesCodigo(q);
+  const exacto = grupo.length>1 ? null : todas.find(p=>(p.codigo||'').trim().toLowerCase()===q || (p.codigo_interno||'').trim().toLowerCase()===q);
   if(exacto){
     renderPrendasSelect(todas.filter(p=>p.id===exacto.id));
     document.getElementById('lv-prenda').value=exacto.id;
@@ -3838,9 +3881,22 @@ function pycEnterBuscador(){
     document.getElementById('lv-espec').focus();
     return;
   }
+  // Código impreso compartido por varios productos (en SmartClic: 889698822350-1, -2, -3)
+  const variantes = grupo;
+  if(variantes.length){
+    renderPrendasSelect(variantes);
+    const sel=document.getElementById('lv-prenda');
+    if(variantes.length===1){ sel.value=variantes[0].id; updateColorTalla(); document.getElementById('lv-espec').focus(); }
+    else { sel.value=''; updateColorTalla(); sel.focus(); toast(`Este código es de ${variantes.length} productos — elige cuál es`); }
+    return;
+  }
   const sel=document.getElementById('lv-prenda');
   if(sel.value){ updateColorTalla(); document.getElementById('lv-espec').focus(); }
   else toast('⚠️ No encontré un producto con ese código');
+}
+function pycVariantesCodigo(q){
+  q=String(q||'').trim().toLowerCase(); if(!q) return [];
+  return (DB.prendas||[]).filter(p=>{ const c=(p.codigo||'').trim().toLowerCase(); return c===q || c.startsWith(q+'-'); });
 }
 function pycEsc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
@@ -3854,7 +3910,8 @@ function updateColorTalla(){
   const stock = p.stock||0;
   box.innerHTML = `<div style="font-weight:600;margin-bottom:4px">${pycEsc(p.nombre)}</div>
     <div style="display:flex;gap:14px;flex-wrap:wrap">
-      <span>💰 Precio: <strong>S/ ${p.precio}</strong></span>
+      ${p.codigo_interno?`<span>🏷️ ${pycEsc(p.codigo_interno)}</span>`:''}
+      <span>💰 Precio: <strong>${p.precio>0?'S/ '+p.precio:'<span style="color:var(--red)">sin precio</span>'}</strong></span>
       ${currentUser?.rol==='admin'?`<span>🔒 Costo: <strong>S/ ${p.costo||0}</strong></span>`:''}
       <span style="color:${stock<=0?'var(--red)':'inherit'}">📦 Stock: <strong>${stock}</strong></span>
     </div>
@@ -3950,6 +4007,7 @@ async function addToCart(){
   if(!prendaId){ toast('Selecciona un producto'); return; }
   const prenda = DB.prendas.find(p=>p.id===prendaId);
   if(!prenda) return;
+  if(!(prenda.precio>0)){ toast('⚠️ Este producto no tiene precio. Ponle precio en Catálogo antes de venderlo.'); return; }
   try {
     // Verificar stock ANTES de crear nada — para saber si es pre-venta
     let esPreventa = false;
@@ -4909,26 +4967,27 @@ function renderCatalogo(){ loadCatalogo(); }
 
 // ═══════════════ IMPORTADOR DE CATÁLOGO (Punto y Compra) ═══════════════
 const IMP_CAMPOS = [
-  {k:'codigo', lbl:'Código de barras', req:false, alias:['codigo de barras','cod barras','cod. barras','codigo barras','codigobarras','barcode','ean','upc','sku','codigo','cod','cod.','codigo producto','cod producto','referencia']},
-  {k:'nombre', lbl:'Nombre *', req:true, alias:['nombre','producto','descripcion','nombre producto','articulo','item','detalle','descripcion producto']},
-  {k:'precio', lbl:'Precio venta *', req:true, alias:['precio venta','precio de venta','pvp','precio','p. venta','p venta','precio unitario','venta','precio publico']},
-  {k:'costo', lbl:'Costo', req:false, alias:['costo','costo unitario','precio compra','precio de compra','p. compra','compra','costo promedio','precio costo']},
+  {k:'codigo_interno', lbl:'Código interno (SmartClic)', req:false, alias:['codigoitem','codigo item','codigo interno','cod interno','cod. interno','item']},
+  {k:'codigo', lbl:'Código de barras', req:false, alias:['codigobarrasitem','codigo barras item','codigo de barras','cod barras','cod. barras','codigo barras','codigobarras','barcode','ean','upc','sku','codigo','cod','cod.','referencia']},
+  {k:'nombre', lbl:'Nombre *', req:true, alias:['descripcionitem','nombre','producto','descripcion','nombre producto','articulo','detalle','descripcion producto']},
+  {k:'precio', lbl:'Precio venta', req:false, alias:['precio de venta','precio venta','pvp','precio','p. venta','p venta','precio unitario','venta','precio publico']},
+  {k:'costo', lbl:'Costo', req:false, alias:['costo','costopromedio','costo promedio','costo unitario','precio compra','precio de compra','p. compra','compra','precio costo']},
   {k:'stock', lbl:'Stock', req:false, alias:['stock','cantidad','existencia','existencias','stock actual','saldo','inventario','unidades','cant','cant.']},
-  {k:'categoria', lbl:'Categoría', req:false, alias:['categoria','familia','linea','grupo','tipo','marca','clase','subcategoria']},
-  {k:'especificaciones', lbl:'Especificaciones', req:false, alias:['especificaciones','especificacion','observaciones','observacion','notas','caracteristicas','detalle adicional','descripcion larga']}
+  {k:'categoria', lbl:'Categoría / Marca', req:false, alias:['marca','marcaitem','categoria','familia','linea','grupo','tipo','clase','subcategoria']},
+  {k:'especificaciones', lbl:'Especificaciones', req:false, alias:['especificaciones','especificacion','observaciones','observacion','notas','caracteristicas']}
 ];
 let impFilas = [], impEncab = [], impFilaEncab = 0, impPlan = null;
 
 function impNorm(t){ return String(t==null?'':t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[_\-]+/g,' ').replace(/\s+/g,' ').trim(); }
 
 function impDescargarPlantilla(){
-  const datos = [IMP_CAMPOS.map(c=>c.lbl.replace(' *','')),
-    ['7501234567890','Ejemplo: Funko Pop Goku',120,70,5,'Funko','Caja original, 10 cm']];
+  const datos = [['CODIGOITEM','CODIGOBARRASITEM','DESCRIPCIONITEM','MARCA','UNIDAD','STOCK','COSTO','PRECIO DE VENTA'],
+    ['P00001','889698706513','Ejemplo: Funko Pop Groot #1193','FUNKO','UNIDAD',15,40.12,58]];
   const ws = XLSX.utils.aoa_to_sheet(datos);
-  ws['!cols'] = [{wch:18},{wch:34},{wch:13},{wch:10},{wch:8},{wch:16},{wch:34}];
-  // La columna de código como texto para no perder ceros iniciales
-  for(let r=0;r<datos.length;r++){ const ref=XLSX.utils.encode_cell({r,c:0}); if(ws[ref]){ ws[ref].t='s'; ws[ref].v=String(ws[ref].v); ws[ref].z='@'; } }
-  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Catalogo');
+  ws['!cols'] = [{wch:12},{wch:18},{wch:40},{wch:12},{wch:9},{wch:8},{wch:9},{wch:16}];
+  // Códigos como texto para no perder ceros iniciales
+  for(let r=0;r<datos.length;r++) for(const c of [0,1]){ const ref=XLSX.utils.encode_cell({r,c}); if(ws[ref]){ ws[ref].t='s'; ws[ref].v=String(ws[ref].v); ws[ref].z='@'; } }
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
   XLSX.writeFile(wb, 'plantilla-catalogo-punto-y-compra.xlsx');
 }
 
@@ -4939,7 +4998,8 @@ function impLeerArchivo(input){
   reader.onload = e => {
     try{
       const wb = XLSX.read(e.target.result, {type:'array'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
+      const hoja = wb.SheetNames.find(n=>/inventario/i.test(n)) || wb.SheetNames[0];
+      const ws = wb.Sheets[hoja];
       const filas = XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:''});
       // La fila de encabezados: la primera (de las 15 primeras) con 2 o más columnas reconocidas
       let mejor = -1, mejorCount = 0;
@@ -4950,7 +5010,7 @@ function impLeerArchivo(input){
       impFilaEncab = mejor>=0 && mejorCount>=2 ? mejor : 0;
       impEncab = (filas[impFilaEncab]||[]).map((c,i)=>String(c||'').trim()||('Columna '+(i+1)));
       impFilas = filas.slice(impFilaEncab+1).filter(f=>f.some(c=>String(c).trim()!==''));
-      document.getElementById('imp-archivo').textContent = `Archivo: ${file.name} · hoja "${wb.SheetNames[0]}" · ${impFilas.length} filas con datos`;
+      document.getElementById('imp-archivo').textContent = `Archivo: ${file.name} · hoja "${hoja}" · ${impFilas.length} filas con datos`;
       impRenderMapeo();
       document.getElementById('imp-progreso').style.display='none';
       document.getElementById('imp-btn-confirmar').disabled=false;
@@ -4997,27 +5057,34 @@ async function impAnalizar(){
   const col = {}; IMP_CAMPOS.forEach(c=>{ col[c.k] = parseInt(document.getElementById('imp-col-'+c.k).value); });
   const modo = document.getElementById('imp-modo-stock').value;
   const avisos = [];
-  if(col.nombre<0 || col.precio<0){
-    document.getElementById('imp-resumen').innerHTML = '<div style="color:var(--red);font-weight:600">Elige qué columna es el Nombre y cuál es el Precio venta.</div>';
+  if(col.nombre<0){
+    document.getElementById('imp-resumen').innerHTML = '<div style="color:var(--red);font-weight:600">Elige qué columna es el Nombre.</div>';
     document.getElementById('imp-preview').innerHTML=''; document.getElementById('imp-avisos').innerHTML='';
     impPlan=null; return;
   }
   let existentes;
-  try{ existentes = await dbGet('prendas?select=id,nombre,codigo,stock'); }
+  try{ existentes = await dbGet('prendas?select=id,nombre,codigo,codigo_interno,stock,precio'); }
   catch(e){ toast('Error leyendo el catálogo actual: '+e.message); return; }
-  const porCodigo = {}, porNombre = {};
-  existentes.forEach(p=>{ if(p.codigo) porCodigo[p.codigo.trim().toLowerCase()] = p; porNombre[impNorm(p.nombre)] = p; });
+  const porCodigo = {}, porNombre = {}, porInterno = {};
+  existentes.forEach(p=>{ if(p.codigo) porCodigo[p.codigo.trim().toLowerCase()] = p; if(p.codigo_interno) porInterno[p.codigo_interno.trim().toLowerCase()] = p; porNombre[impNorm(p.nombre)] = p; });
 
-  const nuevos = [], actualizar = [], errores = [], vistosCod = new Set(), danados = [];
+  const nuevos = [], actualizar = [], errores = [], vistosCod = new Set(), vistosInt = new Set(), danados = [], sinPrecio = [];
   impFilas.forEach((f, i)=>{
     const nFila = impFilaEncab + i + 2;  // número de fila como en Excel
     const get = k => col[k]>=0 ? f[col[k]] : '';
     const nombre = String(get('nombre')||'').trim();
-    const precio = impNumero(get('precio'));
+    const precioX = impNumero(get('precio'));
+    const precio = precioX===null ? null : Math.round(precioX);   // Punto y Compra: precio redondeado al sol
     const {cod, danado} = impCodigo(get('codigo'));
+    const interno = String(get('codigo_interno')||'').trim() || null;
     if(danado) danados.push(nFila);
     if(!nombre){ errores.push(`Fila ${nFila}: sin nombre`); return; }
-    if(precio===null){ errores.push(`Fila ${nFila} (${nombre}): sin precio`); return; }
+    if(interno){
+      const ki = interno.toLowerCase();
+      if(vistosInt.has(ki)){ errores.push(`Fila ${nFila} (${nombre}): código interno ${interno} repetido en el archivo`); return; }
+      vistosInt.add(ki);
+    }
+    if(!precio) sinPrecio.push(`${interno||'Fila '+nFila} · ${nombre}`);
     if(cod){
       const kc = cod.toLowerCase();
       if(vistosCod.has(kc)){ errores.push(`Fila ${nFila} (${nombre}): código ${cod} repetido en el archivo`); return; }
@@ -5027,16 +5094,24 @@ async function impAnalizar(){
     const stockX = impNumero(get('stock'));
     const cat = String(get('categoria')||'').trim();
     const esp = String(get('especificaciones')||'').trim();
-    const dato = { nombre, precio, codigo:cod||null };
-    if(col.costo>=0) dato.costo = costo||0;
+    const dato = { nombre };
+    if(col.costo>=0) dato.costo = costo===null ? 0 : Math.round(costo*100)/100;
     if(col.categoria>=0) dato.categoria = cat||null;
     if(col.especificaciones>=0) dato.especificaciones = esp||null;
-    const existe = cod ? porCodigo[cod.toLowerCase()] : porNombre[impNorm(nombre)];
+    // Se reconoce por código interno, luego por código de barras, luego por nombre
+    const existe = (interno && porInterno[interno.toLowerCase()]) || (cod && porCodigo[cod.toLowerCase()]) || (!interno && !cod && porNombre[impNorm(nombre)]) || null;
     if(existe){
+      // Al actualizar no se borra lo que el Excel trae vacío (ej. un código de barras puesto a mano en el CRM)
+      if(precio) dato.precio = precio;
+      if(cod) dato.codigo = cod;
+      if(interno) dato.codigo_interno = interno;
       if(col.stock>=0 && modo==='reemplazar') dato.stock = Math.round(stockX||0);
       if(col.stock>=0 && modo==='sumar') dato.stock = (existe.stock||0) + Math.round(stockX||0);
       actualizar.push({id:existe.id, dato, fila:nFila, antes:existe});
     } else {
+      dato.precio = precio||0;
+      dato.codigo = cod||null;
+      dato.codigo_interno = interno;
       dato.stock = col.stock>=0 ? Math.round(stockX||0) : 0;
       if(!('costo' in dato)) dato.costo = 0;
       dato.tallas = []; dato.colores=''; dato.activo = true;
@@ -5044,7 +5119,9 @@ async function impAnalizar(){
     }
   });
   if(danados.length) avisos.push(`⚠️ ${danados.length} código(s) de barras vienen en notación científica (ej. 7.5E+12) y ya están dañados en el archivo — filas ${danados.slice(0,10).join(', ')}${danados.length>10?'…':''}. En Excel, pon esa columna en formato Texto y vuelve a exportar.`);
-  if(col.codigo<0) avisos.push('ℹ️ No hay columna de código de barras: los productos se reconocerán por el nombre.');
+  if(col.codigo<0 && col.codigo_interno<0) avisos.push('ℹ️ No hay código interno ni código de barras: los productos se reconocerán por el nombre.');
+  if(sinPrecio.length) avisos.push(`⚠️ ${sinPrecio.length} producto(s) sin precio de venta (no se podrán vender hasta ponerles precio en Catálogo): ${sinPrecio.slice(0,5).map(pycEsc).join(' · ')}${sinPrecio.length>5?'…':''}`);
+  if(col.precio>=0) avisos.push('ℹ️ Los precios se redondean al sol entero (ej. 58.17 → 58).');
   if(col.stock<0) avisos.push('ℹ️ No hay columna de stock: los productos nuevos empezarán con stock 0.');
   impPlan = {nuevos, actualizar, errores};
 
@@ -5053,12 +5130,13 @@ async function impAnalizar(){
       <span class="badge badge-ok" style="font-size:13px;padding:6px 10px">✅ ${nuevos.length} nuevos</span>
       <span class="badge badge-info" style="font-size:13px;padding:6px 10px">🔄 ${actualizar.length} se actualizan</span>
       <span class="badge ${errores.length?'badge-warn':'badge-gray'}" style="font-size:13px;padding:6px 10px">⚠️ ${errores.length} con errores (se saltan)</span>
+      ${sinPrecio.length?`<span class="badge badge-warn" style="font-size:13px;padding:6px 10px">💲 ${sinPrecio.length} sin precio</span>`:''}
     </div>`;
   document.getElementById('imp-avisos').innerHTML = avisos.map(a=>`<div style="background:var(--amber-light);color:var(--amber-dark);border-radius:var(--radius-sm);padding:8px 12px;font-size:12px;margin-bottom:6px">${a}</div>`).join('')
     + (errores.length?`<details style="font-size:12px;margin-bottom:8px"><summary style="cursor:pointer;color:var(--red)">Ver filas con errores</summary><div style="max-height:140px;overflow:auto;margin-top:4px">${errores.map(pycEsc).join('<br>')}</div></details>`:'');
-  const muestra = [...nuevos.map(n=>({...n.dato, _t:'Nuevo'})), ...actualizar.map(a=>({...a.dato, stock: ('stock' in a.dato)?a.dato.stock:a.antes.stock, _t:'Actualiza'}))].slice(0,25);
-  document.getElementById('imp-preview').innerHTML = `<thead><tr><th></th><th>Código de barras</th><th>Nombre</th><th>Precio</th><th>Costo</th><th>Stock</th><th>Categoría</th></tr></thead><tbody>`
-    + muestra.map(m=>`<tr><td><span class="badge ${m._t==='Nuevo'?'badge-ok':'badge-info'}" style="font-size:10px">${m._t}</span></td><td style="font-family:monospace">${pycEsc(m.codigo||'—')}</td><td>${pycEsc(m.nombre)}</td><td>S/ ${m.precio}</td><td>${m.costo!=null?'S/ '+m.costo:'—'}</td><td>${m.stock}</td><td>${pycEsc(m.categoria||'—')}</td></tr>`).join('')
+  const muestra = [...nuevos.map(n=>({...n.dato, _t:'Nuevo'})), ...actualizar.map(a=>({...a.dato, precio:a.dato.precio??a.antes.precio, codigo:a.dato.codigo??a.antes.codigo, stock: ('stock' in a.dato)?a.dato.stock:a.antes.stock, _t:'Actualiza'}))].slice(0,25);
+  document.getElementById('imp-preview').innerHTML = `<thead><tr><th></th><th>Cód. interno</th><th>Código de barras</th><th>Nombre</th><th>Precio</th><th>Costo</th><th>Stock</th><th>Marca</th></tr></thead><tbody>`
+    + muestra.map(m=>`<tr><td><span class="badge ${m._t==='Nuevo'?'badge-ok':'badge-info'}" style="font-size:10px">${m._t}</span></td><td style="font-family:monospace">${pycEsc(m.codigo_interno||'—')}</td><td style="font-family:monospace">${pycEsc(m.codigo||'—')}</td><td>${pycEsc(m.nombre)}</td><td>${m.precio?'S/ '+m.precio:'<span style="color:var(--red)">sin precio</span>'}</td><td>${m.costo!=null?'S/ '+m.costo:'—'}</td><td>${m.stock}</td><td>${pycEsc(m.categoria||'—')}</td></tr>`).join('')
     + `</tbody>`;
   document.getElementById('imp-btn-confirmar').disabled = !(nuevos.length||actualizar.length);
 }
@@ -5078,7 +5156,7 @@ async function impConfirmar(){
       try{ await dbPost('prendas', bloque); }
       catch(e){
         // Si el bloque falla (ej. código ya usado), se intenta uno por uno para no perder los demás
-        for(const d of bloque){ try{ await dbPost('prendas', d); }catch(e2){ fallas.push(`${d.nombre}: ${/prendas_codigo_key/.test(e2.message)?'código de barras ya existe':e2.message.slice(0,80)}`); } }
+        for(const d of bloque){ try{ await dbPost('prendas', d); }catch(e2){ fallas.push(`${d.codigo_interno||''} ${d.nombre}: ${/prendas_codigo_key/.test(e2.message)?'código de barras ya lo usa otro producto':/codigo_interno/.test(e2.message)?'código interno ya existe':e2.message.slice(0,80)}`); } }
       }
       hechos += bloque.length; avanzar();
     }
@@ -5087,7 +5165,8 @@ async function impConfirmar(){
       hechos = nuevos.length + Math.min(i+20, actualizar.length); avanzar();
     }
     prog.innerHTML = `✅ Listo: ${total-fallas.length} de ${total} productos guardados.` + (fallas.length?`<div style="color:var(--red);font-weight:400;font-size:12px;margin-top:6px">No se pudieron guardar ${fallas.length}:<br>${fallas.slice(0,30).map(pycEsc).join('<br>')}</div>`:'');
-    toast('✓ Catálogo importado');
+    toast('✓ Inventario subido');
+    const res = document.getElementById('subir-ultimo'); if(res) res.innerHTML = `Última subida: ${new Date().toLocaleString('es-PE')} · ${total-fallas.length} productos guardados${fallas.length?` · ${fallas.length} con error`:''}`;
     await loadCatalogo();
     await loadCatalogoLive();
   }catch(e){ prog.textContent = 'Error: '+e.message; btn.disabled=false; }
@@ -5095,10 +5174,10 @@ async function impConfirmar(){
 
 function renderCatalogoTabla(prendas){
   document.getElementById('catalogo-tbody').innerHTML=prendas.length?prendas.map(p=>`
-    <tr data-txt="${(p.nombre||'').toLowerCase()} ${(p.codigo||'').toLowerCase()}" data-cat="${p.categoria||''}">
-      <td class="font-500">${p.nombre}</td>
-      <td class="text-muted">${p.codigo||'—'}</td>
-      <td>S/ ${p.precio}${currentUser?.rol==='admin'?` <span class="text-hint">(costo S/${p.costo||0})</span>`:''}</td>
+    <tr data-txt="${pycEsc(((p.nombre||'')+' '+(p.codigo||'')+' '+(p.codigo_interno||'')).toLowerCase())}" data-cat="${pycEsc(p.categoria||'')}" data-sinprecio="${p.precio>0?'0':'1'}" data-sincodigo="${p.codigo?'0':'1'}">
+      <td class="font-500">${pycEsc(p.nombre)}${p.codigo_interno?`<div class="text-hint" style="font-size:11px;font-family:monospace">${pycEsc(p.codigo_interno)}</div>`:''}</td>
+      <td class="text-muted">${p.codigo?pycEsc(p.codigo):`<input class="cat-scan" data-id="${p.id}" placeholder="Escanear aquí" style="width:130px;padding:4px 8px;font-size:12px;border:1px dashed var(--border);border-radius:6px" onkeydown="if(event.key==='Enter'){event.preventDefault();pycAsignarCodigo(this);}">`}</td>
+      <td>${p.precio>0?'S/ '+p.precio:'<span class="badge badge-warn">⚠️ sin precio</span>'}${currentUser?.rol==='admin'?` <span class="text-hint">(costo S/${p.costo||0})</span>`:''}</td>
       <td class="text-hint" style="max-width:220px;white-space:normal">${pycEsc(p.especificaciones||'')}</td>
       <td>${p.categoria||'—'}</td>
       <td><span class="badge ${(p.stock||0)<=STOCK_BAJO_LIMITE?'badge-warn':'badge-ok'}">${p.stock||0}</span></td>
@@ -5121,11 +5200,31 @@ function renderCatalogoTabla(prendas){
 function filtrarCatalogo(){
   const q = (document.getElementById('catalogo-search')?.value||'').toLowerCase().trim();
   const cat = document.getElementById('catalogo-cat-filtro')?.value||'';
+  const est = document.getElementById('catalogo-estado-filtro')?.value||'';
   document.querySelectorAll('#catalogo-tbody tr[data-txt]').forEach(row=>{
     const pasaTexto = !q || row.dataset.txt.includes(q);
     const pasaCat = !cat || row.dataset.cat===cat;
-    row.style.display = (pasaTexto && pasaCat) ? '' : 'none';
+    const pasaEst = !est || (est==='sinprecio' && row.dataset.sinprecio==='1') || (est==='sincodigo' && row.dataset.sincodigo==='1');
+    row.style.display = (pasaTexto && pasaCat && pasaEst) ? '' : 'none';
   });
+}
+
+// Asignar código de barras con la pistola, fila por fila (filtro "Sin código de barras")
+async function pycAsignarCodigo(inp){
+  const cod = (inp.value||'').trim();
+  if(!cod) return;
+  const id = inp.dataset.id;
+  const otro = (DB.prendas||[]).find(p=>p.id!==id && (p.codigo||'').trim().toLowerCase()===cod.toLowerCase());
+  if(otro){ toast('⚠️ Ese código ya es de: '+otro.nombre); inp.select(); return; }
+  try{
+    await dbPatch(`prendas?id=eq.${id}`, {codigo:cod});
+    const p = (DB.prendas||[]).find(x=>x.id===id); if(p) p.codigo = cod;
+    const td = inp.parentElement, tr = td.parentElement;
+    td.textContent = cod; tr.dataset.sincodigo='0'; tr.dataset.txt += ' '+cod.toLowerCase();
+    toast('✓ Código guardado');
+    const sig = [...document.querySelectorAll('#catalogo-tbody input.cat-scan')].find(x=>x.offsetParent!==null);
+    if(sig) sig.focus();
+  }catch(e){ toast(/prendas_codigo_key/.test(e.message)?'⚠️ Ese código ya lo usa otro producto':'Error: '+e.message); }
 }
 
 function updateTallasModal(){
@@ -5145,6 +5244,7 @@ async function guardarPrenda(){
     costo:parseFloat(document.getElementById('pr-costo').value)||0,
     categoria:document.getElementById('pr-cat').value.trim()||null,
     especificaciones:document.getElementById('pr-espec').value.trim()||null,
+    codigo_interno:document.getElementById('pr-codint').value.trim()||null,
     tallas:[], colores:'', activo:true
   };
   const stockTxt = document.getElementById('pr-stock').value;
@@ -5160,7 +5260,7 @@ async function guardarPrenda(){
     closeModal('modal-prenda');
     await loadCatalogo();
     await loadCatalogoLive();
-  } catch(e){ toast(/prendas_codigo_key/.test(e.message)?'⚠️ Ya existe un producto con ese código de barras':'Error guardando producto: '+e.message); }
+  } catch(e){ toast(/prendas_codigo_key/.test(e.message)?'⚠️ Ya existe un producto con ese código de barras':/codigo_interno/.test(e.message)?'⚠️ Ya existe un producto con ese código interno':'Error guardando producto: '+e.message); }
 }
 
 async function togglePrenda(id, activo){
@@ -5188,8 +5288,8 @@ async function loadStock(){
   document.getElementById('stock-tbody').innerHTML='<tr><td colspan="5" class="loading">Cargando stock...</td></tr>';
   try {
     // Punto y Compra: una fila por producto (stock en prendas.stock)
-    const prods = await dbGet('prendas?activo=eq.true&select=id,nombre,codigo,categoria,stock&order=nombre');
-    const rows = prods.map(p=>({id:p.id, prenda_id:p.id, talla:'', color:p.codigo||'', cantidad:p.stock||0, prendas:{nombre:p.nombre, categoria:p.categoria}}));
+    const prods = await dbGet('prendas?activo=eq.true&select=id,nombre,codigo,codigo_interno,categoria,stock&order=nombre');
+    const rows = prods.map(p=>({id:p.id, prenda_id:p.id, talla:'', color:[p.codigo_interno,p.codigo].filter(Boolean).join(' · '), cantidad:p.stock||0, prendas:{nombre:p.nombre, categoria:p.categoria}}));
     DB_STOCK = rows;
     renderStockTabla(rows);
     // Poblar filtro de categorías (una sola vez)
@@ -5294,10 +5394,12 @@ function openModalStock(){
 function stFiltrar(txt, enter){
   const q=(txt||'').trim().toLowerCase();
   const todas=(DB.prendas||[]).filter(p=>p.activo);
-  const exacto = q ? todas.find(p=>(p.codigo||'').trim().toLowerCase()===q) : null;
-  const lista = exacto ? [exacto] : (q ? todas.filter(p=>(p.nombre||'').toLowerCase().includes(q)||(p.codigo||'').toLowerCase().includes(q)) : todas);
+  const grupoSt = q ? pycVariantesCodigo(q) : [];
+  const exacto = q && grupoSt.length<=1 ? todas.find(p=>(p.codigo||'').trim().toLowerCase()===q || (p.codigo_interno||'').trim().toLowerCase()===q) : null;
+  const variantes = q && !exacto ? grupoSt : [];
+  const lista = exacto ? [exacto] : variantes.length ? variantes : (q ? todas.filter(p=>(p.nombre||'').toLowerCase().includes(q)||(p.codigo||'').toLowerCase().includes(q)||(p.codigo_interno||'').toLowerCase().includes(q)) : todas);
   const sel=document.getElementById('st-prenda');
-  sel.innerHTML='<option value="">— seleccionar —</option>'+lista.slice(0,300).map(p=>`<option value="${p.id}">${pycEsc((p.codigo?p.codigo+' · ':'')+p.nombre)} (stock: ${p.stock||0})</option>`).join('');
+  sel.innerHTML='<option value="">— seleccionar —</option>'+lista.slice(0,300).map(p=>`<option value="${p.id}">${pycEsc((p.codigo_interno?p.codigo_interno+' · ':'')+p.nombre)} (stock: ${p.stock||0})</option>`).join('');
   if(lista.length===1) sel.value=lista[0].id;
   if(enter && sel.value) document.getElementById('st-cantidad').focus();
 }
@@ -5336,6 +5438,7 @@ function openModalPrenda(id){
     document.getElementById('modal-prenda-title').textContent='Editar producto';
     document.getElementById('pr-nombre').value=p.nombre;
     document.getElementById('pr-codigo').value=p.codigo||'';
+    document.getElementById('pr-codint').value=p.codigo_interno||'';
     document.getElementById('pr-precio').value=p.precio;
     document.getElementById('pr-costo').value=p.costo||'';
     document.getElementById('pr-cat').value=p.categoria||'';
@@ -5343,7 +5446,7 @@ function openModalPrenda(id){
     document.getElementById('pr-stock').value=p.stock||0;
   } else {
     document.getElementById('modal-prenda-title').textContent='Nuevo producto';
-    ['pr-nombre','pr-codigo','pr-precio','pr-costo','pr-cat','pr-espec','pr-stock'].forEach(fid=>document.getElementById(fid).value='');
+    ['pr-nombre','pr-codigo','pr-codint','pr-precio','pr-costo','pr-cat','pr-espec','pr-stock'].forEach(fid=>document.getElementById(fid).value='');
   }
   document.getElementById('modal-prenda').classList.add('open');
 }
