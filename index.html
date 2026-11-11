@@ -928,6 +928,7 @@ td.empty-state{padding:20px;text-align:center}
         <div class="tabs" style="margin-bottom:14px">
           <div class="tab active" id="db-tab-btn-operacion" onclick="setDashboardTab('operacion')">📋 Pedidos / Operación</div>
           <div class="tab" id="db-tab-btn-finanzas" onclick="setDashboardTab('finanzas')">💰 Inventario / Finanzas</div>
+          <button class="btn btn-sm btn-primary" id="db-btn-ventas-excel" style="margin-left:auto;align-self:center" onclick="abrirVentasExcel()">📊 Descargar ventas (Excel)</button>
         </div>
 
         <!-- ═══ TAB 1: OPERACIÓN ═══ -->
@@ -1157,6 +1158,10 @@ td.empty-state{padding:20px;text-align:center}
           <div class="sec-title">Compras y Gastos</div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-sm btn-primary" onclick="abrirModalCompra()">📦 Registrar compra</button>
+            <button class="btn btn-sm" onclick="cmPlantilla()">📄 Plantilla de compras</button>
+            <label class="btn btn-sm" style="cursor:pointer;background:var(--green-light);color:var(--green);border-color:var(--green)">📥 Subir compras (Excel)
+              <input type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="cmLeer(this)">
+            </label>
             <button class="btn btn-sm" onclick="abrirModalGasto()">💸 Registrar gasto</button>
           </div>
         </div>
@@ -1858,6 +1863,54 @@ td.empty-state{padding:20px;text-align:center}
   </div>
 </div>
 
+<!-- Modal compras masivas (Punto y Compra) -->
+<div class="modal-overlay" id="modal-compras-masivas">
+  <div class="modal" style="max-width:760px;max-height:92vh;overflow-y:auto">
+    <div class="modal-title">📥 Subir compras desde Excel</div>
+    <div id="cm-archivo" class="text-hint" style="font-size:12px;margin-bottom:8px"></div>
+    <div style="background:var(--blue-light);color:var(--blue-dark);border-radius:var(--radius-sm);padding:8px 12px;font-size:12px;margin-bottom:10px">Las compras <strong>suman</strong> stock. Los productos nuevos se crean primero en <strong>Catálogo</strong>.</div>
+    <div id="cm-resumen" style="margin-bottom:10px"></div>
+    <div id="cm-avisos"></div>
+    <div class="tbl-wrap" style="max-height:320px;overflow:auto"><table class="tbl" id="cm-preview"></table></div>
+    <div id="cm-progreso" style="display:none;margin-top:10px;font-size:13px;font-weight:500"></div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" onclick="closeModal('modal-compras-masivas')">Cerrar</button>
+      <button class="btn btn-primary btn-sm" id="cm-btn-confirmar" onclick="cmConfirmar()">Confirmar compras</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Excel de ventas (Punto y Compra) -->
+<div class="modal-overlay" id="modal-ventas-excel">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-title">📊 Descargar ventas en Excel</div>
+    <div class="grid-2">
+      <div class="form-row"><label class="form-label">Desde</label><input type="date" id="vx-desde"></div>
+      <div class="form-row"><label class="form-label">Hasta</label><input type="date" id="vx-hasta"></div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 12px">
+      <button class="btn btn-xs" onclick="vxRango('hoy')">Hoy</button>
+      <button class="btn btn-xs" onclick="vxRango('semana')">Esta semana</button>
+      <button class="btn btn-xs" onclick="vxRango('mes')">Este mes</button>
+      <button class="btn btn-xs" onclick="vxRango('mespasado')">Mes pasado</button>
+    </div>
+    <div class="grid-2">
+      <div class="form-row"><label class="form-label">Canal</label><select id="vx-canal"><option value="">Todos</option><option>TikTok</option><option>WhatsApp</option><option>Web</option><option>Showroom</option></select></div>
+      <div class="form-row"><label class="form-label">Estado del pedido</label><select id="vx-estado"><option value="todos">Todos (sin cancelados)</option><option value="pagados">Solo pagados</option><option value="entregados">Solo entregados</option></select></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-row"><label class="form-label">Marca</label><select id="vx-marca"><option value="">Todas</option></select></div>
+      <div class="form-row"><label class="form-label">Tipo de envío</label><select id="vx-envio"><option value="">Todos</option><option value="motorizado">Motorizado</option><option value="shalom">Shalom</option><option value="marvisur">Marvisur</option><option value="recojo">Recojo en showroom</option></select></div>
+    </div>
+    <div class="text-hint" style="font-size:11.5px">La fecha es el día en que se registró cada producto vendido. El costo es el que tenía el producto ese día.</div>
+    <div id="vx-estado-txt" style="font-size:12.5px;margin-top:8px"></div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" onclick="closeModal('modal-ventas-excel')">Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="vx-btn" onclick="vxDescargar()">Descargar Excel</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal stock -->
 <div class="modal-overlay" id="modal-stock">
   <div class="modal">
@@ -2354,6 +2407,7 @@ async function doLogin(){
   if(currentUser.rol!=='admin') document.getElementById('sb-catalogo').style.display='none';
   if(currentUser.rol!=='admin') document.getElementById('sb-compras').style.display='none';
   if(currentUser.rol!=='admin') document.getElementById('db-tab-btn-finanzas').style.display='none';
+  if(currentUser.rol!=='admin') document.getElementById('db-btn-ventas-excel').style.display='none';
   if(currentUser.rol!=='admin') document.getElementById('sb-stock').style.display='none';
   if(currentUser.rol!=='admin') document.getElementById('sb-config').style.display='none';
   if(currentUser.rol!=='admin') document.getElementById('sb-item-brasil').style.display='none';
@@ -2502,8 +2556,9 @@ async function loadDashboard(){
     let gananciaBruta = vendidoPeriodo, margenPct = 0;
     if(carritoIdsPeriodo.length){
       try {
-        const itemsPeriodo = await dbGet(`carrito_items?carrito_id=in.(${carritoIdsPeriodo.join(',')})&estado_bolsa=neq.eliminado&select=carrito_id,prenda_id`);
-        const costoTotal = itemsPeriodo.reduce((a,it)=>a+(costoPorPrenda[it.prenda_id]||0),0);
+        const itemsPeriodo = await dbGet(`carrito_items?carrito_id=in.(${carritoIdsPeriodo.join(',')})&estado_bolsa=neq.eliminado&select=carrito_id,prenda_id,costo_unitario`);
+        // Punto y Compra: se usa el costo guardado el día de la venta
+        const costoTotal = itemsPeriodo.reduce((a,it)=>a+(it.costo_unitario!=null ? Number(it.costo_unitario) : (costoPorPrenda[it.prenda_id]||0)),0);
         gananciaBruta = vendidoPeriodo - costoTotal;
       } catch(e){ gananciaBruta = vendidoPeriodo; }
     }
@@ -4094,6 +4149,7 @@ async function addToCart(){
       prenda_id:prendaId,
       talla, color: color||'', especificacion: color||null,
       precio_unitario:prenda.precio,
+      costo_unitario: prenda.costo||0,
       estado_bolsa:'sin_agregar',
       estado_pago:'pendiente',
       monto_pagado:0,
@@ -4367,7 +4423,7 @@ async function confirmarPedido(){
       const carritoRows = await dbPost('carritos',{cliente_id:currentLiveClient.id,estado:'en_pedido',total:sub});
       const carrito = Array.isArray(carritoRows)?carritoRows[0]:carritoRows;
       for(const item of liveCart){
-        await dbPost('carrito_items',{carrito_id:carrito.id,prenda_id:item.prenda_id,talla:item.talla||'',color:item.color||'',especificacion:item.color||null,precio_unitario:item.precio,estado_bolsa:'sin_agregar',estado_pago:'pendiente',monto_pagado:0});
+        await dbPost('carrito_items',{carrito_id:carrito.id,prenda_id:item.prenda_id,talla:item.talla||'',color:item.color||'',especificacion:item.color||null,precio_unitario:item.precio,costo_unitario:item.costo_unitario ?? ((DB.prendas||[]).find(x=>x.id===item.prenda_id)?.costo||0),estado_bolsa:'sin_agregar',estado_pago:'pendiente',monto_pagado:0});
       }
       const pedRows = await dbPost('pedidos',{
         numero:'',cliente_id:currentLiveClient.id,carrito_id:carrito.id,
@@ -5059,6 +5115,197 @@ async function loadCatalogo(){
   } catch(e){ console.error('loadCatalogo error:',e); }
 }
 function renderCatalogo(){ loadCatalogo(); }
+
+// ═══════════════ COMPRAS MASIVAS (Punto y Compra) ═══════════════
+let cmPlan = null;
+function cmPlantilla(){
+  const datos = [['CODIGO','CANTIDAD','COSTO UNITARIO','PROVEEDOR','FECHA'],
+                 ['P00001',10,40.12,'Proveedor ejemplo', new Date().toISOString().slice(0,10)],
+                 ['889698706513',5,'','','']];
+  const ws = XLSX.utils.aoa_to_sheet(datos);
+  ws['!cols'] = [{wch:18},{wch:10},{wch:16},{wch:22},{wch:12}];
+  for(let r=0;r<datos.length;r++){ const ref=XLSX.utils.encode_cell({r,c:0}); if(ws[ref]){ ws[ref].t='s'; ws[ref].v=String(ws[ref].v); ws[ref].z='@'; } }
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Compras');
+  XLSX.writeFile(wb, 'plantilla-compras-punto-y-compra.xlsx');
+}
+function cmFecha(v){
+  if(v===null||v===undefined||v==='') return null;
+  if(typeof v==='number'){ const d = XLSX.SSF.parse_date_code(v); if(d) return `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`; }
+  const t = String(v).trim();
+  let m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if(m) return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+  m = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/); if(m){ const y = m[3].length===2?'20'+m[3]:m[3]; return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`; }
+  return null;
+}
+function cmLeer(input){
+  const file = input.files && input.files[0]; input.value='';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    try{
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      const hoja = wb.SheetNames.find(n=>/compra/i.test(n)) || wb.SheetNames[0];
+      const filas = XLSX.utils.sheet_to_json(wb.Sheets[hoja], {header:1, raw:true, defval:''});
+      const A = {codigo:['codigo','codigo interno','codigoitem','codigo de barras','codigobarrasitem','cod','sku','codigo barras'], cantidad:['cantidad','cant','unidades','cant.'], costo:['costo unitario','costo','precio compra','costo unit'], proveedor:['proveedor'], fecha:['fecha','fecha compra']};
+      let hi = filas.findIndex(f=>f.some(c=>A.codigo.includes(impNorm(c))) && f.some(c=>A.cantidad.includes(impNorm(c))));
+      if(hi<0){ toast('No encuentro las columnas CODIGO y CANTIDAD. Usa la plantilla de compras.'); return; }
+      const enc = filas[hi].map(impNorm), col = {};
+      for(const k in A) col[k] = enc.findIndex(h=>A[k].includes(h));
+      const datos = filas.slice(hi+1).map((f,i)=>({f, n:hi+i+2})).filter(x=>x.f.some(c=>String(c).trim()!==''));
+      document.getElementById('cm-archivo').textContent = `Archivo: ${file.name} · hoja "${hoja}" · ${datos.length} filas`;
+      document.getElementById('cm-progreso').style.display='none';
+      document.getElementById('modal-compras-masivas').classList.add('open');
+      document.getElementById('cm-resumen').innerHTML = '<div class="loading">Revisando…</div>';
+      const prods = await dbGet('prendas?select=id,nombre,codigo,codigo_interno,stock,costo');
+      const porCod = {}; prods.forEach(p=>{ if(p.codigo) porCod[p.codigo.trim().toLowerCase()]=p; if(p.codigo_interno) porCod[p.codigo_interno.trim().toLowerCase()]=p; });
+      const hoy = new Date().toISOString().slice(0,10);
+      const grupos = {}, errores = [];
+      datos.forEach(({f,n})=>{
+        const {cod} = impCodigo(f[col.codigo]);
+        const cant = Math.round(impNumero(f[col.cantidad])||0);
+        if(!cod){ errores.push(`Fila ${n}: sin código`); return; }
+        if(cant<=0){ errores.push(`Fila ${n} (${cod}): cantidad inválida`); return; }
+        const p = porCod[cod.toLowerCase()];
+        if(!p){ errores.push(`Fila ${n}: el código ${cod} no existe en el catálogo — créalo primero en Catálogo`); return; }
+        const costo = col.costo>=0 ? impNumero(f[col.costo]) : null;
+        const prov = col.proveedor>=0 ? String(f[col.proveedor]||'').trim() : '';
+        const fecha = (col.fecha>=0 ? cmFecha(f[col.fecha]) : null) || hoy;
+        const key = p.id+'|'+fecha+'|'+prov+'|'+(costo||'');
+        if(!grupos[key]) grupos[key] = {p, cantidad:0, costo:(costo>0?Math.round(costo*100)/100:null), proveedor:prov, fecha, filas:[]};
+        grupos[key].cantidad += cant; grupos[key].filas.push(n);
+      });
+      const lista = Object.values(grupos);
+      cmPlan = lista;
+      const unidades = lista.reduce((a,g)=>a+g.cantidad,0);
+      const sinCosto = lista.filter(g=>!g.costo && !(g.p.costo>0)).length;
+      document.getElementById('cm-resumen').innerHTML = `<div style="display:flex;gap:10px;flex-wrap:wrap">
+        <span class="badge badge-ok" style="font-size:13px;padding:6px 10px">✅ ${lista.length} compra(s) · ${unidades} unidades</span>
+        <span class="badge ${errores.length?'badge-warn':'badge-gray'}" style="font-size:13px;padding:6px 10px">⚠️ ${errores.length} fila(s) con error (se saltan)</span></div>`;
+      document.getElementById('cm-avisos').innerHTML =
+        (sinCosto?`<div style="background:var(--amber-light);color:var(--amber-dark);border-radius:var(--radius-sm);padding:8px 12px;font-size:12px;margin:8px 0">⚠️ ${sinCosto} compra(s) sin costo unitario y con costo 0 en el catálogo: se registran con costo 0.</div>`:'')
+        + (errores.length?`<details open style="font-size:12px;margin:8px 0"><summary style="cursor:pointer;color:var(--red)">Filas con error</summary><div style="max-height:140px;overflow:auto;margin-top:4px">${errores.map(pycEsc).join('<br>')}</div></details>`:'');
+      document.getElementById('cm-preview').innerHTML = `<thead><tr><th>Producto</th><th>Código</th><th>Fecha</th><th>Cantidad</th><th>Costo unit.</th><th>Stock: antes → después</th></tr></thead><tbody>`
+        + lista.slice(0,200).map(g=>`<tr><td>${pycEsc(g.p.nombre)}</td><td style="font-family:monospace">${pycEsc(g.p.codigo_interno||g.p.codigo||'')}</td><td>${g.fecha}</td><td>+${g.cantidad}</td><td>${g.costo!=null?'S/ '+g.costo:'<span class="text-hint">S/ '+(g.p.costo||0)+' (catálogo)</span>'}</td><td>${g.p.stock||0} → <strong>${(g.p.stock||0)+lista.filter(x=>x.p.id===g.p.id).reduce((a,x)=>a+x.cantidad,0)}</strong></td></tr>`).join('') + '</tbody>';
+      document.getElementById('cm-btn-confirmar').disabled = !lista.length;
+    }catch(err){ toast('No pude leer el archivo: '+err.message); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+async function cmConfirmar(){
+  if(!cmPlan || !cmPlan.length) return;
+  const unidades = cmPlan.reduce((a,g)=>a+g.cantidad,0);
+  if(!confirm(`Se registrarán ${cmPlan.length} compra(s) y se sumarán ${unidades} unidades al stock. ¿Continuar?`)) return;
+  const btn = document.getElementById('cm-btn-confirmar'); btn.disabled = true;
+  const prog = document.getElementById('cm-progreso'); prog.style.display='block';
+  const fallas = []; let hechos = 0, preventas = 0;
+  for(const g of cmPlan){
+    try{
+      const rows = await dbGet(`prendas?id=eq.${g.p.id}&select=stock,costo`);   // stock real del momento
+      const costoU = g.costo!=null ? g.costo : (rows[0]?.costo||0);
+      await dbPost('compras', {prenda_id:g.p.id, talla:'', color:'', cantidad:g.cantidad, costo_total:Math.round(g.cantidad*costoU*100)/100, proveedor:g.proveedor||null, fecha:g.fecha});
+      const patch = {stock:(rows[0]?.stock||0)+g.cantidad};
+      if(g.costo!=null && g.costo!==Number(rows[0]?.costo)) patch.costo = g.costo;
+      await dbPatch(`prendas?id=eq.${g.p.id}`, patch);
+      const pv = await dbGet(`carrito_items?prenda_id=eq.${g.p.id}&preventa=eq.true&estado_bolsa=neq.eliminado&select=id&order=agregado_en.asc&limit=${g.cantidad}`);
+      for(const it of pv){ await dbPatch(`carrito_items?id=eq.${it.id}`,{preventa:false}); preventas++; }
+    }catch(e){ fallas.push(`${g.p.nombre}: ${e.message.slice(0,80)}`); }
+    hechos++; prog.textContent = `⏳ Guardando… ${hechos} de ${cmPlan.length}`;
+  }
+  prog.innerHTML = `✅ Listo: ${cmPlan.length-fallas.length} de ${cmPlan.length} compras registradas${preventas?` · ${preventas} pre-venta(s) resuelta(s)`:''}.` + (fallas.length?`<div style="color:var(--red);font-weight:400;font-size:12px;margin-top:6px">${fallas.map(pycEsc).join('<br>')}</div>`:'');
+  toast('✓ Compras registradas');
+  cmPlan = null;
+  try{ await loadCompras(); await loadCatalogoLive(); }catch(e){}
+}
+
+// ═══════════════ EXCEL DE VENTAS (Punto y Compra) ═══════════════
+function vxFechaLima(d){ return new Date(d.getTime()-5*3600*1000).toISOString().slice(0,10); }
+function vxRango(r){
+  const hoy = new Date(Date.now()-5*3600*1000); const f = d=>d.toISOString().slice(0,10);
+  let a = new Date(hoy), b = new Date(hoy);
+  if(r==='semana'){ const dow = (hoy.getUTCDay()+6)%7; a.setUTCDate(hoy.getUTCDate()-dow); }
+  if(r==='mes'){ a = new Date(Date.UTC(hoy.getUTCFullYear(), hoy.getUTCMonth(), 1)); }
+  if(r==='mespasado'){ a = new Date(Date.UTC(hoy.getUTCFullYear(), hoy.getUTCMonth()-1, 1)); b = new Date(Date.UTC(hoy.getUTCFullYear(), hoy.getUTCMonth(), 0)); }
+  document.getElementById('vx-desde').value = f(a); document.getElementById('vx-hasta').value = f(b);
+}
+function abrirVentasExcel(){
+  vxRango('mes');
+  const marcas = [...new Set((DB.prendas||[]).map(p=>p.categoria).filter(Boolean))].sort();
+  document.getElementById('vx-marca').innerHTML = '<option value="">Todas</option>'+marcas.map(m=>`<option>${pycEsc(m)}</option>`).join('');
+  document.getElementById('vx-estado-txt').textContent='';
+  document.getElementById('vx-btn').disabled=false;
+  document.getElementById('modal-ventas-excel').classList.add('open');
+}
+async function vxDescargar(){
+  const desde = document.getElementById('vx-desde').value, hasta = document.getElementById('vx-hasta').value;
+  if(!desde || !hasta || desde>hasta){ toast('Revisa las fechas'); return; }
+  const canal = document.getElementById('vx-canal').value, est = document.getElementById('vx-estado').value;
+  const marca = document.getElementById('vx-marca').value, envio = document.getElementById('vx-envio').value;
+  const txt = document.getElementById('vx-estado-txt'), btn = document.getElementById('vx-btn');
+  btn.disabled = true; txt.textContent = '⏳ Preparando el Excel…';
+  try{
+    const ini = new Date(desde+'T00:00:00-05:00').toISOString();
+    const fin = new Date(new Date(hasta+'T00:00:00-05:00').getTime()+86400000).toISOString();
+    const items = await dbGet(`carrito_items?agregado_en=gte.${ini}&agregado_en=lt.${fin}&estado_bolsa=neq.eliminado&select=id,carrito_id,prenda_id,precio_unitario,costo_unitario,especificacion,color,agregado_en,prendas(nombre,codigo,codigo_interno,categoria,stock,costo)&order=agregado_en.asc`);
+    const carritos = [...new Set(items.map(i=>i.carrito_id).filter(Boolean))];
+    let peds = [];
+    for(let i=0;i<carritos.length;i+=80){
+      peds = peds.concat(await dbGet(`pedidos?carrito_id=in.(${carritos.slice(i,i+80).join(',')})&select=id,numero,estado,canal,tipo_envio,carrito_id,clientes(nombre,telefono,dni)`));
+    }
+    const pedPorCarrito = {}; peds.forEach(p=>{ pedPorCarrito[p.carrito_id]=p; });
+    const PAGADOS = ['pago_completo','empaquetado','en_camino','entregado'];
+    const ESTL = (typeof ESTADOS_LABEL!=='undefined') ? ESTADOS_LABEL : {};
+    const filas = [];
+    for(const it of items){
+      const p = pedPorCarrito[it.carrito_id];
+      if(!p || p.estado==='cancelado') continue;
+      if(est==='pagados' && !PAGADOS.includes(p.estado)) continue;
+      if(est==='entregados' && p.estado!=='entregado') continue;
+      if(canal && (p.canal||'')!==canal) continue;
+      if(envio && !String(p.tipo_envio||'').startsWith(envio)) continue;
+      const pr = it.prendas||{};
+      if(marca && (pr.categoria||'')!==marca) continue;
+      const precio = Number(it.precio_unitario)||0;
+      const costo = it.costo_unitario!=null ? Number(it.costo_unitario) : (Number(pr.costo)||0);
+      const fl = new Date(new Date(it.agregado_en).getTime()-5*3600*1000).toISOString();
+      filas.push({
+        'Fecha': fl.slice(0,10), 'Hora': fl.slice(11,16), 'N.º pedido': p.numero, 'Estado': ESTL[p.estado]||p.estado, 'Canal': p.canal||'',
+        'Cliente': p.clientes?.nombre||'', 'Teléfono': p.clientes?.telefono||'', 'DNI': p.clientes?.dni||'', 'Tipo de envío': pycEnvioLabel(p.tipo_envio).replace(/^\S+\s/,''),
+        'Código interno': pr.codigo_interno||'', 'Código de barras': pr.codigo||'', 'Producto': pr.nombre||'', 'Marca': pr.categoria||'', 'Especificación': it.especificacion||it.color||'',
+        'Precio venta': precio, 'Costo': costo, 'Ganancia': Math.round((precio-costo)*100)/100, 'Stock actual': pr.stock??'', _pid: it.prenda_id, _ped: p.id
+      });
+    }
+    if(!filas.length){ txt.textContent = 'No hay ventas con esos filtros.'; btn.disabled=false; return; }
+    const r2 = n=>Math.round(n*100)/100;
+    // Hoja 2: por producto
+    const porProd = {};
+    filas.forEach(f=>{ const k=f._pid; const x = porProd[k] ||= {'Código interno':f['Código interno'],'Código de barras':f['Código de barras'],'Producto':f['Producto'],'Marca':f['Marca'],'Unidades':0,'Total vendido':0,'Costo total':0,'Ganancia':0,'Stock actual':f['Stock actual']};
+      x['Unidades']++; x['Total vendido']+=f['Precio venta']; x['Costo total']+=f['Costo']; x['Ganancia']+=f['Ganancia']; });
+    const hojaProd = Object.values(porProd).map(x=>({...x,'Total vendido':r2(x['Total vendido']),'Costo total':r2(x['Costo total']),'Ganancia':r2(x['Ganancia'])})).sort((a,b)=>b['Total vendido']-a['Total vendido']);
+    // Hoja 3: por canal y por marca
+    const agrupar = (campo)=>{ const g={}; filas.forEach(f=>{ const k=f[campo]||'(sin dato)'; const x=g[k] ||= {u:0,v:0,c:0,peds:new Set()}; x.u++; x.v+=f['Precio venta']; x.c+=f['Costo']; x.peds.add(f._ped); });
+      return Object.entries(g).sort((a,b)=>b[1].v-a[1].v).map(([k,x])=>[k, x.peds.size, x.u, r2(x.v), r2(x.c), r2(x.v-x.c)]); };
+    const cab = ['', 'Pedidos', 'Unidades', 'Total vendido', 'Costo', 'Ganancia'];
+    const aoaCM = [['POR CANAL'], ['Canal',...cab.slice(1)], ...agrupar('Canal'), [], ['POR MARCA'], ['Marca',...cab.slice(1)], ...agrupar('Marca')];
+    // Hoja 4: resumen
+    const tv = filas.reduce((a,f)=>a+f['Precio venta'],0), tc = filas.reduce((a,f)=>a+f['Costo'],0), np = new Set(filas.map(f=>f._ped)).size;
+    const aoaRes = [['Resumen de ventas — Punto y Compra'], [],
+      ['Periodo', desde+' al '+hasta], ['Canal', canal||'Todos'], ['Estado', document.getElementById('vx-estado').selectedOptions[0].text], ['Marca', marca||'Todas'], ['Tipo de envío', envio?pycEnvioLabel(envio).replace(/^\S+\s/,''):'Todos'], [],
+      ['Pedidos', np], ['Productos vendidos', filas.length], ['Total vendido (S/)', r2(tv)], ['Costo (S/)', r2(tc)], ['Ganancia (S/)', r2(tv-tc)], ['Margen', tv>0?Math.round((tv-tc)/tv*100)+'%':'—'], ['Ticket promedio (S/)', np?r2(tv/np):0], [],
+      ['Nota', 'Montos sin costo de envío. Costo = costo del producto el día de la venta.'], ['Generado', new Date().toLocaleString('es-PE')+' por '+(currentUser?.nombre||'')]];
+    const wb = XLSX.utils.book_new();
+    const det = filas.map(({_pid,_ped,...x})=>x);
+    const s1 = XLSX.utils.json_to_sheet(det); s1['!cols'] = Object.keys(det[0]).map(k=>({wch:Math.min(42,Math.max(9,k.length+2,...det.slice(0,200).map(r=>String(r[k]??'').length+1)))}));
+    XLSX.utils.book_append_sheet(wb, s1, 'Detalle');
+    const s2 = XLSX.utils.json_to_sheet(hojaProd); s2['!cols'] = [{wch:14},{wch:16},{wch:44},{wch:16},{wch:10},{wch:14},{wch:12},{wch:12},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, s2, 'Por producto');
+    const s3 = XLSX.utils.aoa_to_sheet(aoaCM); s3['!cols'] = [{wch:20},{wch:9},{wch:10},{wch:14},{wch:12},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, s3, 'Por canal y marca');
+    const s4 = XLSX.utils.aoa_to_sheet(aoaRes); s4['!cols'] = [{wch:22},{wch:60}];
+    XLSX.utils.book_append_sheet(wb, s4, 'Resumen');
+    XLSX.writeFile(wb, `ventas-punto-y-compra-${desde}-al-${hasta}.xlsx`);
+    txt.textContent = `✅ Excel descargado: ${np} pedido(s), ${filas.length} producto(s), S/ ${r2(tv)} vendidos.`;
+  }catch(e){ txt.textContent = 'Error: '+e.message; }
+  btn.disabled = false;
+}
 
 // ═══════════════ IMPORTADOR DE CATÁLOGO (Punto y Compra) ═══════════════
 const IMP_CAMPOS = [
