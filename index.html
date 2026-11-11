@@ -392,38 +392,34 @@ td.empty-state{padding:20px;text-align:center}
             <div class="f5-courier-icon">🏍️</div>
             <div class="f5-courier-name">Motorizado</div>
             <div class="f5-courier-desc">Entrega a domicilio en Lima y Callao</div>
-            <div class="f5-courier-price pago">Según distrito</div>
           </div>
           <div class="f5-courier-opt" id="opt-shalom" onclick="selCourier('shalom')">
             <div class="f5-courier-icon">🚛</div>
             <div class="f5-courier-name">Shalom</div>
             <div class="f5-courier-desc">Envío a provincias — recojo en agencia</div>
-            <div class="f5-courier-price pago">Por confirmar</div>
           </div>
           <div class="f5-courier-opt" id="opt-marvisur" onclick="selCourier('marvisur')">
             <div class="f5-courier-icon">🚌</div>
             <div class="f5-courier-name">Marvisur</div>
             <div class="f5-courier-desc">Envío a provincias — recojo en agencia</div>
-            <div class="f5-courier-price pago">Por confirmar</div>
           </div>
           <div class="f5-courier-opt" id="opt-recojo" onclick="selCourier('recojo')">
             <div class="f5-courier-icon">🏬</div>
             <div class="f5-courier-name">Recojo en showroom</div>
             <div class="f5-courier-desc">Recoges tu pedido en nuestro showroom</div>
-            <div class="f5-courier-price gratis">Sin costo</div>
           </div>
         </div>
         <div id="f5-shalom-info" style="display:none" class="f5-info-box green">
-          🚛 Recoges tu paquete en la agencia Shalom que elijas. <strong>Te confirmaremos el costo del envío por WhatsApp</strong>; se paga antes de despachar.
+          🚛 Recoges tu paquete en la agencia Shalom que elijas. Coordinaremos tu envío por WhatsApp.
         </div>
         <div id="f5-motor-info" style="display:none" class="f5-info-box">
-          🏍️ El motorizado llega a tu puerta en Lima y Callao. El costo va de S/ 10 a S/ 25 según tu distrito y el tamaño de la caja. <strong>Te lo confirmaremos por WhatsApp</strong>; se paga antes de despachar.
+          🏍️ El motorizado llega a tu puerta en Lima y Callao. Coordinaremos tu envío por WhatsApp.
         </div>
         <div id="f5-marvisur-info" style="display:none" class="f5-info-box">
-          🚌 Recoges tu paquete en la agencia Marvisur de tu ciudad. <strong>Te confirmaremos el costo del envío por WhatsApp</strong>; se paga antes de despachar.
+          🚌 Recoges tu paquete en la agencia Marvisur de tu ciudad. Coordinaremos tu envío por WhatsApp.
         </div>
         <div id="f5-recojo-info" style="display:none" class="f5-info-box green">
-          🏬 Recoges tu pedido en nuestro showroom, sin costo de envío. Te avisaremos por WhatsApp cuando esté listo.
+          🏬 Recoges tu pedido en nuestro showroom. Te avisaremos por WhatsApp cuando esté listo.
         </div>
       </div>
       <div class="f5-nav" style="justify-content:flex-end">
@@ -521,15 +517,14 @@ td.empty-state{padding:20px;text-align:center}
             <li>Pasado el plazo se cobrará una penalidad de <strong>S/ 5.00 por día</strong>.</li>
           </ul>
           <br>
-          <h4>💳 Pago del envío</h4>
+          <h4>💳 Pago</h4>
           <ul>
-            <li>Te confirmaremos el costo del envío por WhatsApp.</li>
-            <li>El pedido y el envío se pagan <strong>antes de despachar</strong>.</li>
+            <li>Tu pedido se despacha cuando el pago está completo. Lo coordinamos contigo por WhatsApp.</li>
           </ul>
           <br>
           <h4>🏍️ Motorizado</h4>
           <ul>
-            <li>Entrega en Lima y Callao. Costo de S/ 10 a S/ 25 según distrito y tamaño de caja.</li>
+            <li>Entrega en Lima y Callao.</li>
             <li>Rango de entrega: lunes a sábado de 10am a 9pm.</li>
           </ul>
           <br>
@@ -540,7 +535,7 @@ td.empty-state{padding:20px;text-align:center}
           <br>
           <h4>🏬 Recojo en showroom</h4>
           <ul>
-            <li>Sin costo de envío. Te avisaremos cuando tu pedido esté listo.</li>
+            <li>Te avisaremos cuando tu pedido esté listo.</li>
           </ul>
           <br>
           <h4>⚠️ Responsabilidades</h4>
@@ -569,7 +564,7 @@ td.empty-state{padding:20px;text-align:center}
           <div class="f5-title">¡Todo listo! 👑</div>
           <div class="f5-desc" id="f5-confirm-desc">Revisamos tus datos y te escribimos por WhatsApp.</div>
           <div class="f5-info-box green" style="margin-bottom:0">
-            ✓ <strong>No debes pagar nada en este paso.</strong> Te confirmaremos el total con el envío por WhatsApp; se paga antes de despachar.
+            ✓ <strong>No debes pagar nada en este paso.</strong> Coordinaremos tu pago y tu envío por WhatsApp.
           </div>
         </div>
         <div class="f5-nav">
@@ -1068,9 +1063,21 @@ td.empty-state{padding:20px;text-align:center}
               <div class="profile-header">
                 <div class="avatar-lg" id="lc-av">KF</div>
                 <div>
-                  <div class="font-500" style="font-size:14px" id="lc-name">Karina Flores</div>
+                  <div style="display:flex;align-items:center;gap:6px">
+                    <div class="font-500" style="font-size:14px" id="lc-name">Karina Flores</div>
+                    <button class="btn btn-xs" title="Editar nombre y DNI" onclick="pycEditarClienteLive()" style="padding:2px 7px">✏️</button>
+                  </div>
                   <div class="text-muted text-sm" id="lc-tel">987 654 321</div>
+                  <div class="text-hint" style="font-size:12px" id="lc-dni"></div>
                   <span class="badge mt-8" id="lc-badge">recurrente</span>
+                </div>
+              </div>
+              <div id="lc-editar" style="display:none;background:var(--gray-light);border-radius:var(--radius-sm);padding:10px 12px;margin:8px 0">
+                <div class="form-row" style="margin-bottom:8px"><label class="form-label">Nombre <span class="text-hint">(opcional)</span></label><input type="text" id="lc-edit-nombre" placeholder="Nombre del cliente"></div>
+                <div class="form-row" style="margin-bottom:8px"><label class="form-label">DNI <span class="text-hint">(opcional)</span></label><input type="text" id="lc-edit-dni" inputmode="numeric" maxlength="12" placeholder="8 dígitos"></div>
+                <div style="display:flex;gap:6px;justify-content:flex-end">
+                  <button class="btn btn-sm" onclick="document.getElementById('lc-editar').style.display='none'">Cancelar</button>
+                  <button class="btn btn-primary btn-sm" onclick="pycGuardarClienteLive()">Guardar</button>
                 </div>
               </div>
               <div class="grid-2 mb-8">
@@ -2252,7 +2259,8 @@ function inicioSemanaLunes(fecha){
 
 // ══════════════ LOCAL FALLBACK DATA ══════════════
 const USERS = {
-  elisabeth: { pass:'Pyc-cttp-627', nombre:'Elisabeth', rol:'Admin', initials:'E' },
+  elizabeth: { pass:'Pyc-cttp-627', nombre:'Elizabeth', rol:'Admin', initials:'E' },
+  humberto: { pass:'Pyc-hm7k-358', nombre:'Humberto', rol:'Admin', initials:'H' },
   operario: { pass:'Pyc-53b5-444', nombre:'Operario', rol:'Operador', initials:'O' }
 };
 
@@ -3767,9 +3775,9 @@ async function loadCarritos(){
             const hora = it.agregado_en ? new Date(it.agregado_en).toLocaleString('es-PE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
             const nombre = it.prendas?.nombre||'Prenda';
             const talla = it.talla ? ' · T-'+it.talla : '';
-            const btnEliminar = pagado
+            const btnEliminar = (pagado && currentUser?.rol!=='admin')
               ? '<button disabled style="border:none;background:none;color:var(--text3);font-size:11px;cursor:not-allowed">🔒</button>'
-              : '<button class="btn-quitar-item" data-item="' + it.id + '" data-precio="' + it.precio_unitario + '" data-pedido="' + c.id + '" data-prenda="' + (it.prenda_id||'') + '" style="border:none;background:var(--red-light);color:var(--red);font-size:11px;font-weight:600;cursor:pointer;padding:2px 8px;border-radius:4px">Quitar</button>';
+              : '<button class="btn-quitar-item" data-pagado="' + (pagado?'1':'0') + '" data-monto-pagado="' + (it.monto_pagado||0) + '" data-item="' + it.id + '" data-precio="' + it.precio_unitario + '" data-pedido="' + c.id + '" data-prenda="' + (it.prenda_id||'') + '" style="border:none;background:var(--red-light);color:var(--red);font-size:11px;font-weight:600;cursor:pointer;padding:2px 8px;border-radius:4px">Quitar</button>';
             return '<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);gap:8px">'
               + '<div style="flex:1;min-width:0">'
                 + '<div style="font-size:12.5px;font-weight:500">📦 '+nombre+'<span style="color:var(--text3);font-weight:400">'+talla+'</span></div>'
@@ -3812,7 +3820,7 @@ async function generarPedidoDesdeCarrito(pedidoId, clienteId, subtotal){
     const pedRows = await dbGet(`pedidos?id=eq.${pedidoId}&select=*`);
     currentPedidoActivo = pedRows[0];
     const items = await dbGet(`carrito_items?carrito_id=eq.${currentPedidoActivo.carrito_id}&estado_bolsa=neq.eliminado&select=*,prendas(nombre)`);
-    liveCart = items.map(it=>({id:it.id, prenda_id:it.prenda_id, nombre:it.prendas?.nombre||'Prenda', talla:it.talla, color:it.color||'', precio:it.precio_unitario, estado_pago:it.estado_pago, estado_bolsa:it.estado_bolsa}));
+    liveCart = items.map(it=>({id:it.id, prenda_id:it.prenda_id, nombre:it.prendas?.nombre||'Prenda', talla:it.talla, color:it.color||'', precio:it.precio_unitario, estado_pago:it.estado_pago, monto_pagado:it.monto_pagado||0, estado_bolsa:it.estado_bolsa}));
     document.getElementById('env-subtotal').textContent = 'S/ '+subtotal;
     pycPrepararModalEnvio(currentPedidoActivo);
     document.getElementById('modal-envio').classList.add('open');
@@ -3898,6 +3906,7 @@ function pycVariantesCodigo(q){
   q=String(q||'').trim().toLowerCase(); if(!q) return [];
   return (DB.prendas||[]).filter(p=>{ const c=(p.codigo||'').trim().toLowerCase(); return c===q || c.startsWith(q+'-'); });
 }
+function pycSubtotalCliente(ped){ return ped?.subtotal!=null ? ped.subtotal : Math.max(0,(ped?.total||0)-(ped?.costo_envio||0)); }
 function pycEsc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function updateColorTalla(){
@@ -3945,7 +3954,7 @@ async function selectLiveClient(id){
     if(pedActivos.length){
       currentCarritoId = pedActivos[0].id; // reutilizamos currentCarritoId para guardar el pedido activo
       const items = await dbGet(`carrito_items?carrito_id=eq.${pedActivos[0].carrito_id}&estado_bolsa=neq.eliminado&select=*,prendas(nombre)`);
-      liveCart = items.map(it=>({id:it.id, prenda_id:it.prenda_id, nombre:it.prendas?.nombre||'Prenda', talla:it.talla, color:it.color||'', precio:it.precio_unitario, estado_pago:it.estado_pago, estado_bolsa:it.estado_bolsa}));
+      liveCart = items.map(it=>({id:it.id, prenda_id:it.prenda_id, nombre:it.prendas?.nombre||'Prenda', talla:it.talla, color:it.color||'', precio:it.precio_unitario, estado_pago:it.estado_pago, monto_pagado:it.monto_pagado||0, estado_bolsa:it.estado_bolsa}));
       currentPedidoActivo = pedActivos[0];
     } else {
       currentCarritoId = null;
@@ -3956,6 +3965,8 @@ async function selectLiveClient(id){
     document.getElementById('lc-av').textContent=initials(c.nombre||'?');
     document.getElementById('lc-name').textContent=c.nombre||'Sin nombre';
     document.getElementById('lc-tel').textContent=c.telefono;
+    document.getElementById('lc-dni').textContent = c.dni ? '🪪 DNI '+c.dni : '';
+    document.getElementById('lc-editar').style.display='none';
     const badge=document.getElementById('lc-badge');
     if(c.pedidos_count>0){ badge.textContent='recurrente'; badge.className='badge badge-pink'; }
     else { badge.textContent='nueva'; badge.className='badge badge-ok'; }
@@ -3969,6 +3980,31 @@ async function selectLiveClient(id){
     document.getElementById('live-resumen-card').style.display='block';
     renderLiveCart();
   } catch(e){ console.error('selectLiveClient error:',e); alert('Error cargando clienta'); }
+}
+
+function pycEditarClienteLive(){
+  if(!currentLiveClient) return;
+  document.getElementById('lc-edit-nombre').value = currentLiveClient.nombre && currentLiveClient.nombre!=='Nueva clienta' ? currentLiveClient.nombre : '';
+  document.getElementById('lc-edit-dni').value = currentLiveClient.dni||'';
+  document.getElementById('lc-editar').style.display='block';
+  setTimeout(()=>document.getElementById('lc-edit-nombre').focus(),50);
+}
+async function pycGuardarClienteLive(){
+  if(!currentLiveClient) return;
+  const nombre = document.getElementById('lc-edit-nombre').value.trim();
+  const dni = document.getElementById('lc-edit-dni').value.replace(/\s+/g,'');
+  if(dni && !/^\d{8,12}$/.test(dni)){ toast('El DNI debe tener solo números (8 dígitos; carné de extranjería hasta 12)'); return; }
+  const patch = { dni: dni||null };
+  if(nombre) patch.nombre = nombre;
+  try{
+    await dbPatch(`clientes?id=eq.${currentLiveClient.id}`, patch);
+    Object.assign(currentLiveClient, patch);
+    document.getElementById('lc-name').textContent = currentLiveClient.nombre||'Sin nombre';
+    document.getElementById('lc-av').textContent = initials(currentLiveClient.nombre||'?');
+    document.getElementById('lc-dni').textContent = currentLiveClient.dni ? '🪪 DNI '+currentLiveClient.dni : '';
+    document.getElementById('lc-editar').style.display='none';
+    toast('✓ Datos del cliente guardados');
+  }catch(e){ toast('Error: '+e.message); }
 }
 
 function hideClientCard(){
@@ -4141,12 +4177,33 @@ async function toggleBolsaCarritoItem(itemId, el){
   } catch(e){ toast('Error: '+e.message); }
 }
 
+// Punto y Compra: el administrador puede quitar un artículo pagado. Se descuenta su pago
+// como si ese dinero no hubiera ingresado (queda un pago negativo como registro) y vuelve al stock.
+async function pycRevertirPagoArticulo(pedidoId, montoItem, nombreItem){
+  if(!(montoItem>0) || !pedidoId) return;
+  const pagos = await dbGet(`pagos?pedido_id=eq.${pedidoId}&estado=eq.confirmado&order=pagado_en.desc&select=metodo`);
+  const metodo = pagos[0]?.metodo || 'Yape';
+  const peds = await dbGet(`pedidos?id=eq.${pedidoId}&select=estado,monto_pagado`);
+  const estadoAntes = peds[0]?.estado;
+  await dbPost('pagos', { pedido_id:pedidoId, metodo, monto:-montoItem, estado:'confirmado',
+    confirmado_por:(currentUser?.nombre||'Admin')+' · artículo eliminado: '+String(nombreItem||'').slice(0,60) });
+  const nuevoPagado = Math.max(0, (peds[0]?.monto_pagado||0) - montoItem);
+  const p2 = await dbGet(`pedidos?id=eq.${pedidoId}&select=total`);
+  const total = p2[0]?.total||0;
+  let estado = nuevoPagado>=total && total>0 ? 'pago_completo' : nuevoPagado>0 ? 'pago_parcial' : 'pago_pendiente';
+  if(['acumulando','listo_envio'].includes(estadoAntes) && nuevoPagado<total) estado = estadoAntes;
+  if(['empaquetado','en_camino','entregado'].includes(estadoAntes) && nuevoPagado>=total) estado = estadoAntes;
+  await dbPatch(`pedidos?id=eq.${pedidoId}`, { monto_pagado:nuevoPagado, estado });
+}
+
 async function removeCartItem(i){
   const item=liveCart[i];
-  if(item.estado_pago==='confirmado'){
-    toast('⚠️ Esta prenda ya fue pagada — para retirarla debes hacer una devolución');
+  const itemPagado = item.estado_pago==='confirmado' || (item.monto_pagado||0)>0;
+  if(itemPagado && currentUser?.rol!=='admin'){
+    toast('⚠️ Este artículo ya fue pagado — solo el administrador puede quitarlo');
     return;
   }
+  if(itemPagado && !confirm('Este artículo YA FUE PAGADO (S/ '+(item.monto_pagado||item.precio)+').\nSe quitará del pedido y se descontará ese pago, como si no hubiera ingresado. La devolución al cliente se coordina por fuera.\n¿Continuar?')) return;
   if(!item.id){
     toast('⚠️ Error: esta prenda no tiene ID guardado. Recarga la página e intenta de nuevo.');
     return;
@@ -4155,6 +4212,12 @@ async function removeCartItem(i){
     await dbPatch(`carrito_items?id=eq.${item.id}`,{estado_bolsa:'eliminado'});
     liveCart.splice(i,1);
     renderLiveCart();
+    if(itemPagado && currentPedidoActivo){
+      // primero se actualiza el total y luego se descuenta el pago
+      const subTmp = liveCart.reduce((a,it)=>a+it.precio,0);
+      await dbPatch(`pedidos?id=eq.${currentPedidoActivo.id}`,{subtotal:subTmp, total:subTmp+(currentPedidoActivo.costo_envio||0)});
+      await pycRevertirPagoArticulo(currentPedidoActivo.id, item.monto_pagado||item.precio, item.nombre);
+    }
     // Devolver 1 unidad de stock del modelo (best-effort)
     if(item.prenda_id){
       try {
@@ -4175,7 +4238,7 @@ async function removeCartItem(i){
       }
     }
     loadCarritos();
-    toast('✓ Prenda eliminada');
+    toast(itemPagado?'✓ Artículo quitado y su pago descontado':'✓ Artículo eliminado');
   } catch(e){ toast('Error eliminando: '+e.message); }
 }
 
@@ -4183,7 +4246,7 @@ async function removeCartItem(i){
 document.addEventListener('click', function(e){
   const btn = e.target.closest('.btn-quitar-item');
   if(btn){
-    removeCarritoItem(btn.dataset.item, parseFloat(btn.dataset.precio), btn.dataset.pedido, false, btn.dataset.prenda);
+    removeCarritoItem(btn.dataset.item, parseFloat(btn.dataset.precio), btn.dataset.pedido, btn.dataset.pagado==='1', btn.dataset.prenda, btn.dataset.montoPagado);
     return;
   }
   const bolsa = e.target.closest('[data-bolsa-id]');
@@ -4192,12 +4255,15 @@ document.addEventListener('click', function(e){
   }
 });
 
-async function removeCarritoItem(itemId, precio, pedidoId, pagado, prendaId){
-  if(pagado===true||pagado==='true'){
-    toast('⚠️ Esta prenda ya fue pagada — para retirarla debes hacer una devolución');
+async function removeCarritoItem(itemId, precio, pedidoId, pagado, prendaId, montoPagado){
+  const itemPagado = pagado===true||pagado==='true';
+  if(itemPagado && currentUser?.rol!=='admin'){
+    toast('⚠️ Este artículo ya fue pagado — solo el administrador puede quitarlo');
     return;
   }
-  if(!confirm('¿Eliminar esta prenda?')) return;
+  if(itemPagado){
+    if(!confirm('Este artículo YA FUE PAGADO (S/ '+(montoPagado||precio)+').\nSe quitará del pedido y se descontará ese pago, como si no hubiera ingresado. La devolución al cliente se coordina por fuera.\n¿Continuar?')) return;
+  } else if(!confirm('¿Eliminar este artículo?')) return;
   try {
     await dbPatch(`carrito_items?id=eq.${itemId}`,{estado_bolsa:'eliminado'});
     // Recalcular total del pedido directo por id
@@ -4211,6 +4277,7 @@ async function removeCarritoItem(itemId, precio, pedidoId, pagado, prendaId){
         const nuevoSubtotal = allItems.reduce((a,it)=>a+(it.precio_unitario||0),0);
         await dbPatch(`pedidos?id=eq.${pedidoId}`,{subtotal:nuevoSubtotal, total:nuevoSubtotal+(ped[0].costo_envio||0)});
       }
+      if(itemPagado) await pycRevertirPagoArticulo(pedidoId, parseFloat(montoPagado)||precio, 'artículo');
     }
     // Devolver 1 unidad de stock del modelo (best-effort)
     if(prendaId){
@@ -4219,7 +4286,7 @@ async function removeCarritoItem(itemId, precio, pedidoId, pagado, prendaId){
         if(rows.length) await dbPatch(`prendas?id=eq.${prendaId}`,{stock:(rows[0].stock||0)+1});
       } catch(e){ console.warn('No se pudo devolver stock:', e.message); }
     }
-    toast('✓ Prenda eliminada');
+    toast(itemPagado?'✓ Artículo quitado y su pago descontado':'✓ Artículo eliminado');
     loadCarritos();
   } catch(e){ toast('Error: '+e.message); }
 }
@@ -6234,8 +6301,8 @@ function renderTrackingPage(ped){
   document.getElementById('trk-name').textContent=cl?.nombre||'Clienta';
   document.getElementById('trk-meta').innerHTML=`<span>${ped.creado_en?.slice(0,10)||''}</span><span>${pycEnvioLabel(ped.tipo_envio)}</span><span>${ped.distrito||''}</span>`;
   const banners={
-    pago_pendiente:{bg:'#FAEEDA',c:'#633806',lbl:'Pendiente de pago',sub:`Coordina tu pago por WhatsApp al 914 036 405 · Total S/${ped.total}`},
-    pago_parcial:{bg:'#FAEEDA',c:'#633806',lbl:'Pago parcial recibido',sub:`Abono S/${ped.monto_pagado} · faltan S/${ped.total-ped.monto_pagado}`},
+    pago_pendiente:{bg:'#FAEEDA',c:'#633806',lbl:'Pendiente de pago',sub:`Coordina tu pago por WhatsApp al 914 036 405 · Total productos S/${pycSubtotalCliente(ped)}`},
+    pago_parcial:{bg:'#FAEEDA',c:'#633806',lbl:'Pago parcial recibido',sub:`Abono S/${ped.monto_pagado} · coordina el saldo por WhatsApp al 914 036 405`},
     pago_completo:{bg:'#E6F1FB',c:'#0C447C',lbl:'Pago confirmado',sub:'Tu pedido está en preparación'},
     empaquetado:{bg:'#E1F5EE',c:'#085041',lbl:'Pedido empaquetado',sub:'Listo para el próximo despacho'},
     en_camino:{bg:'#F1EFE8',c:'#2C2C2A',lbl:'Tu pedido va en camino',sub:`Código: ${ped.courier_codigo||'—'} · ${ped.distrito||''}`},
@@ -6248,7 +6315,7 @@ function renderTrackingPage(ped){
   // Aviso aparte (no forma parte del saldo interno del sistema) — el motorizado cobra el envío en la puerta
   const notaEnvio = document.getElementById('trk-envio-nota');
   const esMotorizado = (ped.tipo_envio||'').startsWith('motorizado');
-  if(esMotorizado && !ped.envio_pagado && (ped.costo_envio||0)>0 && ped.estado!=='entregado' && ped.estado!=='cancelado'){
+  if(false){  // Punto y Compra: el costo de envío no se muestra al cliente
     notaEnvio.style.display='block';
     notaEnvio.innerHTML = `🏍️ <strong>Recuerda:</strong> al recibir tu pedido, paga <strong>S/${ped.costo_envio}</strong> al motorizado — el envío se cobra directo en la entrega.`;
   } else {
@@ -6280,8 +6347,8 @@ function renderTrackingPage(ped){
   const items = ped.carrito_items||[];
   document.getElementById('trk-items').innerHTML=
     items.map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12.5px"><span>${it.prendas?.nombre||'Producto'} ${it.color?`<span style="color:var(--text3)">· ${it.color}</span>`:''}</span><span style="font-weight:500">S/${it.precio_unitario}</span></div>`).join('')+
-    `<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:6px 0;border-bottom:0.5px solid var(--border)"><span>Envío ${ped.tipo_envio==='shalom'?'Shalom':'Motorizado'}</span><span>${ped.costo_envio===0?'Gratis':'S/'+ped.costo_envio}</span></div>`+
-    `<div style="display:flex;justify-content:space-between;margin-top:8px;font-weight:600;font-size:14px"><span>Total</span><span>S/${ped.total}</span></div>`;
+    `<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:6px 0;border-bottom:0.5px solid var(--border)"><span>Envío</span><span>${pycEnvioLabel(ped.tipo_envio)}</span></div>`+
+    `<div style="display:flex;justify-content:space-between;margin-top:8px;font-weight:600;font-size:14px"><span>Total productos</span><span>S/${pycSubtotalCliente(ped)}</span></div>`;
 }
 
 function feIrASeguimiento(){ renderTrackingPage(trackingPedidoData); }
@@ -6804,7 +6871,7 @@ function f5Next(){
     document.getElementById('f5-motor-pago').style.display='none';
     document.getElementById('f5-confirm-desc').textContent = f5Courier==='recojo'
       ? 'Te avisaremos por WhatsApp cuando tu pedido esté listo para recoger en el showroom.'
-      : 'Revisamos tus datos y te escribimos por WhatsApp con el total y el costo del envío.';
+      : 'Revisamos tus datos y te escribimos por WhatsApp para coordinar tu envío.';
     f5ShowPaso(5);
   }
 }
@@ -6837,8 +6904,8 @@ function f5BuildResumen(){
     <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#9C9A92;margin-bottom:8px">Productos</div>
     <div style="border:0.5px solid #E8E6E0;border-radius:8px;overflow:hidden">
       ${items.map(it=>`<div class="f5-resumen-item" style="padding:7px 12px"><span>${it.prendas?.nombre||'Producto'} ${it.color?`<span style="color:#9C9A92">· ${it.color}</span>`:''}</span><span style="font-weight:500">S/ ${it.precio_unitario}</span></div>`).join('')}
-      <div class="f5-resumen-item" style="padding:7px 12px"><span>Envío ${pycEnvioLabel(f5Courier)}</span><span style="font-weight:500;color:${costoEnvio===0?'#1D9E75':'#1A1A18'}">${costoEnvio===0?'Gratis':costoEnvio===null?'Por confirmar':'S/ '+costoEnvio}</span></div>
-      <div class="f5-total-row" style="padding:10px 12px"><span>Total${costoEnvio===null?' (sin envío)':''}</span><span>S/ ${total}</span></div>
+      <div class="f5-resumen-item" style="padding:7px 12px"><span>Envío</span><span style="font-weight:500">${pycEnvioLabel(f5Courier)}</span></div>
+      <div class="f5-total-row" style="padding:10px 12px"><span>Total productos</span><span>S/ ${subtotal}</span></div>
     </div>`;
 
   const nombre = document.getElementById('f5-nombre').value;
@@ -7133,7 +7200,7 @@ async function rgGuardar(){
   document.getElementById('rg-confirm-wrap').style.display='block';
   document.getElementById('rg-confirm-detalle').innerHTML = rgCourier==='shalom'
     ? `<strong>${nombre}</strong><br>Shalom: ${dir}<br>${distrito}<br><span style="color:var(--text3)">WA: ${tel}</span>`
-    : `<strong>${nombre}</strong><br>${dir}${ref?', '+ref:''}<br>${distrito} · 🏍️ Motorizado (costo por confirmar)<br><span style="color:var(--text3)">WA: ${tel}</span>`;
+    : `<strong>${nombre}</strong><br>${dir}${ref?', '+ref:''}<br>${distrito} · 🏍️ Motorizado<br><span style="color:var(--text3)">WA: ${tel}</span>`;
 
   // ¿Ya tiene pedidos acumulados/activos? Si sí, ofrecer solicitar envío urgente
   const urgenteWrap = document.getElementById('rg-confirm-urgente-wrap');
