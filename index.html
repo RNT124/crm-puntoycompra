@@ -1792,8 +1792,8 @@ td.empty-state{padding:20px;text-align:center}
       <div class="form-row"><label class="form-label">Código interno <span class="text-hint">(SmartClic, ej. P00001)</span></label><input type="text" id="pr-codint" placeholder="P00001"></div>
     </div>
     <div class="grid-2">
-      <div class="form-row"><label class="form-label">Precio venta (S/)</label><input type="number" id="pr-precio" placeholder="89"></div>
-      <div class="form-row"><label class="form-label">Costo (S/) <span class="text-hint">solo admin</span></label><input type="number" id="pr-costo" placeholder="45"></div>
+      <div class="form-row"><label class="form-label">Precio venta (S/)</label><input type="number" id="pr-precio" placeholder="89" step="1" min="0"></div>
+      <div class="form-row"><label class="form-label">Costo (S/) <span class="text-hint">solo admin</span></label><input type="number" id="pr-costo" placeholder="45" step="1" min="0"></div>
     </div>
     <div class="form-row">
       <label class="form-label">Categoría</label>
@@ -2123,8 +2123,8 @@ td.empty-state{padding:20px;text-align:center}
         <div class="form-row"><label class="form-label">Código de barras <span class="text-hint">(opcional)</span></label><input type="text" id="mc-codigo" placeholder="Escanea o escribe"></div>
       </div>
       <div class="grid-2">
-        <div class="form-row"><label class="form-label">Precio venta (S/)</label><input type="number" id="mc-precio-venta" placeholder="ej. 120" oninput="mcRecalcularTotal()"></div>
-        <div class="form-row"><label class="form-label">Costo unitario (S/) <span class="text-hint">editable si cambió</span></label><input type="number" id="mc-costo-unitario" placeholder="ej. 70" oninput="mcRecalcularTotal()"></div>
+        <div class="form-row"><label class="form-label">Precio venta (S/)</label><input type="number" id="mc-precio-venta" placeholder="ej. 120" step="1" min="0" oninput="mcRecalcularTotal()"></div>
+        <div class="form-row"><label class="form-label">Costo unitario (S/) <span class="text-hint">editable si cambió</span></label><input type="number" id="mc-costo-unitario" placeholder="ej. 70" step="1" min="0" oninput="mcRecalcularTotal()"></div>
       </div>
       <div class="grid-2">
         <div class="form-row"><label class="form-label">Categoría</label><input type="text" id="mc-categoria" list="mc-cat-lista" placeholder="ej. Figuras" autocomplete="off"><datalist id="mc-cat-lista"></datalist></div>
@@ -3092,9 +3092,9 @@ async function guardarCompra(){
   if(!nombre){ toast('El nombre es obligatorio'); return; }
   const cantidad = parseInt(document.getElementById('mc-cantidad').value)||0;
   if(cantidad<1){ toast('Ingresa la cantidad comprada'); return; }
-  const costoUnitario = parseFloat(document.getElementById('mc-costo-unitario').value)||0;
+  const costoUnitario = Math.round(parseFloat(document.getElementById('mc-costo-unitario').value)||0);  // Punto y Compra: enteros
   if(!costoUnitario||costoUnitario<=0){ toast('Ingresa el costo unitario'); return; }
-  const precioVenta = parseFloat(document.getElementById('mc-precio-venta').value)||0;
+  const precioVenta = Math.round(parseFloat(document.getElementById('mc-precio-venta').value)||0);
   const codigo = document.getElementById('mc-codigo').value.trim()||null;
   const categoria = document.getElementById('mc-categoria').value.trim()||null;
   const especificaciones = document.getElementById('mc-espec').value.trim()||null;
@@ -3973,7 +3973,9 @@ function pycLeerPrecio(txt){
   if(txt===null) return undefined;               // canceló
   const n = impNumero(String(txt).trim());
   if(n===null || n<=0){ toast('Escribe un precio mayor a 0'); return undefined; }
-  return Math.round(n*100)/100;
+  const r = Math.round(n);  // Punto y Compra: precios en enteros
+  if(r<=0){ toast('Escribe un precio mayor a 0'); return undefined; }
+  return r;
 }
 function pycEditarPrecioVenta(){
   const id = document.getElementById('lv-prenda').value;
@@ -5219,7 +5221,7 @@ function cmLeer(input){
         const prov = col.proveedor>=0 ? String(f[col.proveedor]||'').trim() : '';
         const fecha = (col.fecha>=0 ? cmFecha(f[col.fecha]) : null) || hoy;
         const key = p.id+'|'+fecha+'|'+prov+'|'+(costo||'');
-        if(!grupos[key]) grupos[key] = {p, cantidad:0, costo:(costo>0?Math.round(costo*100)/100:null), proveedor:prov, fecha, filas:[]};
+        if(!grupos[key]) grupos[key] = {p, cantidad:0, costo:(costo>0?Math.round(costo):null), proveedor:prov, fecha, filas:[]};
         grupos[key].cantidad += cant; grupos[key].filas.push(n);
       });
       const lista = Object.values(grupos);
@@ -5249,7 +5251,7 @@ async function cmConfirmar(){
   for(const g of cmPlan){
     try{
       const rows = await dbGet(`prendas?id=eq.${g.p.id}&select=stock,costo`);   // stock real del momento
-      const costoU = g.costo!=null ? g.costo : (rows[0]?.costo||0);
+      const costoU = Math.round(g.costo!=null ? g.costo : (rows[0]?.costo||0));
       await dbPost('compras', {prenda_id:g.p.id, talla:'', color:'', cantidad:g.cantidad, costo_total:Math.round(g.cantidad*costoU*100)/100, proveedor:g.proveedor||null, fecha:g.fecha});
       const patch = {stock:(rows[0]?.stock||0)+g.cantidad};
       if(g.costo!=null && g.costo!==Number(rows[0]?.costo)) patch.costo = g.costo;
@@ -5486,7 +5488,7 @@ async function impAnalizar(){
     const cat = String(get('categoria')||'').trim();
     const esp = String(get('especificaciones')||'').trim();
     const dato = { nombre };
-    if(col.costo>=0) dato.costo = costo===null ? 0 : Math.round(costo*100)/100;
+    if(col.costo>=0) dato.costo = costo===null ? 0 : Math.round(costo);  // enteros
     if(col.categoria>=0) dato.categoria = cat||null;
     if(col.especificaciones>=0) dato.especificaciones = esp||null;
     // Se reconoce por código interno, luego por código de barras, luego por nombre
@@ -5512,7 +5514,7 @@ async function impAnalizar(){
   if(danados.length) avisos.push(`⚠️ ${danados.length} código(s) de barras vienen en notación científica (ej. 7.5E+12) y ya están dañados en el archivo — filas ${danados.slice(0,10).join(', ')}${danados.length>10?'…':''}. En Excel, pon esa columna en formato Texto y vuelve a exportar.`);
   if(col.codigo<0 && col.codigo_interno<0) avisos.push('ℹ️ No hay código interno ni código de barras: los productos se reconocerán por el nombre.');
   if(sinPrecio.length) avisos.push(`⚠️ ${sinPrecio.length} producto(s) sin precio de venta (no se podrán vender hasta ponerles precio en Catálogo): ${sinPrecio.slice(0,5).map(pycEsc).join(' · ')}${sinPrecio.length>5?'…':''}`);
-  if(col.precio>=0) avisos.push('ℹ️ Los precios se redondean al sol entero (ej. 58.17 → 58).');
+  if(col.precio>=0 || col.costo>=0) avisos.push('ℹ️ Precios y costos se redondean al sol entero (ej. 58.17 → 58, 25.57 → 26).');
   if(col.stock<0) avisos.push('ℹ️ No hay columna de stock: los productos nuevos empezarán con stock 0.');
   impPlan = {nuevos, actualizar, errores};
 
@@ -5631,8 +5633,8 @@ async function guardarPrenda(){
   const data={
     nombre,
     codigo:document.getElementById('pr-codigo').value.trim()||null,
-    precio:parseFloat(document.getElementById('pr-precio').value)||0,
-    costo:parseFloat(document.getElementById('pr-costo').value)||0,
+    precio:Math.round(parseFloat(document.getElementById('pr-precio').value)||0),   // Punto y Compra: enteros
+    costo:Math.round(parseFloat(document.getElementById('pr-costo').value)||0),
     categoria:document.getElementById('pr-cat').value.trim()||null,
     especificaciones:document.getElementById('pr-espec').value.trim()||null,
     codigo_interno:document.getElementById('pr-codint').value.trim()||null,
