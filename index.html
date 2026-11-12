@@ -3967,6 +3967,49 @@ function pycEnterBuscador(){
   if(sel.value){ updateColorTalla(); document.getElementById('lv-espec').focus(); }
   else toast('⚠️ No encontré un producto con ese código');
 }
+// ── Precio editable en Registrar venta (solo cambia esa venta, no el catálogo) ──
+let pycPrecioVenta = null, pycPrecioPrendaId = null;
+function pycLeerPrecio(txt){
+  if(txt===null) return undefined;               // canceló
+  const n = impNumero(String(txt).trim());
+  if(n===null || n<=0){ toast('Escribe un precio mayor a 0'); return undefined; }
+  return Math.round(n*100)/100;
+}
+function pycEditarPrecioVenta(){
+  const id = document.getElementById('lv-prenda').value;
+  const p = (DB.prendas||[]).find(x=>x.id===id); if(!p) return;
+  const v = pycLeerPrecio(prompt('Precio para esta venta (S/)\nEl precio del catálogo (S/ '+(p.precio||0)+') no cambia.', pycPrecioVenta ?? (p.precio||'')));
+  if(v===undefined) return;
+  pycPrecioVenta = (v===Number(p.precio)) ? null : v;
+  updateColorTalla();
+  document.getElementById('lv-espec')?.focus();
+}
+async function pycRecalcularPedidoLive(){
+  if(!currentPedidoActivo) return;
+  const sub = liveCart.reduce((a,i)=>a+i.precio,0);
+  const total = sub+(currentPedidoActivo.costo_envio||0);
+  const pagado = currentPedidoActivo.monto_pagado||0;
+  const patch = {subtotal:sub, total};
+  if(['pago_completo','empaquetado'].includes(currentPedidoActivo.estado) && pagado < total) patch.estado = pagado>0 ? 'pago_parcial' : 'pago_pendiente';
+  else if(['pago_parcial','pago_pendiente'].includes(currentPedidoActivo.estado) && pagado>0 && pagado >= total) patch.estado = 'pago_completo';
+  await dbPatch(`pedidos?id=eq.${currentPedidoActivo.id}`, patch);
+  Object.assign(currentPedidoActivo, patch);
+}
+async function pycEditarPrecioItem(i){
+  const it = liveCart[i]; if(!it) return;
+  if(it.estado_pago==='confirmado' || (it.monto_pagado||0)>0){ toast('⚠️ Este producto ya está pagado: no se puede cambiar su precio'); return; }
+  const cat = (DB.prendas||[]).find(x=>x.id===it.prenda_id)?.precio;
+  const v = pycLeerPrecio(prompt('Nuevo precio para "'+it.nombre+'" en esta venta (S/)'+(cat!=null?'\nPrecio del catálogo: S/ '+cat:''), it.precio));
+  if(v===undefined || v===it.precio) return;
+  try{
+    await dbPatch(`carrito_items?id=eq.${it.id}`, {precio_unitario:v});
+    it.precio = v;
+    await pycRecalcularPedidoLive();
+    renderLiveCart();
+    toast('✓ Precio actualizado a S/ '+v);
+  }catch(e){ toast('Error: '+e.message); }
+}
+
 function pycVariantesCodigo(q){
   q=String(q||'').trim().toLowerCase(); if(!q) return [];
   return (DB.prendas||[]).filter(p=>{ const c=(p.codigo||'').trim().toLowerCase(); return c===q || c.startsWith(q+'-'); });
@@ -3980,12 +4023,14 @@ function updateColorTalla(){
   const box = document.getElementById('lv-info');
   if(!box) return;
   const p = prendaId ? (DB.prendas||[]).find(x=>x.id===prendaId) : null;
+  if(prendaId!==pycPrecioPrendaId){ pycPrecioVenta=null; pycPrecioPrendaId=prendaId; }  // otro producto: vuelve al precio del catálogo
   if(!p){ box.style.display='none'; box.innerHTML=''; return; }
   const stock = p.stock||0;
   box.innerHTML = `<div style="font-weight:600;margin-bottom:4px">${pycEsc(p.nombre)}</div>
     <div style="display:flex;gap:14px;flex-wrap:wrap">
       ${p.codigo_interno?`<span>🏷️ ${pycEsc(p.codigo_interno)}</span>`:''}
-      <span>💰 Precio: <strong>${p.precio>0?'S/ '+p.precio:'<span style="color:var(--red)">sin precio</span>'}</strong></span>
+      <span id="lv-precio-wrap">💰 Precio: <strong>${pycPrecioVenta!=null?'S/ '+pycPrecioVenta+' <span class="text-hint" style="font-weight:400">(catálogo S/ '+(p.precio||0)+')</span>':(p.precio>0?'S/ '+p.precio:'<span style="color:var(--red)">sin precio</span>')}</strong>
+        <button class="btn btn-xs" title="Cambiar el precio solo para esta venta" style="padding:1px 6px;margin-left:4px" onclick="pycEditarPrecioVenta()">✏️</button></span>
       ${currentUser?.rol==='admin'?`<span>🔒 Costo: <strong>S/ ${p.costo||0}</strong></span>`:''}
       <span style="color:${stock<=0?'var(--red)':'inherit'}">📦 Stock: <strong>${stock}</strong></span>
     </div>
@@ -4108,7 +4153,8 @@ async function addToCart(){
   if(!prendaId){ toast('Selecciona un producto'); return; }
   const prenda = DB.prendas.find(p=>p.id===prendaId);
   if(!prenda) return;
-  if(!(prenda.precio>0)){ toast('⚠️ Este producto no tiene precio. Ponle precio en Catálogo antes de venderlo.'); return; }
+  const precioVenta = (pycPrecioVenta!=null && pycPrecioPrendaId===prendaId) ? pycPrecioVenta : Number(prenda.precio)||0;
+  if(!(precioVenta>0)){ toast('⚠️ Este producto no tiene precio. Toca ✏️ para ponerle precio a esta venta, o ponlo en Catálogo.'); return; }
   try {
     // Verificar stock ANTES de crear nada — para saber si es pre-venta
     let esPreventa = false;
@@ -4148,7 +4194,7 @@ async function addToCart(){
       carrito_id:carritoId,
       prenda_id:prendaId,
       talla, color: color||'', especificacion: color||null,
-      precio_unitario:prenda.precio,
+      precio_unitario:precioVenta,
       costo_unitario: prenda.costo||0,
       estado_bolsa:'sin_agregar',
       estado_pago:'pendiente',
@@ -4165,7 +4211,8 @@ async function addToCart(){
     } catch(e){ /* stock check opcional */ }
     const item = Array.isArray(itemRows)?itemRows[0]:itemRows;
     if(!item || !item.id){ toast('Error guardando producto — intenta de nuevo'); return; }
-    liveCart.push({id:item.id, prenda_id:prendaId, nombre:prenda.nombre, talla, color:color||'', precio:prenda.precio, estado_pago:'pendiente', estado_bolsa:'sin_agregar', preventa:esPreventa});
+    liveCart.push({id:item.id, prenda_id:prendaId, nombre:prenda.nombre, talla, color:color||'', precio:precioVenta, estado_pago:'pendiente', estado_bolsa:'sin_agregar', preventa:esPreventa});
+    pycPrecioVenta = null;
     // Descontar 1 unidad de stock del modelo (best-effort, no bloquea la venta)
     let avisoStock = '';
     try {
@@ -4208,7 +4255,9 @@ function renderLiveCart(){
       <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
         <span class="font-500">${it.nombre}</span>
         <span style="display:flex;align-items:center;gap:6px">
+          ${(()=>{ const cat=(DB.prendas||[]).find(x=>x.id===it.prenda_id)?.precio; return (cat!=null && Number(cat)!==Number(it.precio)) ? `<span class="text-hint" style="font-size:11px;text-decoration:line-through">S/ ${cat}</span>` : ''; })()}
           <span class="font-500">S/ ${it.precio}</span>
+          ${(it.estado_pago==='confirmado'||(it.monto_pagado||0)>0)?'':`<span title="Cambiar precio" style="cursor:pointer;font-size:12px" onclick="pycEditarPrecioItem(${i})">✏️</span>`}
           <span style="cursor:pointer;color:var(--text3);font-size:12px" onclick="removeCartItem(${i})">✕</span>
         </span>
       </div>
