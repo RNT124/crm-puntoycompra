@@ -403,10 +403,20 @@ td.empty-state{padding:20px;text-align:center}
             <div class="f5-courier-name">Marvisur</div>
             <div class="f5-courier-desc">Envío a provincias — recojo en agencia</div>
           </div>
+          <div class="f5-courier-opt" id="opt-olva" onclick="selCourier('olva')">
+            <div class="f5-courier-icon">📮</div>
+            <div class="f5-courier-name">Olva Courier</div>
+            <div class="f5-courier-desc">Envío a todo el Perú</div>
+          </div>
           <div class="f5-courier-opt" id="opt-recojo" onclick="selCourier('recojo')">
             <div class="f5-courier-icon">🏬</div>
-            <div class="f5-courier-name">Recojo en showroom</div>
-            <div class="f5-courier-desc">Recoges tu pedido en nuestro showroom</div>
+            <div class="f5-courier-name">Recojo en tienda</div>
+            <div class="f5-courier-desc">Eliges el día y la hora</div>
+          </div>
+          <div class="f5-courier-opt" id="opt-otro" onclick="selCourier('otro')">
+            <div class="f5-courier-icon">📦</div>
+            <div class="f5-courier-name">Otro</div>
+            <div class="f5-courier-desc">Otra agencia o modalidad</div>
           </div>
         </div>
         <div id="f5-shalom-info" style="display:none" class="f5-info-box green">
@@ -419,7 +429,13 @@ td.empty-state{padding:20px;text-align:center}
           🚌 Recoges tu paquete en la agencia Marvisur de tu ciudad. Coordinaremos tu envío por WhatsApp.
         </div>
         <div id="f5-recojo-info" style="display:none" class="f5-info-box green">
-          🏬 Recoges tu pedido en nuestro showroom. Te avisaremos por WhatsApp cuando esté listo.
+          🏬 Recoges tu pedido en nuestra tienda. En el siguiente paso eliges el día y la hora.
+        </div>
+        <div id="f5-olva-info" style="display:none" class="f5-info-box">
+          📮 Te enviamos por Olva Courier a tu dirección. Coordinaremos tu envío por WhatsApp.
+        </div>
+        <div id="f5-otro-info" style="display:none" class="f5-info-box">
+          📦 Cuéntanos qué agencia o modalidad prefieres y tus datos. Lo coordinamos contigo por WhatsApp.
         </div>
       </div>
       <div class="f5-nav" style="justify-content:flex-end">
@@ -465,6 +481,30 @@ td.empty-state{padding:20px;text-align:center}
           <label class="f5-label">Agencia Marvisur de recojo *</label>
           <input class="f5-input" id="f5-mv-agencia" placeholder="ej. Marvisur Arequipa - Terminal">
         </div>
+          <div id="f5-campos-olva" style="display:none">
+            <label class="f5-label">Departamento / Provincia / Distrito *</label>
+            <input class="f5-input" id="f5-ol-ciudad" placeholder="ej. Cusco / Cusco / Wanchaq">
+            <label class="f5-label">Dirección de envío *</label>
+            <input class="f5-input" id="f5-ol-direccion" placeholder="Calle, número, dpto. o agencia Olva">
+            <label class="f5-label">Referencia <span style="color:#9C9A92;font-weight:400">(opcional)</span></label>
+            <input class="f5-input" id="f5-ol-referencia" placeholder="ej. frente al mercado">
+          </div>
+          <div id="f5-campos-recojo" style="display:none">
+            <label class="f5-label">¿Qué día recoges? *</label>
+            <input class="f5-input" id="f5-rc-fecha" type="date">
+            <label class="f5-label">¿A qué hora? *</label>
+            <input class="f5-input" id="f5-rc-hora" type="time">
+          </div>
+          <div id="f5-campos-otro" style="display:none">
+            <label class="f5-label">¿Qué modalidad de envío? *</label>
+            <input class="f5-input" id="f5-ot-modalidad" placeholder="ej. Marvisur, Cruz del Sur, bus, encomienda...">
+            <label class="f5-label">Departamento / Provincia / Distrito *</label>
+            <input class="f5-input" id="f5-ot-ciudad" placeholder="ej. Piura / Piura / Castilla">
+            <label class="f5-label">Dirección o agencia de recojo *</label>
+            <input class="f5-input" id="f5-ot-direccion" placeholder="Dirección exacta o nombre de la agencia">
+            <label class="f5-label">Detalles adicionales <span style="color:#9C9A92;font-weight:400">(opcional)</span></label>
+            <input class="f5-input" id="f5-ot-detalle" placeholder="Cualquier dato que ayude a coordinar tu envío">
+          </div>
         <!-- campos motorizado -->
         <div id="f5-campos-motor" style="display:none">
           <label class="f5-label">Distrito *</label>
@@ -533,7 +573,12 @@ td.empty-state{padding:20px;text-align:center}
             <li>Recoge tu paquete en la agencia que indicaste.</li>
           </ul>
           <br>
-          <h4>🏬 Recojo en showroom</h4>
+          <h4>📮 Olva Courier · 📦 Otro</h4>
+          <ul>
+            <li>Envío a la dirección o agencia que indicaste. Lo coordinamos contigo por WhatsApp.</li>
+          </ul>
+          <br>
+          <h4>🏬 Recojo en tienda</h4>
           <ul>
             <li>Te avisaremos cuando tu pedido esté listo.</li>
           </ul>
@@ -700,9 +745,13 @@ td.empty-state{padding:20px;text-align:center}
           <input class="f5-input" id="rg-dni" placeholder="12345678" maxlength="8">
 
           <label class="f5-label">Tipo de envío *</label>
-          <div class="f5-courier-opts" style="display:flex;gap:10px;margin-bottom:14px">
+          <div class="f5-courier-opts" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
             <div class="f5-courier-card" id="rg-opt-motorizado" onclick="rgSelCourier('motorizado')" style="flex:1;border:1.5px solid #E5E3DC;border-radius:10px;padding:12px;text-align:center;cursor:pointer">🏍️<br><span style="font-size:12.5px;font-weight:600">Motorizado</span></div>
             <div class="f5-courier-card" id="rg-opt-shalom" onclick="rgSelCourier('shalom')" style="flex:1;border:1.5px solid #E5E3DC;border-radius:10px;padding:12px;text-align:center;cursor:pointer">📦<br><span style="font-size:12.5px;font-weight:600">Shalom</span></div>
+            <div class="f5-courier-card" id="rg-opt-olva" onclick="rgSelCourier('olva')" style="flex:1 1 30%;min-width:90px;border:1.5px solid #E5E3DC;border-radius:10px;padding:12px;text-align:center;cursor:pointer">📮<br><span style="font-size:12.5px;font-weight:600">Olva Courier</span></div>
+            <div class="f5-courier-card" id="rg-opt-marvisur" onclick="rgSelCourier('marvisur')" style="flex:1 1 30%;min-width:90px;border:1.5px solid #E5E3DC;border-radius:10px;padding:12px;text-align:center;cursor:pointer">🚌<br><span style="font-size:12.5px;font-weight:600">Marvisur</span></div>
+            <div class="f5-courier-card" id="rg-opt-recojo" onclick="rgSelCourier('recojo')" style="flex:1 1 30%;min-width:90px;border:1.5px solid #E5E3DC;border-radius:10px;padding:12px;text-align:center;cursor:pointer">🏬<br><span style="font-size:12.5px;font-weight:600">Recojo en tienda</span></div>
+            <div class="f5-courier-card" id="rg-opt-otro" onclick="rgSelCourier('otro')" style="flex:1 1 30%;min-width:90px;border:1.5px solid #E5E3DC;border-radius:10px;padding:12px;text-align:center;cursor:pointer">📦<br><span style="font-size:12.5px;font-weight:600">Otro</span></div>
           </div>
 
           <div id="rg-campos-motor" style="display:none">
@@ -731,6 +780,37 @@ td.empty-state{padding:20px;text-align:center}
               <input class="f5-input" id="rg-agencia-manual-input" placeholder="ej. Shalom Yurimaguas">
               <div style="font-size:11px;color:#9C9A92;margin-top:-8px;margin-bottom:12px">Escríbela y la verificamos antes de despachar. <a href="#" onclick="agManual(this.closest('[id$=agencia-manual]').id.split('-')[0],false);return false" style="color:#014590">Volver al buscador</a></div>
             </div>
+          </div>
+
+          <div id="rg-campos-marvisur" style="display:none">
+            <label class="f5-label">Ciudad / Provincia *</label>
+            <input class="f5-input" id="rg-mv-ciudad" placeholder="ej. Arequipa">
+            <label class="f5-label">Agencia Marvisur de recojo *</label>
+            <input class="f5-input" id="rg-mv-agencia" placeholder="ej. Marvisur Arequipa - Terminal">
+          </div>
+          <div id="rg-campos-olva" style="display:none">
+            <label class="f5-label">Departamento / Provincia / Distrito *</label>
+            <input class="f5-input" id="rg-ol-ciudad" placeholder="ej. Cusco / Cusco / Wanchaq">
+            <label class="f5-label">Dirección de envío *</label>
+            <input class="f5-input" id="rg-ol-direccion" placeholder="Calle, número, dpto. o agencia Olva">
+            <label class="f5-label">Referencia <span style="color:#9C9A92;font-weight:400">(opcional)</span></label>
+            <input class="f5-input" id="rg-ol-referencia" placeholder="ej. frente al mercado">
+          </div>
+          <div id="rg-campos-recojo" style="display:none">
+            <label class="f5-label">¿Qué día recoges? *</label>
+            <input class="f5-input" id="rg-rc-fecha" type="date">
+            <label class="f5-label">¿A qué hora? *</label>
+            <input class="f5-input" id="rg-rc-hora" type="time">
+          </div>
+          <div id="rg-campos-otro" style="display:none">
+            <label class="f5-label">¿Qué modalidad de envío? *</label>
+            <input class="f5-input" id="rg-ot-modalidad" placeholder="ej. Marvisur, Cruz del Sur, bus, encomienda...">
+            <label class="f5-label">Departamento / Provincia / Distrito *</label>
+            <input class="f5-input" id="rg-ot-ciudad" placeholder="ej. Piura / Piura / Castilla">
+            <label class="f5-label">Dirección o agencia de recojo *</label>
+            <input class="f5-input" id="rg-ot-direccion" placeholder="Dirección exacta o nombre de la agencia">
+            <label class="f5-label">Detalles adicionales <span style="color:#9C9A92;font-weight:400">(opcional)</span></label>
+            <input class="f5-input" id="rg-ot-detalle" placeholder="Cualquier dato que ayude a coordinar tu envío">
           </div>
 
           <div class="f5-error" id="rg-error"></div>
@@ -1054,7 +1134,7 @@ td.empty-state{padding:20px;text-align:center}
               <div class="card-title">1. Buscar cliente</div>
               <div class="search-wrap" style="margin-bottom:8px">
                 <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input type="text" id="live-search" placeholder="Número WhatsApp..." oninput="liveSearch(this.value)" autocomplete="off">
+                <input type="text" id="live-search" placeholder="Celular, nombre o DNI..." oninput="liveSearch(this.value)" autocomplete="off">
               </div>
               <div id="live-search-results"></div>
             </div>
@@ -1139,15 +1219,18 @@ td.empty-state{padding:20px;text-align:center}
       <div id="pg-urgentes" class="page">
         <div class="sec-header">
           <div class="sec-title">Solicitudes urgentes</div>
-          <div style="font-size:12px;color:var(--text2)">Clientas que pidieron prioridad en el próximo reparto</div>
+          <div style="font-size:12px;color:var(--text2)">Clientes que pidieron prioridad en el próximo reparto</div>
         </div>
         <div class="tabs" style="margin-bottom:12px">
           <div class="tab active" onclick="filterUrgentes('todos',this)">Todos</div>
           <div class="tab" onclick="filterUrgentes('shalom',this)">Shalom</div>
           <div class="tab" onclick="filterUrgentes('motorizado',this)">Motorizado</div>
+          <div class="tab" onclick="filterUrgentes('olva',this)">Olva</div>
+          <div class="tab" onclick="filterUrgentes('recojo',this)">Recojo en tienda</div>
+          <div class="tab" onclick="filterUrgentes('otro',this)">Otro</div>
         </div>
         <div style="padding:0 0 12px 0">
-          <input id="urgentes-search" type="text" placeholder="🔍 Buscar por DNI o celular..." style="width:100%;max-width:320px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarUrgentes(this.value)">
+          <input id="urgentes-search" type="text" placeholder="🔍 Buscar por celular, nombre o DNI..." style="width:100%;max-width:320px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarUrgentes(this.value)">
         </div>
         <div id="urgentes-lista"><div class="loading">Cargando...</div></div>
       </div>
@@ -1222,7 +1305,7 @@ td.empty-state{padding:20px;text-align:center}
 
         <!-- buscador -->
         <div style="margin-bottom:12px">
-          <input id="carritos-search" type="text" placeholder="🔍 Buscar por teléfono o nombre..." style="width:100%;max-width:320px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarCarritosBuscador(this.value)">
+          <input id="carritos-search" type="text" placeholder="🔍 Buscar por celular, nombre o DNI..." style="width:100%;max-width:320px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarCarritosBuscador(this.value)">
         </div>
         <!-- lista de bolsas -->
         <div id="carritos-lista"></div>
@@ -1236,13 +1319,27 @@ td.empty-state{padding:20px;text-align:center}
         </div>
         <div class="metrics-grid" id="cortes-metrics"></div>
         <div class="tabs" style="margin-bottom:12px">
-          <div class="tab active" onclick="filterCortes('mes',this)">Este mes</div>
           <div class="tab" onclick="filterCortes('hoy',this)">Hoy</div>
+          <div class="tab" onclick="filterCortes('ayer',this)">Ayer</div>
           <div class="tab" onclick="filterCortes('semana',this)">Esta semana</div>
+          <div class="tab active" onclick="filterCortes('mes',this)">Este mes</div>
           <div class="tab" onclick="filterCortes('todos',this)">Todos</div>
         </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:-4px 0 12px">
+          <span class="text-hint" style="font-size:12px">Día de esta semana:</span>
+          <button class="btn btn-xs cortes-dia" onclick="filterCortes('d0',null,this)">Lun</button>
+          <button class="btn btn-xs cortes-dia" onclick="filterCortes('d1',null,this)">Mar</button>
+          <button class="btn btn-xs cortes-dia" onclick="filterCortes('d2',null,this)">Mié</button>
+          <button class="btn btn-xs cortes-dia" onclick="filterCortes('d3',null,this)">Jue</button>
+          <button class="btn btn-xs cortes-dia" onclick="filterCortes('d4',null,this)">Vie</button>
+          <button class="btn btn-xs cortes-dia" onclick="filterCortes('d5',null,this)">Sáb</button>
+          <button class="btn btn-xs cortes-dia" onclick="filterCortes('d6',null,this)">Dom</button>
+          <span class="text-hint" style="font-size:12px;margin-left:6px">o fecha:</span>
+          <input type="date" id="cortes-fecha" style="padding:4px 8px;font-size:12px;border:1px solid var(--border);border-radius:6px" onchange="if(this.value) filterCortes('f'+this.value,null,null)">
+          <span id="cortes-rango-lbl" class="text-hint" style="font-size:12px;margin-left:6px"></span>
+        </div>
         <div style="margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <input id="cortes-search" type="text" placeholder="🔍 Buscar por teléfono..." style="flex:1;min-width:200px;max-width:280px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarCortes(this.value)">
+          <input id="cortes-search" type="text" placeholder="🔍 Buscar por celular, nombre o DNI..." style="flex:1;min-width:200px;max-width:280px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarCortes(this.value)">
           <button class="btn btn-sm" id="btn-cortes-pendientes" onclick="toggleCortesPendientes()">💰 Ver pendientes de pago</button>
         </div>
         <div id="cortes-lista"><div class="loading">Cargando...</div></div>
@@ -1269,7 +1366,7 @@ td.empty-state{padding:20px;text-align:center}
           </div>
         </div>
         <div style="padding:0 0 12px 0">
-          <input id="pedidos-search" type="text" placeholder="🔍 Buscar por teléfono o nombre..." style="width:100%;max-width:320px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarPedidosBuscador(this.value)">
+          <input id="pedidos-search" type="text" placeholder="🔍 Buscar por celular, nombre, DNI o N.º de pedido..." style="width:100%;max-width:320px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px" oninput="filtrarPedidosBuscador(this.value)">
         </div>
         <div id="pedidos-bulk-bar" style="display:none;position:sticky;top:0;z-index:5;background:var(--primary);color:#fff;border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:10px;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
           <span id="pedidos-bulk-count" style="font-size:12.5px;font-weight:500"></span>
@@ -1294,7 +1391,7 @@ td.empty-state{padding:20px;text-align:center}
         </div>
         <div class="search-wrap mb-12">
           <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input type="text" placeholder="Buscar por nombre o teléfono..." oninput="filterClientes(this.value)">
+          <input type="text" placeholder="Buscar por celular, nombre o DNI..." oninput="filterClientes(this.value)">
         </div>
         <div class="tbl-wrap">
           <table class="tbl">
@@ -1535,10 +1632,13 @@ td.empty-state{padding:20px;text-align:center}
             <div class="tab active" onclick="filterDespacho('todos',this)">Todos</div>
             <div class="tab" onclick="filterDespacho('shalom',this)">Shalom</div>
             <div class="tab" onclick="filterDespacho('motorizado',this)">Motorizado</div>
+            <div class="tab" onclick="filterDespacho('olva',this)">Olva</div>
             <div class="tab" onclick="filterDespacho('marvisur',this)">Marvisur</div>
-            <div class="tab" onclick="filterDespacho('recojo',this)">Recojo</div>
+            <div class="tab" onclick="filterDespacho('recojo',this)">Recojo en tienda</div>
+            <div class="tab" onclick="filterDespacho('otro',this)">Otro</div>
             <div class="tab" onclick="filterDespacho('programados',this)">📅 Programados</div>
           </div>
+          <input id="despacho-search" type="text" placeholder="🔍 Celular, nombre, DNI o N.º de pedido..." oninput="renderDespachoListas()" style="flex:1;min-width:200px;max-width:300px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px">
           <div style="display:flex;gap:8px;align-items:center">
             <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text2);cursor:pointer;user-select:none">
               <input type="checkbox" id="despacho-solo-urgentes" onchange="toggleSoloUrgentesDespacho()" style="width:15px;height:15px;cursor:pointer">
@@ -1628,8 +1728,10 @@ td.empty-state{padding:20px;text-align:center}
         <select id="env-tipo" onchange="updateEnvCosto()">
           <option value="motorizado">🏍️ Motorizado (Lima)</option>
           <option value="shalom">🚚 Shalom</option>
+          <option value="olva">📮 Olva Courier</option>
           <option value="marvisur">🚌 Marvisur</option>
-          <option value="recojo">🏬 Recojo en showroom</option>
+          <option value="recojo">🏬 Recojo en tienda</option>
+          <option value="otro">📦 Otro</option>
         </select>
       </div>
       <div class="form-row">
@@ -1792,8 +1894,8 @@ td.empty-state{padding:20px;text-align:center}
       <div class="form-row"><label class="form-label">Código interno <span class="text-hint">(SmartClic, ej. P00001)</span></label><input type="text" id="pr-codint" placeholder="P00001"></div>
     </div>
     <div class="grid-2">
-      <div class="form-row"><label class="form-label">Precio venta (S/)</label><input type="number" id="pr-precio" placeholder="89" step="1" min="0"></div>
-      <div class="form-row"><label class="form-label">Costo (S/) <span class="text-hint">solo admin</span></label><input type="number" id="pr-costo" placeholder="45" step="1" min="0"></div>
+      <div class="form-row"><label class="form-label">Precio venta (S/)</label><input type="number" id="pr-precio" placeholder="89" step="0.01" min="0"></div>
+      <div class="form-row"><label class="form-label">Costo (S/) <span class="text-hint">solo admin</span></label><input type="number" id="pr-costo" placeholder="45" step="0.01" min="0"></div>
     </div>
     <div class="form-row">
       <label class="form-label">Categoría</label>
@@ -2123,8 +2225,8 @@ td.empty-state{padding:20px;text-align:center}
         <div class="form-row"><label class="form-label">Código de barras <span class="text-hint">(opcional)</span></label><input type="text" id="mc-codigo" placeholder="Escanea o escribe"></div>
       </div>
       <div class="grid-2">
-        <div class="form-row"><label class="form-label">Precio venta (S/)</label><input type="number" id="mc-precio-venta" placeholder="ej. 120" step="1" min="0" oninput="mcRecalcularTotal()"></div>
-        <div class="form-row"><label class="form-label">Costo unitario (S/) <span class="text-hint">editable si cambió</span></label><input type="number" id="mc-costo-unitario" placeholder="ej. 70" step="1" min="0" oninput="mcRecalcularTotal()"></div>
+        <div class="form-row"><label class="form-label">Precio venta (S/)</label><input type="number" id="mc-precio-venta" placeholder="ej. 120" step="0.01" min="0" oninput="mcRecalcularTotal()"></div>
+        <div class="form-row"><label class="form-label">Costo unitario (S/) <span class="text-hint">editable si cambió</span></label><input type="number" id="mc-costo-unitario" placeholder="ej. 70" step="0.01" min="0" oninput="mcRecalcularTotal()"></div>
       </div>
       <div class="grid-2">
         <div class="form-row"><label class="form-label">Categoría</label><input type="text" id="mc-categoria" list="mc-cat-lista" placeholder="ej. Figuras" autocomplete="off"><datalist id="mc-cat-lista"></datalist></div>
@@ -2343,7 +2445,36 @@ let currentPedidoIdx = null;
 let editingPrendaIdx = null;
 
 const DISTRITOS_COSTO = {};  // Punto y Compra: el costo de envío se escribe a mano en cada pedido
-const PYC_ENVIOS = { motorizado:'🏍️ Motorizado', shalom:'🚚 Shalom', marvisur:'🚌 Marvisur', recojo:'🏬 Recojo en showroom' };
+const PYC_ENVIOS = { motorizado:'🏍️ Motorizado', shalom:'🚚 Shalom', olva:'📮 Olva Courier', marvisur:'🚌 Marvisur', recojo:'🏬 Recojo en tienda', otro:'📦 Otro' };
+// Datos de entrega de las modalidades nuevas (formularios del cliente). P = prefijo de los campos ('rg' o 'f5')
+function pycDatosModalidad(P, tipo){
+  const v = id => (document.getElementById(P+'-'+id)?.value||'').trim();
+  if(tipo==='olva'){
+    if(!v('ol-ciudad')) return {err:'Ingresa tu departamento, provincia y distrito.'};
+    if(!v('ol-direccion')) return {err:'Ingresa tu dirección de envío.'};
+    return {distrito:v('ol-ciudad'), dir:v('ol-direccion'), ref:v('ol-referencia')};
+  }
+  if(tipo==='recojo'){
+    if(!v('rc-fecha')) return {err:'Elige el día en que recoges tu pedido.'};
+    if(!v('rc-hora')) return {err:'Elige la hora en que recoges tu pedido.'};
+    return {distrito:'', dir:'Recojo en tienda · '+v('rc-fecha').split('-').reverse().join('/')+' '+v('rc-hora'), ref:''};
+  }
+  if(tipo==='otro'){
+    if(!v('ot-modalidad')) return {err:'Escribe la modalidad de envío (ej. Marvisur).'};
+    if(!v('ot-ciudad')) return {err:'Ingresa tu departamento, provincia y distrito.'};
+    if(!v('ot-direccion')) return {err:'Ingresa la dirección o agencia de recojo.'};
+    return {distrito:v('ot-ciudad'), dir:v('ot-modalidad')+' · '+v('ot-direccion'), ref:v('ot-detalle')};
+  }
+  if(tipo==='marvisur'){
+    if(!v('mv-ciudad')) return {err:'Ingresa tu ciudad o provincia.'};
+    if(!v('mv-agencia')) return {err:'Ingresa la agencia Marvisur de recojo.'};
+    return {distrito:v('mv-ciudad'), dir:v('mv-agencia'), ref:''};
+  }
+  return null;
+}
+function pycMostrarCamposModalidad(P, tipo){
+  ['marvisur','olva','recojo','otro'].forEach(k=>{ const el=document.getElementById(P+'-campos-'+k); if(el) el.style.display = tipo===k?'block':'none'; });
+}
 function pycEnvioLabel(t){ t=String(t||'').toLowerCase(); for(const k in PYC_ENVIOS){ if(t.startsWith(k)) return PYC_ENVIOS[k]; } return t?t:'Sin definir'; }
 
 let DB = {
@@ -2571,11 +2702,11 @@ async function loadDashboard(){
     const stockBajo = variantes.filter(v=>v.stock<=STOCK_BAJO_LIMITE).length;
 
     document.getElementById('db-metrics').innerHTML=`
-      <div class="metric"><div class="metric-val">S/ ${vendidoPeriodo.toFixed(0)}</div><div class="metric-lbl">Vendido ${rangoLabel}</div><div class="metric-delta ${deltaPeriodo>=0?'delta-up':''}" style="${deltaPeriodo<0?'color:var(--red)':''}">${deltaPeriodo>=0?'↑':'↓'} ${Math.abs(deltaPeriodo)}% ${deltaTxt}</div></div>
-      ${currentUser?.rol==='admin'?`<div class="metric"><div class="metric-val" style="color:var(--green)">S/ ${gananciaBruta.toFixed(0)}</div><div class="metric-lbl">Ganancia bruta ${rangoLabel}</div><div class="metric-delta text-hint">${margenPct}% de margen</div></div>`:''}
-      <div class="metric"><div class="metric-val">S/ ${porCobrar.toFixed(0)}</div><div class="metric-lbl">Por cobrar</div><div class="metric-delta text-hint">en pedidos activos</div></div>
+      <div class="metric"><div class="metric-val">S/ ${pycM(vendidoPeriodo)}</div><div class="metric-lbl">Vendido ${rangoLabel}</div><div class="metric-delta ${deltaPeriodo>=0?'delta-up':''}" style="${deltaPeriodo<0?'color:var(--red)':''}">${deltaPeriodo>=0?'↑':'↓'} ${Math.abs(deltaPeriodo)}% ${deltaTxt}</div></div>
+      ${currentUser?.rol==='admin'?`<div class="metric"><div class="metric-val" style="color:var(--green)">S/ ${pycM(gananciaBruta)}</div><div class="metric-lbl">Ganancia bruta ${rangoLabel}</div><div class="metric-delta text-hint">${margenPct}% de margen</div></div>`:''}
+      <div class="metric"><div class="metric-val">S/ ${pycM(porCobrar)}</div><div class="metric-lbl">Por cobrar</div><div class="metric-delta text-hint">en pedidos activos</div></div>
       <div class="metric"><div class="metric-val">${activos.length}</div><div class="metric-lbl">Pedidos activos</div><div class="metric-delta text-hint">${nuevosPeriodo} nuevo${nuevosPeriodo!==1?'s':''} ${rangoLabel}</div></div>
-      <div class="metric"><div class="metric-val">S/ ${ticketProm}</div><div class="metric-lbl">Ticket promedio</div></div>
+      <div class="metric"><div class="metric-val">S/ ${pycM(ticketProm)}</div><div class="metric-lbl">Ticket promedio</div></div>
       <div class="metric"><div class="metric-val">${clientes.length}</div><div class="metric-lbl">Clientas totales</div><div class="metric-delta ${clientesNuevasPeriodo>0?'delta-up':'text-hint'}">${clientesNuevasPeriodo>0?'↑ ':''}${clientesNuevasPeriodo} nueva${clientesNuevasPeriodo!==1?'s':''} ${rangoLabel}</div></div>
       <div class="metric" ${stockBajo>0?'style="cursor:pointer" onclick="nav(\'stock\',document.getElementById(\'sb-stock\'))"':''}><div class="metric-val" style="${stockBajo>0?'color:var(--red)':''}">${stockBajo}</div><div class="metric-lbl">Prendas con stock bajo</div></div>
       <div class="metric" ${urgentes.length>0?'style="cursor:pointer" onclick="nav(\'urgentes\',document.getElementById(\'sb-urgentes\'))"':''}><div class="metric-val" style="${urgentes.length>0?'color:var(--pink)':''}">${urgentes.length}</div><div class="metric-lbl">🚀 Envío urgente</div><div class="metric-delta text-hint">${urgentes.length>0?'clientas esperando':'sin pendientes'}</div></div>`;
@@ -2593,7 +2724,7 @@ async function loadDashboard(){
     if(sinDir.length) alertasHtml += `<div class="alert-item" onclick="nav('pedidos',document.querySelector('[onclick*=pedidos]'))"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div style="flex:1"><div class="alert-text">${sinDir.length} pedido${sinDir.length!==1?'s':''} sin dirección</div><div class="alert-sub">Clienta no completó datos</div></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg></div>`;
     if(pagoParcialVencido.length){
       const peor = pagoParcialVencido.sort((a,b)=>(b.total-b.monto_pagado)-(a.total-a.monto_pagado))[0];
-      alertasHtml += `<div class="alert-item" onclick="nav('pedidos',document.querySelector('[onclick*=pedidos]'))"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><div style="flex:1"><div class="alert-text">${pagoParcialVencido.length} pago${pagoParcialVencido.length!==1?'s':''} parcial${pagoParcialVencido.length!==1?'es':''} +5 días</div><div class="alert-sub">${peor.numero||''} · falta S/ ${(peor.total-peor.monto_pagado).toFixed(0)}</div></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg></div>`;
+      alertasHtml += `<div class="alert-item" onclick="nav('pedidos',document.querySelector('[onclick*=pedidos]'))"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><div style="flex:1"><div class="alert-text">${pagoParcialVencido.length} pago${pagoParcialVencido.length!==1?'s':''} parcial${pagoParcialVencido.length!==1?'es':''} +5 días</div><div class="alert-sub">${peor.numero||''} · falta S/ ${pycM(peor.total-peor.monto_pagado)}</div></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg></div>`;
     }
     if(stockBajo>0) alertasHtml += `<div class="alert-item" onclick="nav('stock',document.getElementById('sb-stock'))"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg><div style="flex:1"><div class="alert-text">${stockBajo} variante${stockBajo!==1?'s':''} con stock bajo</div><div class="alert-sub">2 unidades o menos</div></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg></div>`;
     if(!alertasHtml) alertasHtml = '<div style="font-size:12px;color:var(--text3);padding:8px 0">Sin alertas ✓</div>';
@@ -2622,7 +2753,7 @@ async function loadDashboard(){
       });
       totalPeriodo = valores.reduce((a,b)=>a+b,0);
       const mx = Math.max(...valores,1);
-      barsHtml = valores.map((v,i)=>`<div class="bar-col"><div class="bar" style="height:${Math.max(Math.round(v/mx*62),4)}px;background:var(--pink)" title="S/ ${v.toFixed(0)}"></div><div class="bar-lbl">${bloques[i]}</div></div>`).join('');
+      barsHtml = valores.map((v,i)=>`<div class="bar-col"><div class="bar" style="height:${Math.max(Math.round(v/mx*62),4)}px;background:var(--pink)" title="S/ ${pycM(v)}"></div><div class="bar-lbl">${bloques[i]}</div></div>`).join('');
     } else if(periodo==='semana'){
       const dias=['Dom','Lun','Mar','Mie','Jue','Vie','Sab'];
       const valores=Array(7).fill(0);
@@ -2630,15 +2761,15 @@ async function loadDashboard(){
       totalPeriodo = valores.reduce((a,b)=>a+b,0);
       const mx=Math.max(...valores,1);
       const labels=[]; for(let i=6;i>=0;i--){ const d=new Date(hoy); d.setDate(d.getDate()-i); labels.push(dias[d.getDay()]); }
-      barsHtml = valores.map((v,i)=>`<div class="bar-col"><div class="bar" style="height:${Math.max(Math.round(v/mx*62),4)}px;background:${i===6?'var(--pink)':'var(--gray-mid)'}" title="S/ ${v.toFixed(0)}"></div><div class="bar-lbl">${labels[i]}</div></div>`).join('');
+      barsHtml = valores.map((v,i)=>`<div class="bar-col"><div class="bar" style="height:${Math.max(Math.round(v/mx*62),4)}px;background:${i===6?'var(--pink)':'var(--gray-mid)'}" title="S/ ${pycM(v)}"></div><div class="bar-lbl">${labels[i]}</div></div>`).join('');
     } else {
       const valores=[0,0,0,0,0];
       noCancel.filter(enRango).forEach(p=>{ const dia=new Date(p.creado_en).getDate(); const semanaIdx=Math.min(Math.floor((dia-1)/7),4); valores[semanaIdx]+=(p.subtotal||0); });
       totalPeriodo = valores.reduce((a,b)=>a+b,0);
       const mx=Math.max(...valores,1);
-      barsHtml = valores.map((v,i)=>`<div class="bar-col"><div class="bar" style="height:${Math.max(Math.round(v/mx*62),4)}px;background:${i===valores.length-1?'var(--pink)':'var(--gray-mid)'}" title="S/ ${v.toFixed(0)}"></div><div class="bar-lbl">Sem ${i+1}</div></div>`).join('');
+      barsHtml = valores.map((v,i)=>`<div class="bar-col"><div class="bar" style="height:${Math.max(Math.round(v/mx*62),4)}px;background:${i===valores.length-1?'var(--pink)':'var(--gray-mid)'}" title="S/ ${pycM(v)}"></div><div class="bar-lbl">Sem ${i+1}</div></div>`).join('');
     }
-    document.getElementById('db-semana-total').textContent='S/ '+totalPeriodo.toFixed(0);
+    document.getElementById('db-semana-total').textContent='S/ '+pycM(totalPeriodo);
     document.getElementById('db-bars').innerHTML = barsHtml;
 
     // ── Prendas más vendidas — según período ──
@@ -2656,7 +2787,7 @@ async function loadDashboard(){
       });
       const top = Object.values(porPrenda).sort((a,b)=>b.ingresos-a.ingresos).slice(0,8);
       document.getElementById('db-top-prendas').innerHTML = top.length ? top.map((t,i)=>
-        `<tr><td class="text-hint">${i+1}</td><td>${t.nombre}</td><td>${t.unidades}</td><td>S/ ${t.ingresos.toFixed(0)}</td></tr>`
+        `<tr><td class="text-hint">${i+1}</td><td>${t.nombre}</td><td>${t.unidades}</td><td>S/ ${pycM(t.ingresos)}</td></tr>`
       ).join('') : `<tr><td colspan="4" class="empty-state">Sin ventas ${rangoLabel}</td></tr>`;
     } else {
       document.getElementById('db-top-prendas').innerHTML = `<tr><td colspan="4" class="empty-state">Sin ventas ${rangoLabel}</td></tr>`;
@@ -2705,9 +2836,9 @@ async function loadDashboardFinanzas(){
 
     document.getElementById('fin-metrics').innerHTML = `
       <div class="metric"><div class="metric-val">${stockTotal}</div><div class="metric-lbl">Unidades en stock</div><div class="metric-delta text-hint">${prendas.length} modelos</div></div>
-      <div class="metric"><div class="metric-val">S/ ${inversionTotal.toFixed(0)}</div><div class="metric-lbl">Inversión en inventario</div><div class="metric-delta text-hint">Σ stock × costo</div></div>
-      <div class="metric"><div class="metric-val">S/ ${valorVenta.toFixed(0)}</div><div class="metric-lbl">Valor estimado de venta</div><div class="metric-delta text-hint">Σ stock × precio</div></div>
-      <div class="metric"><div class="metric-val" style="color:var(--green)">S/ ${margenPotencial.toFixed(0)}</div><div class="metric-lbl">Margen potencial</div><div class="metric-delta delta-up">${margenPct}% del valor de venta</div></div>`;
+      <div class="metric"><div class="metric-val">S/ ${pycM(inversionTotal)}</div><div class="metric-lbl">Inversión en inventario</div><div class="metric-delta text-hint">Σ stock × costo</div></div>
+      <div class="metric"><div class="metric-val">S/ ${pycM(valorVenta)}</div><div class="metric-lbl">Valor estimado de venta</div><div class="metric-delta text-hint">Σ stock × precio</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--green)">S/ ${pycM(margenPotencial)}</div><div class="metric-lbl">Margen potencial</div><div class="metric-delta delta-up">${margenPct}% del valor de venta</div></div>`;
 
     // ── Rankings de ganancia (esta semana) ──
     const conVentas = prendas.map(p=>{
@@ -2722,13 +2853,13 @@ async function loadDashboardFinanzas(){
     document.getElementById('fin-top-ganancia').innerHTML = topGanancia.length ? topGanancia.map((p,i)=>`
       <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;${i<topGanancia.length-1?'border-bottom:1px solid var(--border)':''}">
         <div><span class="text-hint" style="margin-right:6px">${i+1}</span>${p.nombre}<div style="font-size:11px;color:var(--text3)">${p.unidades} vendida${p.unidades!==1?'s':''}</div></div>
-        <div style="color:var(--green);font-weight:600">S/ ${p.gananciaTotal.toFixed(0)}</div>
+        <div style="color:var(--green);font-weight:600">S/ ${pycM(p.gananciaTotal)}</div>
       </div>`).join('') : '<div style="font-size:12px;color:var(--text3);padding:8px 0">Sin ventas esta semana</div>';
 
     const topMargen = [...conVentas].filter(p=>p.precio>0).sort((a,b)=>b.margenPctUnit-a.margenPctUnit).slice(0,5);
     document.getElementById('fin-top-margen').innerHTML = topMargen.length ? topMargen.map((p,i)=>`
       <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;${i<topMargen.length-1?'border-bottom:1px solid var(--border)':''}">
-        <div><span class="text-hint" style="margin-right:6px">${i+1}</span>${p.nombre}<div style="font-size:11px;color:var(--text3)">S/${p.costo||0} → S/${p.precio||0}</div></div>
+        <div><span class="text-hint" style="margin-right:6px">${i+1}</span>${p.nombre}<div style="font-size:11px;color:var(--text3)">S/${pycM(p.costo||0)} → S/${pycM(p.precio||0)}</div></div>
         <div style="color:var(--pink);font-weight:600">${p.margenPctUnit}%</div>
       </div>`).join('') : '<div style="font-size:12px;color:var(--text3);padding:8px 0">Sin datos</div>';
 
@@ -2737,7 +2868,7 @@ async function loadDashboardFinanzas(){
     const lenta = conVentas.filter(p=>(p.stock||0)>=STOCK_ALTO && p.unidades<=1).sort((a,b)=>(b.stock*(b.costo||0))-(a.stock*(a.costo||0))).slice(0,8);
     document.getElementById('fin-rotacion-lenta').innerHTML = lenta.length ? `
       <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Prenda</th><th>Stock</th><th>Vendido (semana)</th><th>Plata parada</th></tr></thead><tbody>
-      ${lenta.map(p=>`<tr><td>${p.nombre}</td><td style="color:var(--red);font-weight:600">${p.stock}</td><td>${p.unidades}</td><td>S/ ${(p.stock*(p.costo||0)).toFixed(0)}</td></tr>`).join('')}
+      ${lenta.map(p=>`<tr><td>${p.nombre}</td><td style="color:var(--red);font-weight:600">${p.stock}</td><td>${p.unidades}</td><td>S/ ${pycM(p.stock*(p.costo||0))}</td></tr>`).join('')}
       </tbody></table></div>` : '<div class="card card-sm" style="font-size:12px;color:var(--text3)">Sin candidatos de rotación lenta por ahora ✓</div>';
 
     // ── Ranking de rotación completo ──
@@ -2849,7 +2980,7 @@ function renderConsultaVentas(){
       <td>${f.color}</td>
       <td class="text-muted">${f.categoria}</td>
       <td>${f.vendido}</td>
-      <td>S/ ${f.ingreso}</td>
+      <td>S/ ${pycM(f.ingreso)}</td>
       <td class="${f.stock<=2?'':''}" style="${f.stock<=2?'color:var(--red);font-weight:600':''}">${f.stock}</td>
       <td>${f.rotacion.toFixed(2)}</td>
     </tr>`).join('') : '<tr><td colspan="8" class="empty-state">Sin resultados con estos filtros</td></tr>';
@@ -2880,7 +3011,7 @@ function filterUrgentes(f, el){
 function filtrarUrgentes(q){
   q=(q||'').toLowerCase().trim();
   document.querySelectorAll('#urgentes-lista [data-tel]').forEach(card=>{
-    const coincide = !q || card.dataset.tel.includes(q) || card.dataset.dni.includes(q);
+    const coincide = pycBusca(q, card.dataset.tel, card.dataset.dni, card.dataset.nombre||'');
     card.style.display = coincide ? '' : 'none';
   });
 }
@@ -2959,9 +3090,9 @@ async function loadCompras(){
     const gananciaReal = totalIngresos - totalGastado;
 
     document.getElementById('compras-metrics').innerHTML = `
-      <div class="metric"><div class="metric-val">S/ ${totalIngresos.toFixed(0)}</div><div class="metric-lbl">Ingresado</div></div>
-      <div class="metric"><div class="metric-val" style="color:var(--red)">S/ ${totalGastado.toFixed(0)}</div><div class="metric-lbl">Gastado</div><div class="metric-delta text-hint">Compras S/${totalCompras.toFixed(0)} + Gastos S/${totalGastos.toFixed(0)}</div></div>
-      <div class="metric"><div class="metric-val" style="color:${gananciaReal>=0?'var(--green)':'var(--red)'}">S/ ${gananciaReal.toFixed(0)}</div><div class="metric-lbl">Ganancia real</div><div class="metric-delta text-hint">Ingresado − gastado</div></div>`;
+      <div class="metric"><div class="metric-val">S/ ${pycM(totalIngresos)}</div><div class="metric-lbl">Ingresado</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--red)">S/ ${pycM(totalGastado)}</div><div class="metric-lbl">Gastado</div><div class="metric-delta text-hint">Compras S/${pycM(totalCompras)} + Gastos S/${pycM(totalGastos)}</div></div>
+      <div class="metric"><div class="metric-val" style="color:${gananciaReal>=0?'var(--green)':'var(--red)'}">S/ ${pycM(gananciaReal)}</div><div class="metric-lbl">Ganancia real</div><div class="metric-delta text-hint">Ingresado − gastado</div></div>`;
 
     document.getElementById('compras-lista').innerHTML = compras.length ? compras.map(c=>`
       <div class="card card-sm mb-8">
@@ -2971,7 +3102,7 @@ async function loadCompras(){
             <div style="font-size:11.5px;color:var(--text3)">${c.cantidad} unid.${c.proveedor?' · '+c.proveedor:''}</div>
             <div style="font-size:11px;color:var(--text3)">${c.fecha}</div>
           </div>
-          <div class="font-600">S/ ${c.costo_total}</div>
+          <div class="font-600">S/ ${pycM(c.costo_total)}</div>
         </div>
       </div>`).join('') : '<div style="font-size:12px;color:var(--text3);padding:8px 0">Sin compras registradas en este período</div>';
 
@@ -2983,7 +3114,7 @@ async function loadCompras(){
             ${g.descripcion?`<div style="font-size:11.5px;color:var(--text3)">${g.descripcion}</div>`:''}
             <div style="font-size:11px;color:var(--text3)">${g.fecha}</div>
           </div>
-          <div class="font-600" style="color:var(--red)">S/ ${g.monto}</div>
+          <div class="font-600" style="color:var(--red)">S/ ${pycM(g.monto)}</div>
         </div>
       </div>`).join('') : '<div style="font-size:12px;color:var(--text3);padding:8px 0">Sin gastos registrados en este período</div>';
 
@@ -3092,9 +3223,9 @@ async function guardarCompra(){
   if(!nombre){ toast('El nombre es obligatorio'); return; }
   const cantidad = parseInt(document.getElementById('mc-cantidad').value)||0;
   if(cantidad<1){ toast('Ingresa la cantidad comprada'); return; }
-  const costoUnitario = Math.round(parseFloat(document.getElementById('mc-costo-unitario').value)||0);  // Punto y Compra: enteros
+  const costoUnitario = pycR2(parseFloat(document.getElementById('mc-costo-unitario').value)||0);
   if(!costoUnitario||costoUnitario<=0){ toast('Ingresa el costo unitario'); return; }
-  const precioVenta = Math.round(parseFloat(document.getElementById('mc-precio-venta').value)||0);
+  const precioVenta = pycR2(parseFloat(document.getElementById('mc-precio-venta').value)||0);
   const codigo = document.getElementById('mc-codigo').value.trim()||null;
   const categoria = document.getElementById('mc-categoria').value.trim()||null;
   const especificaciones = document.getElementById('mc-espec').value.trim()||null;
@@ -3685,7 +3816,8 @@ async function loadUrgentes(){
     rows = rows.filter(r=>r.ped);
 
     if(urgentesFiltro!=='todos'){
-      rows = rows.filter(({cl})=> (cl.tipo_envio_preferido||'').startsWith(urgentesFiltro==='shalom'?'shalom':'motorizado'));
+      // "Otro" agrupa las otras agencias (Marvisur u otra modalidad escrita por el cliente)
+      rows = rows.filter(({cl})=>{ const t=(cl.tipo_envio_preferido||'').toLowerCase(); return urgentesFiltro==='otro' ? (t.startsWith('otro')||t.startsWith('marvisur')) : t.startsWith(urgentesFiltro); });
     }
 
     if(!rows.length){
@@ -3701,19 +3833,20 @@ async function loadUrgentes(){
       </div>` + rows.map(({cl,ped})=>{
       const mins = Math.floor((Date.now()-new Date(cl.envio_urgente_en).getTime())/60000);
       const tiempo = mins<60 ? `hace ${mins} min` : mins<1440 ? `hace ${Math.floor(mins/60)}h` : `hace ${Math.floor(mins/1440)}d`;
-      const esShalom = (cl.tipo_envio_preferido||'').startsWith('shalom');
+      const tUrg = (cl.tipo_envio_preferido||'').toLowerCase();
+      const esShalom = tUrg.startsWith('shalom');
       const etiqueta = esShalom
         ? `📦 Shalom — Agencia: ${cl.direccion||'—'} (${cl.distrito||'—'})`
-        : `🏍️ Motorizado — ${cl.direccion||'—'}, ${cl.distrito||'—'}${cl.referencia?' · Ref: '+cl.referencia:''}`;
+        : `${pycEnvioLabel(tUrg)} — ${cl.direccion||'—'}${cl.distrito?', '+cl.distrito:''}${cl.referencia?' · Ref: '+cl.referencia:''}`;
 
       // Texto completo para el botón "Copiar"
       const lineasCopy = [
         `Nombre: ${cl.nombre||'—'}`,
         `Teléfono: ${cl.telefono||'—'}`,
         `DNI: ${cl.dni||'—'}`,
-        esShalom ? `Envío: Shalom` : `Envío: Motorizado`,
+        `Envío: ${pycEnvioLabel(tUrg).replace(/^\S+\s/,'')}`,
         esShalom ? `Agencia: ${cl.direccion||'—'}` : `Dirección: ${cl.direccion||'—'}`,
-        esShalom ? `Ciudad/Departamento: ${cl.distrito||'—'}` : `Distrito: ${cl.distrito||'—'}`,
+        esShalom ? `Ciudad/Departamento: ${cl.distrito||'—'}` : `Distrito / Ciudad: ${cl.distrito||'—'}`,
       ];
       if(!esShalom && cl.referencia) lineasCopy.push(`Referencia: ${cl.referencia}`);
       urgentesCopyData[cl.id] = lineasCopy.join('\n');
@@ -3738,7 +3871,7 @@ async function loadUrgentes(){
         estadoLbl = ped.estado; accion='';
       }
 
-      return `<div class="card" data-tel="${(cl.telefono||'').toLowerCase()}" data-dni="${(cl.dni||'').toLowerCase()}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px">
+      return `<div class="card" data-tel="${(cl.telefono||'').toLowerCase()}" data-dni="${(cl.dni||'').toLowerCase()}" data-nombre="${pycEsc(cl.nombre||'')}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px">
         <div style="display:flex;align-items:center;gap:10px">
           ${ped.estado==='empaquetado'?`<input type="checkbox" class="urg-check" data-id="${ped.id}" onchange="actualizarBulkUrgentes()" style="width:16px;height:16px;flex-shrink:0;cursor:pointer">`:''}
           <div>
@@ -3769,7 +3902,7 @@ async function loadCarritos(){
   document.getElementById('carritos-lista').innerHTML='<div class="loading">Cargando carritos...</div>';
   try {
     // Cargar pedidos en acumulando (bolsas activas sin envío solicitado)
-    const pedActivos = await dbGet('pedidos?estado=eq.acumulando&select=id,numero,subtotal,total,monto_pagado,carrito_id,cliente_id,creado_en,clientes(nombre,telefono,talla)&order=creado_en.desc');
+    const pedActivos = await dbGet('pedidos?estado=eq.acumulando&select=id,numero,subtotal,total,monto_pagado,carrito_id,cliente_id,creado_en,clientes(nombre,telefono,talla,dni)&order=creado_en.desc');
     let carritos = await Promise.all(pedActivos.map(async p=>{
       const items = await dbGet(`carrito_items?carrito_id=eq.${p.carrito_id}&estado_bolsa=neq.eliminado&select=*,prendas(nombre)`);
       return {...p, carrito_items:items, actualizado_en:p.creado_en};
@@ -3794,7 +3927,7 @@ async function loadCarritos(){
     document.getElementById('carritos-metrics').innerHTML=`
       <div class="metric"><div class="metric-val">${carritos.length}</div><div class="metric-lbl">Bolsas abiertas</div></div>
       <div class="metric"><div class="metric-val">${totalPrendas}</div><div class="metric-lbl">Prendas reservadas</div></div>
-      <div class="metric"><div class="metric-val">S/ ${totalValor}</div><div class="metric-lbl">Valor acumulado</div></div>
+      <div class="metric"><div class="metric-val">S/ ${pycM(totalValor)}</div><div class="metric-lbl">Valor acumulado</div></div>
       ${sinNombre>0?`<div class="metric" style="background:var(--amber-light)"><div class="metric-val" style="color:var(--amber-dark)">${sinNombre}</div><div class="metric-lbl" style="color:var(--amber-dark)">Sin nombre aún</div></div>`:''}`;
 
     if(!carritos.length){
@@ -3816,7 +3949,7 @@ async function loadCarritos(){
       const dias = Math.floor((Date.now()-new Date(c.actualizado_en))/86400000);
       const diasLabel = dias===0?'hoy':dias===1?'ayer':`hace ${dias} días`;
 
-      return `<div class="card carrito-card" style="margin-bottom:10px">
+      return `<div class="card carrito-card" data-bus="${pycEsc([p.clientes?.nombre,p.clientes?.telefono,p.clientes?.dni,p.numero].filter(Boolean).join(' '))}" style="margin-bottom:10px">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
           <div style="width:38px;height:38px;border-radius:50%;background:var(--amber-light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--amber-dark);flex-shrink:0">${initials(nombre)}</div>
           <div style="flex:1">
@@ -3824,7 +3957,7 @@ async function loadCarritos(){
             <div style="font-size:11.5px;color:var(--text2)">${tel}${talla?' · T-'+talla:''}</div>
           </div>
           <div style="text-align:right">
-            <div style="font-size:15px;font-weight:600;color:var(--text)">S/ ${total}</div>
+            <div style="font-size:15px;font-weight:600;color:var(--text)">S/ ${pycM(total)}</div>
             <div style="font-size:11px;color:var(--text3)">${items.length} prenda${items.length!==1?'s':''} · ${diasLabel}</div>
           </div>
         </div>
@@ -3859,7 +3992,7 @@ async function loadCarritos(){
             + '</div>';
           }).join('')}
           <div style="display:flex;justify-content:space-between;font-weight:600;font-size:13px;padding-top:6px;margin-top:2px">
-            <span>Total carrito</span><span>S/ ${total}</span>
+            <span>Total carrito</span><span>S/ ${pycM(total)}</span>
           </div>
         </div>
 
@@ -3886,7 +4019,7 @@ async function generarPedidoDesdeCarrito(pedidoId, clienteId, subtotal){
     currentPedidoActivo = pedRows[0];
     const items = await dbGet(`carrito_items?carrito_id=eq.${currentPedidoActivo.carrito_id}&estado_bolsa=neq.eliminado&select=*,prendas(nombre)`);
     liveCart = items.map(it=>({id:it.id, prenda_id:it.prenda_id, nombre:it.prendas?.nombre||'Prenda', talla:it.talla, color:it.color||'', precio:it.precio_unitario, estado_pago:it.estado_pago, monto_pagado:it.monto_pagado||0, estado_bolsa:it.estado_bolsa}));
-    document.getElementById('env-subtotal').textContent = 'S/ '+subtotal;
+    document.getElementById('env-subtotal').textContent = 'S/ '+pycM(subtotal);
     pycPrepararModalEnvio(currentPedidoActivo);
     document.getElementById('modal-envio').classList.add('open');
   } catch(e){ alert('Error: '+e.message); }
@@ -3921,7 +4054,7 @@ function renderPrendasSelect(prendas){
   prendas.forEach(p=>{
     const opt = document.createElement('option');
     opt.value = p.id;
-    opt.textContent = `${p.codigo_interno?p.codigo_interno+' · ':''}${p.nombre} — ${p.precio?'S/'+p.precio:'⚠️ sin precio'}`;
+    opt.textContent = `${p.codigo_interno?p.codigo_interno+' · ':''}${p.nombre} — ${p.precio?'S/ '+pycM(p.precio):'⚠️ sin precio'}`;
     sel.appendChild(opt);
   });
   if(current) sel.value = current;
@@ -3973,7 +4106,7 @@ function pycLeerPrecio(txt){
   if(txt===null) return undefined;               // canceló
   const n = impNumero(String(txt).trim());
   if(n===null || n<=0){ toast('Escribe un precio mayor a 0'); return undefined; }
-  const r = Math.round(n);  // Punto y Compra: precios en enteros
+  const r = pycR2(n);
   if(r<=0){ toast('Escribe un precio mayor a 0'); return undefined; }
   return r;
 }
@@ -3988,8 +4121,8 @@ function pycEditarPrecioVenta(){
 }
 async function pycRecalcularPedidoLive(){
   if(!currentPedidoActivo) return;
-  const sub = liveCart.reduce((a,i)=>a+i.precio,0);
-  const total = sub+(currentPedidoActivo.costo_envio||0);
+  const sub = pycR2(liveCart.reduce((a,i)=>a+i.precio,0));
+  const total = pycR2(sub+(currentPedidoActivo.costo_envio||0));
   const pagado = currentPedidoActivo.monto_pagado||0;
   const patch = {subtotal:sub, total};
   if(['pago_completo','empaquetado'].includes(currentPedidoActivo.estado) && pagado < total) patch.estado = pagado>0 ? 'pago_parcial' : 'pago_pendiente';
@@ -4017,6 +4150,12 @@ function pycVariantesCodigo(q){
   return (DB.prendas||[]).filter(p=>{ const c=(p.codigo||'').trim().toLowerCase(); return c===q || c.startsWith(q+'-'); });
 }
 function pycSubtotalCliente(ped){ return ped?.subtotal!=null ? ped.subtotal : Math.max(0,(ped?.total||0)-(ped?.costo_envio||0)); }
+// Punto y Compra: todos los montos con 2 decimales (S/ 9.90, S/ 58.00)
+function pycM(n){ const x = Number(n); return (isFinite(x)?x:0).toFixed(2); }
+function pycR2(n){ return Math.round((Number(n)||0)*100)/100; }
+// Texto normalizado para buscar (sin tildes, minúsculas)
+function pycNormBus(t){ return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function pycBusca(q, ...campos){ q = pycNormBus(q).trim(); if(!q) return true; const txt = pycNormBus(campos.join(' ')); return q.split(/\s+/).every(w=>txt.includes(w)); }
 function pycEsc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function updateColorTalla(){
@@ -4031,9 +4170,9 @@ function updateColorTalla(){
   box.innerHTML = `<div style="font-weight:600;margin-bottom:4px">${pycEsc(p.nombre)}</div>
     <div style="display:flex;gap:14px;flex-wrap:wrap">
       ${p.codigo_interno?`<span>🏷️ ${pycEsc(p.codigo_interno)}</span>`:''}
-      <span id="lv-precio-wrap">💰 Precio: <strong>${pycPrecioVenta!=null?'S/ '+pycPrecioVenta+' <span class="text-hint" style="font-weight:400">(catálogo S/ '+(p.precio||0)+')</span>':(p.precio>0?'S/ '+p.precio:'<span style="color:var(--red)">sin precio</span>')}</strong>
+      <span id="lv-precio-wrap">💰 Precio: <strong>${pycPrecioVenta!=null?'S/ '+pycM(pycPrecioVenta)+' <span class="text-hint" style="font-weight:400">(catálogo S/ '+(p.precio||0)+')</span>':(p.precio>0?'S/ '+pycM(p.precio):'<span style="color:var(--red)">sin precio</span>')}</strong>
         <button class="btn btn-xs" title="Cambiar el precio solo para esta venta" style="padding:1px 6px;margin-left:4px" onclick="pycEditarPrecioVenta()">✏️</button></span>
-      ${currentUser?.rol==='admin'?`<span>🔒 Costo: <strong>S/ ${p.costo||0}</strong></span>`:''}
+      ${currentUser?.rol==='admin'?`<span>🔒 Costo: <strong>S/ ${pycM(p.costo||0)}</strong></span>`:''}
       <span style="color:${stock<=0?'var(--red)':'inherit'}">📦 Stock: <strong>${stock}</strong></span>
     </div>
     ${p.especificaciones?`<div class="text-hint" style="margin-top:4px">${pycEsc(p.especificaciones)}</div>`:''}`;
@@ -4042,15 +4181,22 @@ function updateColorTalla(){
 
 async function liveSearch(val){
   const clean=val.replace(/\D/g,'');
+  const txt=(val||'').trim();
   const res=document.getElementById('live-search-results');
-  if(clean.length<4){ res.innerHTML=''; hideClientCard(); return; }
+  const esTexto = /[a-záéíóúñ]/i.test(txt);
+  if((!esTexto && clean.length<4) || (esTexto && txt.length<3)){ res.innerHTML=''; hideClientCard(); return; }
   try {
-    const matches = await dbGet(`clientes?telefono=like.${clean}*&limit=5`);
+    // Punto y Compra: busca por celular, DNI o nombre/apellido
+    const filtro = esTexto
+      ? `nombre.ilike.*${encodeURIComponent(txt.replace(/[(),*]/g,' ').trim().replace(/\s+/g,'*'))}*`
+      : `telefono.like.${clean}*,dni.like.${clean}*`;
+    const matches = await dbGet(`clientes?or=(${filtro})&limit=8`);
+    if(!matches.length && esTexto){ res.innerHTML='<div style="font-size:12px;color:var(--text2)">No hay clientes con ese nombre. Para registrar uno nuevo escribe su celular.</div>'; hideClientCard(); return; }
     if(!matches.length){
       res.innerHTML=`<div style="font-size:12px;color:var(--text2);margin-bottom:6px">No encontrada — <strong>${clean}</strong></div><button class="btn btn-sm" onclick="registrarNuevaEnLive('${clean}')">+ Registrar nueva</button>`;
       hideClientCard();
     } else {
-      res.innerHTML=`<div class="pill-row">${matches.map(c=>`<button class="btn btn-xs" onclick="selectLiveClient('${c.id}')">${c.nombre||'Sin nombre'} · ${c.telefono}</button>`).join('')}</div>`;
+      res.innerHTML=`<div class="pill-row">${matches.map(c=>`<button class="btn btn-xs" onclick="selectLiveClient('${c.id}')">${pycEsc(c.nombre||'Sin nombre')} · ${c.telefono}${c.dni?' · DNI '+c.dni:''}</button>`).join('')}</div>`;
     }
   } catch(e){ res.innerHTML='<div style="font-size:12px;color:var(--red)">Error de conexión</div>'; }
 }
@@ -4082,10 +4228,10 @@ async function selectLiveClient(id){
     const badge=document.getElementById('lc-badge');
     if(c.pedidos_count>0){ badge.textContent='recurrente'; badge.className='badge badge-pink'; }
     else { badge.textContent='nueva'; badge.className='badge badge-ok'; }
-    document.getElementById('lc-total').textContent='S/ '+(c.total_gastado||0);
+    document.getElementById('lc-total').textContent='S/ '+pycM(c.total_gastado||0);
     document.getElementById('lc-pedidos').textContent=c.pedidos_count||0;
     document.getElementById('lc-history').innerHTML=pedidos.length
-      ?pedidos.map(p=>`<div class="cart-item"><span class="text-muted">${p.numero}</span><span class="font-500">S/ ${p.total}</span></div>`).join('')
+      ?pedidos.map(p=>`<div class="cart-item"><span class="text-muted">${p.numero}</span><span class="font-500">S/ ${pycM(p.total)}</span></div>`).join('')
       :'<div class="text-hint text-sm">Sin historial aún</div>';
     document.getElementById('live-client-card').style.display='block';
     document.getElementById('live-cart-card').style.display='block';
@@ -4226,8 +4372,8 @@ async function addToCart(){
       if(nuevoStock<=0) avisoStock = ' — ⚠️ sin stock';
     } catch(e){ console.warn('No se pudo descontar stock:', e.message); }
     // Recalcular total del pedido
-    const nuevoSubtotal = liveCart.reduce((a,i)=>a+i.precio,0);
-    const nuevoTotal = nuevoSubtotal+(currentPedidoActivo.costo_envio||0);
+    const nuevoSubtotal = pycR2(liveCart.reduce((a,i)=>a+i.precio,0));
+    const nuevoTotal = pycR2(nuevoSubtotal+(currentPedidoActivo.costo_envio||0));
     const patchPedido = {subtotal:nuevoSubtotal, total:nuevoTotal};
     // Si ya estaba pago_completo o empaquetado, con la prenda nueva vuelve a quedar debiendo — retrocede el estado
     if(['pago_completo','empaquetado'].includes(currentPedidoActivo.estado) && (currentPedidoActivo.monto_pagado||0) < nuevoTotal){
@@ -4251,14 +4397,14 @@ async function addToCart(){
 
 function renderLiveCart(){
   const cont=document.getElementById('live-cart-items');
-  const total=liveCart.reduce((a,i)=>a+i.precio,0);
+  const total=pycR2(liveCart.reduce((a,i)=>a+i.precio,0));
   cont.innerHTML=liveCart.length?liveCart.map((it,i)=>`
     <div class="cart-item" style="flex-direction:column;align-items:flex-start;gap:5px;padding:8px 0">
       <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
         <span class="font-500">${it.nombre}</span>
         <span style="display:flex;align-items:center;gap:6px">
-          ${(()=>{ const cat=(DB.prendas||[]).find(x=>x.id===it.prenda_id)?.precio; return (cat!=null && Number(cat)!==Number(it.precio)) ? `<span class="text-hint" style="font-size:11px;text-decoration:line-through">S/ ${cat}</span>` : ''; })()}
-          <span class="font-500">S/ ${it.precio}</span>
+          ${(()=>{ const cat=(DB.prendas||[]).find(x=>x.id===it.prenda_id)?.precio; return (cat!=null && Number(cat)!==Number(it.precio)) ? `<span class="text-hint" style="font-size:11px;text-decoration:line-through">S/ ${pycM(cat)}</span>` : ''; })()}
+          <span class="font-500">S/ ${pycM(it.precio)}</span>
           ${(it.estado_pago==='confirmado'||(it.monto_pagado||0)>0)?'':`<span title="Cambiar precio" style="cursor:pointer;font-size:12px" onclick="pycEditarPrecioItem(${i})">✏️</span>`}
           <span style="cursor:pointer;color:var(--text3);font-size:12px" onclick="removeCartItem(${i})">✕</span>
         </span>
@@ -4272,7 +4418,7 @@ function renderLiveCart(){
         ${it.preventa?`<span class="badge" style="font-size:10px;background:#FFE8CC;color:#B3541E">🕒 Pre-venta</span>`:''}
       </div>
     </div>`).join(''):`<div class="text-hint text-sm">Sin productos aún</div>`;
-  document.getElementById('live-cart-total').textContent='S/ '+total;
+  document.getElementById('live-cart-total').textContent='S/ '+pycM(total);
 }
 
 async function toggleBolsaItem(i, el){
@@ -4331,7 +4477,7 @@ async function removeCartItem(i){
     renderLiveCart();
     if(itemPagado && currentPedidoActivo){
       // primero se actualiza el total y luego se descuenta el pago
-      const subTmp = liveCart.reduce((a,it)=>a+it.precio,0);
+      const subTmp = pycR2(liveCart.reduce((a,it)=>a+it.precio,0));
       await dbPatch(`pedidos?id=eq.${currentPedidoActivo.id}`,{subtotal:subTmp, total:subTmp+(currentPedidoActivo.costo_envio||0)});
       await pycRevertirPagoArticulo(currentPedidoActivo.id, item.monto_pagado||item.precio, item.nombre);
     }
@@ -4343,14 +4489,14 @@ async function removeCartItem(i){
       } catch(e){ console.warn('No se pudo devolver stock:', e.message); }
     }
     if(currentPedidoActivo){
-      const nuevoSubtotal = liveCart.reduce((a,it)=>a+it.precio,0);
+      const nuevoSubtotal = pycR2(liveCart.reduce((a,it)=>a+it.precio,0));
       if(liveCart.length === 0){
         // No quedan prendas — cancelar pedido zombie
         await dbPatch(`pedidos?id=eq.${currentPedidoActivo.id}`,{estado:'cancelado',subtotal:0,total:0});
         currentPedidoActivo = null;
         currentCarritoId = null;
       } else {
-        await dbPatch(`pedidos?id=eq.${currentPedidoActivo.id}`,{subtotal:nuevoSubtotal, total:nuevoSubtotal+(currentPedidoActivo.costo_envio||0)});
+        await dbPatch(`pedidos?id=eq.${currentPedidoActivo.id}`,{subtotal:nuevoSubtotal, total:pycR2(nuevoSubtotal+(currentPedidoActivo.costo_envio||0))});
         currentPedidoActivo.subtotal = nuevoSubtotal;
       }
     }
@@ -4391,8 +4537,8 @@ async function removeCarritoItem(itemId, precio, pedidoId, pagado, prendaId, mon
         // No quedan prendas — cancelar pedido
         await dbPatch(`pedidos?id=eq.${pedidoId}`,{estado:'cancelado', subtotal:0, total:0});
       } else {
-        const nuevoSubtotal = allItems.reduce((a,it)=>a+(it.precio_unitario||0),0);
-        await dbPatch(`pedidos?id=eq.${pedidoId}`,{subtotal:nuevoSubtotal, total:nuevoSubtotal+(ped[0].costo_envio||0)});
+        const nuevoSubtotal = pycR2(allItems.reduce((a,it)=>a+(it.precio_unitario||0),0));
+        await dbPatch(`pedidos?id=eq.${pedidoId}`,{subtotal:nuevoSubtotal, total:pycR2(nuevoSubtotal+(ped[0].costo_envio||0))});
       }
       if(itemPagado) await pycRevertirPagoArticulo(pedidoId, parseFloat(montoPagado)||precio, 'artículo');
     }
@@ -4410,8 +4556,8 @@ async function removeCarritoItem(itemId, precio, pedidoId, pagado, prendaId, mon
 
 function openEnvioModal(){
   if(!liveCart.length){ alert('Agrega al menos un producto'); return; }
-  const sub=liveCart.reduce((a,i)=>a+i.precio,0);
-  document.getElementById('env-subtotal').textContent='S/ '+sub;
+  const sub=pycR2(liveCart.reduce((a,i)=>a+i.precio,0));
+  document.getElementById('env-subtotal').textContent='S/ '+pycM(sub);
   pycPrepararModalEnvio(currentPedidoActivo);
   document.getElementById('modal-envio').classList.add('open');
 }
@@ -4439,11 +4585,11 @@ function updateEnvCosto(){
   inp.disabled = tipo==='recojo';
   if(tipo==='recojo') inp.value='0';
   document.getElementById('env-costo-hint').textContent = tipo==='motorizado' ? 'Motorizado: entre S/ 10 y S/ 25 según distrito y tamaño de caja'
-    : tipo==='recojo' ? 'Sin costo: el cliente recoge en el showroom' : 'Escribe el costo que cobrarás al cliente';
+    : tipo==='recojo' ? 'Sin costo: el cliente recoge en la tienda' : 'Escribe el costo que cobrarás al cliente';
   const costo=pycCostoEnvio()||0;
-  const sub=liveCart.reduce((a,i)=>a+i.precio,0);
-  document.getElementById('env-costo').textContent='S/ '+costo;
-  document.getElementById('env-total').textContent='S/ '+(sub+costo);
+  const sub=pycR2(liveCart.reduce((a,i)=>a+i.precio,0));
+  document.getElementById('env-costo').textContent='S/ '+pycM(costo);
+  document.getElementById('env-total').textContent='S/ '+pycM(sub+costo);
 }
 
 async function confirmarPedido(){
@@ -4452,8 +4598,8 @@ async function confirmarPedido(){
   if(costo===null){ toast('Escribe el costo de envío (S/)'); document.getElementById('env-costo-input').focus(); return; }
   const fechaProg=document.getElementById('env-fecha').value||null;
   const canal=document.getElementById('lv-canal')?.value||null;
-  const sub=liveCart.reduce((a,i)=>a+i.precio,0);
-  const total=sub+costo;
+  const sub=pycR2(liveCart.reduce((a,i)=>a+i.precio,0));
+  const total=pycR2(sub+costo);
   let numPedido='';
   try {
     if(currentPedidoActivo){
@@ -4504,7 +4650,7 @@ async function confirmarPedido(){
   const linkReg=`${base}?registro`;
   document.getElementById('link-url').textContent=linkPedido;
   document.getElementById('link-registro').textContent=linkReg;
-  document.getElementById('link-wa-msg').textContent=`WA: "Hola! Tu pedido ${numPedido} está registrado. Total productos S/${sub}. Sigue tu pedido aquí: ${linkPedido}"`;
+  document.getElementById('link-wa-msg').textContent=`WA: "Hola! Tu pedido ${numPedido} está registrado. Total productos S/${pycM(sub)}. Sigue tu pedido aquí: ${linkPedido}"`;
   document.getElementById('modal-link').classList.add('open');
 }
 function copyLink(){ navigator.clipboard.writeText(document.getElementById('link-url').textContent).catch(()=>{}); }
@@ -4555,8 +4701,7 @@ function filtrarCarritosBuscador(q){
   q = q.toLowerCase().trim();
   const cards = document.querySelectorAll('#carritos-lista .carrito-card');
   cards.forEach(card=>{
-    const txt = card.textContent.toLowerCase();
-    card.style.display = (!q || txt.includes(q)) ? '' : 'none';
+    card.style.display = pycBusca(q, card.dataset.bus||'', card.textContent) ? '' : 'none';
   });
 }
 
@@ -4564,14 +4709,13 @@ function filtrarPedidosBuscador(q){
   q = q.toLowerCase().trim();
   const rows = document.querySelectorAll('#pedidos-tbody tr');
   rows.forEach(row=>{
-    const txt = row.textContent.toLowerCase();
-    row.style.display = (!q || txt.includes(q)) ? '' : 'none';
+    row.style.display = pycBusca(q, row.dataset.bus||'', row.textContent) ? '' : 'none';
   });
 }
 
 async function loadPedidos(f='todos'){
   try {
-    const pedidos = await dbGet('pedidos?select=*,clientes(nombre,telefono,direccion,distrito,envio_urgente_en)&order=creado_en.desc');
+    const pedidos = await dbGet('pedidos?select=*,clientes(nombre,telefono,direccion,distrito,envio_urgente_en,dni)&order=creado_en.desc');
     DB.pedidos = pedidos;
     let list = pedidos;
     if(f==='por_pagar') list=pedidos.filter(p=>['pago_pendiente','pago_parcial'].includes(p.estado));
@@ -4593,15 +4737,15 @@ async function loadPedidos(f='todos'){
       return '<span class="badge badge-gray">🛍️ Acumulando</span>';
     }
     document.getElementById('pedidos-tbody').innerHTML=list.length?list.map(p=>`
-      <tr>
+      <tr data-bus="${pycEsc([p.numero,p.clientes?.nombre,p.clientes?.telefono,p.clientes?.dni].filter(Boolean).join(' '))}">
         <td class="pedidos-check-col" style="display:${f==='en_camino'?'':'none'}">${f==='en_camino'?`<input type="checkbox" class="ped-check" data-id="${p.id}" onchange="actualizarBulkPedidos()">`:''}</td>
         <td>
           <div class="font-500">${p.numero}</div>
           <div style="font-size:11px;color:var(--text3);margin-top:1px">${p.clientes?.nombre||'—'}</div>
         </td>
         <td style="font-size:12px;color:var(--text2)">${p.clientes?.telefono||'—'}</td>
-        <td>S/ ${p.total}</td>
-        <td>${falta(p)>0?`<span style="color:var(--red)">S/${p.monto_pagado} (-S/${falta(p)})</span>`:`<span style="color:var(--green)">S/${p.monto_pagado} ✓</span>`}</td>
+        <td>S/ ${pycM(p.total)}</td>
+        <td>${falta(p)>0?`<span style="color:var(--red)">S/${pycM(p.monto_pagado)} (-S/${pycM(falta(p))})</span>`:`<span style="color:var(--green)">S/${pycM(p.monto_pagado)} ✓</span>`}</td>
         <td><span class="badge ${ESTADOS_BADGE[p.estado]}">${ESTADOS_LABEL[p.estado]}</span></td>
         <td>${registroBadge(p.clientes)}</td>
         <td>${p.courier_codigo?`<span style="font-size:11px;font-family:monospace">${p.courier_codigo}</span>`:'—'}</td>
@@ -4649,13 +4793,29 @@ async function bulkMarcarEntregados(){
   }catch(e){ toast('Error en actualización masiva: '+e.message); }
 }
 
+let pycResumenPedidoTxt = '';
+function pycCopiarResumenPedido(){
+  const t = pycResumenPedidoTxt; if(!t) return;
+  const ok = ()=>toast('✓ Resumen copiado — pégalo en el WhatsApp del cliente');
+  if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(t).then(ok).catch(()=>{ pycCopiarFallback(t); ok(); }); }
+  else { pycCopiarFallback(t); ok(); }
+}
+function pycCopiarFallback(t){ const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} ta.remove(); }
+
 async function openPedidoModal(id){
   currentPedidoIdx=id;
   try {
     const rows = await dbGet(`pedidos?id=eq.${id}&select=*,clientes(nombre,telefono)`);
     const p = rows[0];
-    const items = await dbGet(`carrito_items?carrito_id=eq.${p.carrito_id}&estado_bolsa=neq.eliminado&select=*,prendas(nombre)`);
+    const items = await dbGet(`carrito_items?carrito_id=eq.${p.carrito_id}&estado_bolsa=neq.eliminado&select=*,prendas(nombre,codigo_interno)&order=agregado_en.asc`);
     document.getElementById('mp-title').textContent=p.numero;
+    // Punto y Compra: productos agrupados por fecha de registro + texto para copiar al cliente
+    const fLima = t => t ? new Date(new Date(t).getTime()-5*3600*1000).toISOString().slice(0,10).split('-').reverse().join('/') : '—';
+    const grupos = []; items.forEach(it=>{ const f=fLima(it.agregado_en); let g=grupos.find(x=>x.f===f); if(!g){ g={f,items:[]}; grupos.push(g); } g.items.push(it); });
+    const lineaItem = it => `${it.prendas?.codigo_interno?it.prendas.codigo_interno+' · ':''}${it.prendas?.nombre||'Producto'}${it.color?' ('+it.color+')':''} · S/ ${pycM(it.precio_unitario)}`;
+    const subItems = pycR2(items.reduce((a,it)=>a+(Number(it.precio_unitario)||0),0));
+    pycResumenPedidoTxt = `🛍️ *Resumen de tu pedido ${p.numero}* — Punto y Compra 👑\n` + grupos.map(g=>`\n📅 ${g.f}\n`+g.items.map(it=>'• '+lineaItem(it)).join('\n')).join('\n')
+      + `\n\n*Total productos: S/ ${pycM(subItems)}*` + ((p.monto_pagado||0)>0?`\nPagado: S/ ${pycM(p.monto_pagado)}`:'');
     const requerido=montoRequeridoPedido(p);
     const falta=requerido-(p.monto_pagado||0);
     const esMotorizado=(p.tipo_envio||'').startsWith('motorizado');
@@ -4673,34 +4833,41 @@ async function openPedidoModal(id){
 
     document.getElementById('mp-content').innerHTML=`
       <div class="grid-2 mb-12">
-        <div><div class="text-xs text-hint">Clienta</div><div class="font-500">${p.clientes?.nombre||'—'}</div></div>
-        <div><div class="text-xs text-hint">Fecha</div><div>${p.creado_en?.slice(0,10)||'—'}</div></div>
+        <div><div class="text-xs text-hint">Cliente</div><div class="font-500">${p.clientes?.nombre||'—'}${p.clientes?.telefono?' · '+p.clientes.telefono:''}</div></div>
+        <div><div class="text-xs text-hint">Fecha de registro</div><div>${fLima(p.creado_en)}</div></div>
         <div><div class="text-xs text-hint">Estado</div><div><span class="badge ${ESTADOS_BADGE[p.estado]}">${ESTADOS_LABEL[p.estado]}</span></div></div>
         <div><div class="text-xs text-hint">Canal</div><div>${p.canal||'—'}</div></div>
         <div><div class="text-xs text-hint">Fecha programada</div><div>${p.fecha_programada?p.fecha_programada.split('-').reverse().join('/'):'—'}</div></div>
-        <div><div class="text-xs text-hint">Envío</div><div>${pycEnvioLabel(p.tipo_envio)} · ${p.distrito||'Sin dirección'} · S/${p.costo_envio||0}${esMotorizado?(p.envio_pagado?' <span style="color:var(--green)">✓ pagado</span>':' <span style="color:var(--text3)">(se cobra al entregar)</span>'):''}</div></div>
-        <div><div class="text-xs text-hint">Total</div><div class="font-600">S/ ${p.total}</div></div>
-        <div><div class="text-xs text-hint">Pagado</div><div class="${falta>0?'delta-dn':'delta-up'} font-500">S/${p.monto_pagado||0}${falta>0?' <span style="color:var(--red)">(falta S/'+falta+')</span>':' ✓'}</div></div>
+        <div><div class="text-xs text-hint">Envío</div><div>${pycEnvioLabel(p.tipo_envio)} · ${p.distrito||'Sin dirección'} · S/${pycM(p.costo_envio||0)}${esMotorizado?(p.envio_pagado?' <span style="color:var(--green)">✓ pagado</span>':' <span style="color:var(--text3)">(se cobra al entregar)</span>'):''}</div></div>
+        <div><div class="text-xs text-hint">Total</div><div class="font-600">S/ ${pycM(p.total)}</div></div>
+        <div><div class="text-xs text-hint">Pagado</div><div class="${falta>0?'delta-dn':'delta-up'} font-500">S/${pycM(p.monto_pagado||0)}${falta>0?' <span style="color:var(--red)">(falta S/ '+pycM(falta)+')</span>':' ✓'}</div></div>
       </div>
-      ${esMotorizado?`
+      ${false?`
         <div class="card mb-12" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
           <div>
             <div class="text-xs text-hint">Envío motorizado</div>
-            <div style="font-size:12px;color:var(--text2)">Normalmente el motorizado cobra S/${p.costo_envio||0} al entregar. Márcalo solo si la clienta ya lo pagó por adelantado.</div>
+            <div style="font-size:12px;color:var(--text2)">Normalmente el motorizado cobra S/${pycM(p.costo_envio||0)} al entregar. Márcalo solo si la clienta ya lo pagó por adelantado.</div>
           </div>
           <button class="btn btn-xs ${p.envio_pagado?'btn-success':''}" onclick="toggleEnvioPagado('${p.id}',${!p.envio_pagado})">${p.envio_pagado?'✓ Envío pagado':'Marcar envío pagado'}</button>
         </div>`:''}
       ${p.courier_codigo?`<div class="card mb-12" style="background:var(--blue-light)"><div class="text-xs text-hint">Código courier</div><div class="font-500">${p.courier_codigo}</div></div>`:''}
-      <div class="card-title">Prendas del pedido</div>
-      <div class="tbl-wrap mb-12">${items.length?items.map(it=>`
-        <div class="cart-item" style="padding:7px 12px;display:flex;justify-content:space-between">
-          <span>${it.prendas?.nombre||'Prenda'} ${it.talla?'T-'+it.talla:''} ${it.color?'· '+it.color:''}</span>
-          <span class="font-500">S/ ${it.precio_unitario}</span>
-        </div>`).join(''):'<div style="padding:8px 12px;color:var(--text3);font-size:12px">Sin items</div>'}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="card-title" style="margin:0">Productos del pedido</div>
+        ${items.length?`<button class="btn btn-sm btn-primary" onclick="pycCopiarResumenPedido()">📋 Copiar resumen</button>`:''}
+      </div>
+      <div class="tbl-wrap mb-12">${items.length?grupos.map(g=>`
+        <div style="padding:6px 12px;background:var(--gray-light);font-size:11.5px;font-weight:600;color:var(--text2)">📅 ${g.f} · ${g.items.length} producto(s)</div>
+        ${g.items.map(it=>`
+        <div class="cart-item" style="padding:7px 12px;display:flex;justify-content:space-between;gap:10px">
+          <span>${it.prendas?.codigo_interno?`<span style="font-family:monospace;font-size:12px;color:var(--text2)">${pycEsc(it.prendas.codigo_interno)}</span> · `:''}${pycEsc(it.prendas?.nombre||'Producto')} ${it.color?'<span class="text-hint">· '+pycEsc(it.color)+'</span>':''}</span>
+          <span class="font-500" style="white-space:nowrap">S/ ${pycM(it.precio_unitario)}</span>
+        </div>`).join('')}`).join('')
+        + `<div style="padding:8px 12px;display:flex;justify-content:space-between;font-weight:600;border-top:1px solid var(--border)"><span>Total productos</span><span>S/ ${pycM(subItems)}</span></div>`
+        :'<div style="padding:8px 12px;color:var(--text3);font-size:12px">Sin items</div>'}</div>
       ${['pago_pendiente','pago_parcial','listo_envio'].includes(p.estado)?`
         <div style="background:var(--amber-light);border-radius:var(--radius-sm);padding:12px 14px;margin-top:4px;display:flex;align-items:center;justify-content:space-between;gap:10px">
           <div>
-            <div style="font-size:12px;font-weight:600;color:var(--amber-dark)">${p.estado==='pago_parcial'?'Pago parcial — falta S/'+falta:'Pendiente de pago — S/'+falta}</div>
+            <div style="font-size:12px;font-weight:600;color:var(--amber-dark)">${p.estado==='pago_parcial'?'Pago parcial — falta S/ '+pycM(falta):'Pendiente de pago — S/ '+pycM(falta)}</div>
             <div style="font-size:11px;color:var(--amber-dark);opacity:.8;margin-top:2px">Los pagos se validan desde Cortes de pago</div>
           </div>
           <button class="btn btn-sm" style="background:var(--amber-dark);color:#fff;border-color:transparent;white-space:nowrap;flex-shrink:0" onclick="closeModal('modal-pedido');nav('cortes')">→ Ir a Cortes</button>
@@ -4903,7 +5070,7 @@ async function verHistorialPedido(id, numero){
 async function loadClientes(filter=''){
   try {
     const q = filter
-      ? `clientes?or=(nombre.ilike.*${filter}*,telefono.ilike.*${filter}*)&order=nombre`
+      ? `clientes?or=(nombre.ilike.*${encodeURIComponent(filter.trim().replace(/[(),*]/g,' ').replace(/\s+/g,'*'))}*,telefono.ilike.*${encodeURIComponent(filter.trim())}*,dni.ilike.*${encodeURIComponent(filter.trim())}*)&order=nombre`
       : 'clientes?order=nombre';
     const list = await dbGet(q);
     DB.clientes = list;
@@ -4927,7 +5094,7 @@ function renderClientesTabla(list){
       <td>${metodo==='shalom'?'<span class="badge badge-info">🚛 Shalom</span>':metodo==='motorizado'?'<span class="badge badge-pink">🏍️ Motorizado</span>':'<span class="badge badge-gray">Sin definir</span>'}</td>
       <td>${completo?'<span class="badge badge-ok">✓ Completo</span>':'<span class="badge badge-warn">⚠ Incompleto</span>'}</td>
       <td>${c.pedidos_count||0}</td>
-      <td>S/ ${c.total_gastado||0}</td>
+      <td>S/ ${pycM(c.total_gastado||0)}</td>
       <td><button class="btn btn-xs" onclick="editCliente('${c.id}')">Editar</button> <button class="btn btn-xs" onclick="verHistorialCliente('${c.id}','${(c.nombre||'').replace(/'/g,"\\'")}')">📜 Historial</button></td>
     </tr>`;
   }).join(''):'<tr><td colspan="8" class="empty-state">Sin clientas aún</td></tr>';
@@ -5128,7 +5295,7 @@ async function loadDesgloseVentas(){
         <td>${f.talla||'—'}</td>
         <td>${f.color||'—'}</td>
         <td class="font-500">${f.unidades}</td>
-        <td>S/ ${f.ingreso}</td>
+        <td>S/ ${pycM(f.ingreso)}</td>
         <td class="text-muted">${f.stock}</td>
       </tr>`).join('') : '<tr><td colspan="5" class="empty-state">Sin ventas registradas en este periodo</td></tr>';
   } catch(e){ document.getElementById('dv-tbody').innerHTML = `<tr><td colspan="5" style="color:var(--red)">Error: ${e.message}</td></tr>`; }
@@ -5151,7 +5318,7 @@ async function verDetalleVenta(talla, color){
           <div style="font-size:13px;font-weight:500">${cl.nombre||'—'}</div>
           <div style="font-size:11px;color:var(--text3)">${cl.telefono||''} · ${fechaStr}</div>
         </div>
-        <div style="font-size:12.5px;font-weight:600">S/ ${it.precio_unitario||0}</div>
+        <div style="font-size:12.5px;font-weight:600">S/ ${pycM(it.precio_unitario||0)}</div>
       </div>`;
     }).join('') : '<div class="empty-state">Sin ventas de esta combinación en este periodo</div>';
   } catch(e){ document.getElementById('dvd-lista').innerHTML = `<div style="color:var(--red);font-size:12.5px">Error: ${e.message}</div>`; }
@@ -5221,7 +5388,7 @@ function cmLeer(input){
         const prov = col.proveedor>=0 ? String(f[col.proveedor]||'').trim() : '';
         const fecha = (col.fecha>=0 ? cmFecha(f[col.fecha]) : null) || hoy;
         const key = p.id+'|'+fecha+'|'+prov+'|'+(costo||'');
-        if(!grupos[key]) grupos[key] = {p, cantidad:0, costo:(costo>0?Math.round(costo):null), proveedor:prov, fecha, filas:[]};
+        if(!grupos[key]) grupos[key] = {p, cantidad:0, costo:(costo>0?pycR2(costo):null), proveedor:prov, fecha, filas:[]};
         grupos[key].cantidad += cant; grupos[key].filas.push(n);
       });
       const lista = Object.values(grupos);
@@ -5235,7 +5402,7 @@ function cmLeer(input){
         (sinCosto?`<div style="background:var(--amber-light);color:var(--amber-dark);border-radius:var(--radius-sm);padding:8px 12px;font-size:12px;margin:8px 0">⚠️ ${sinCosto} compra(s) sin costo unitario y con costo 0 en el catálogo: se registran con costo 0.</div>`:'')
         + (errores.length?`<details open style="font-size:12px;margin:8px 0"><summary style="cursor:pointer;color:var(--red)">Filas con error</summary><div style="max-height:140px;overflow:auto;margin-top:4px">${errores.map(pycEsc).join('<br>')}</div></details>`:'');
       document.getElementById('cm-preview').innerHTML = `<thead><tr><th>Producto</th><th>Código</th><th>Fecha</th><th>Cantidad</th><th>Costo unit.</th><th>Stock: antes → después</th></tr></thead><tbody>`
-        + lista.slice(0,200).map(g=>`<tr><td>${pycEsc(g.p.nombre)}</td><td style="font-family:monospace">${pycEsc(g.p.codigo_interno||g.p.codigo||'')}</td><td>${g.fecha}</td><td>+${g.cantidad}</td><td>${g.costo!=null?'S/ '+g.costo:'<span class="text-hint">S/ '+(g.p.costo||0)+' (catálogo)</span>'}</td><td>${g.p.stock||0} → <strong>${(g.p.stock||0)+lista.filter(x=>x.p.id===g.p.id).reduce((a,x)=>a+x.cantidad,0)}</strong></td></tr>`).join('') + '</tbody>';
+        + lista.slice(0,200).map(g=>`<tr><td>${pycEsc(g.p.nombre)}</td><td style="font-family:monospace">${pycEsc(g.p.codigo_interno||g.p.codigo||'')}</td><td>${g.fecha}</td><td>+${g.cantidad}</td><td>${g.costo!=null?'S/ '+pycM(g.costo):'<span class="text-hint">S/ '+(g.p.costo||0)+' (catálogo)</span>'}</td><td>${g.p.stock||0} → <strong>${(g.p.stock||0)+lista.filter(x=>x.p.id===g.p.id).reduce((a,x)=>a+x.cantidad,0)}</strong></td></tr>`).join('') + '</tbody>';
       document.getElementById('cm-btn-confirmar').disabled = !lista.length;
     }catch(err){ toast('No pude leer el archivo: '+err.message); }
   };
@@ -5251,8 +5418,8 @@ async function cmConfirmar(){
   for(const g of cmPlan){
     try{
       const rows = await dbGet(`prendas?id=eq.${g.p.id}&select=stock,costo`);   // stock real del momento
-      const costoU = Math.round(g.costo!=null ? g.costo : (rows[0]?.costo||0));
-      await dbPost('compras', {prenda_id:g.p.id, talla:'', color:'', cantidad:g.cantidad, costo_total:Math.round(g.cantidad*costoU*100)/100, proveedor:g.proveedor||null, fecha:g.fecha});
+      const costoU = pycR2(g.costo!=null ? g.costo : (rows[0]?.costo||0));
+      await dbPost('compras', {prenda_id:g.p.id, talla:'', color:'', cantidad:g.cantidad, costo_total:pycR2(g.cantidad*costoU), proveedor:g.proveedor||null, fecha:g.fecha});
       const patch = {stock:(rows[0]?.stock||0)+g.cantidad};
       if(g.costo!=null && g.costo!==Number(rows[0]?.costo)) patch.costo = g.costo;
       await dbPatch(`prendas?id=eq.${g.p.id}`, patch);
@@ -5467,7 +5634,7 @@ async function impAnalizar(){
     const get = k => col[k]>=0 ? f[col[k]] : '';
     const nombre = String(get('nombre')||'').trim();
     const precioX = impNumero(get('precio'));
-    const precio = precioX===null ? null : Math.round(precioX);   // Punto y Compra: precio redondeado al sol
+    const precio = precioX===null ? null : Math.round(precioX*10)/10;   // Punto y Compra: precio redondeado a 0.10 (58.17 → 58.20)
     const {cod, danado} = impCodigo(get('codigo'));
     const interno = String(get('codigo_interno')||'').trim() || null;
     if(danado) danados.push(nFila);
@@ -5488,7 +5655,7 @@ async function impAnalizar(){
     const cat = String(get('categoria')||'').trim();
     const esp = String(get('especificaciones')||'').trim();
     const dato = { nombre };
-    if(col.costo>=0) dato.costo = costo===null ? 0 : Math.round(costo);  // enteros
+    if(col.costo>=0) dato.costo = costo===null ? 0 : pycR2(costo);
     if(col.categoria>=0) dato.categoria = cat||null;
     if(col.especificaciones>=0) dato.especificaciones = esp||null;
     // Se reconoce por código interno, luego por código de barras, luego por nombre
@@ -5514,7 +5681,7 @@ async function impAnalizar(){
   if(danados.length) avisos.push(`⚠️ ${danados.length} código(s) de barras vienen en notación científica (ej. 7.5E+12) y ya están dañados en el archivo — filas ${danados.slice(0,10).join(', ')}${danados.length>10?'…':''}. En Excel, pon esa columna en formato Texto y vuelve a exportar.`);
   if(col.codigo<0 && col.codigo_interno<0) avisos.push('ℹ️ No hay código interno ni código de barras: los productos se reconocerán por el nombre.');
   if(sinPrecio.length) avisos.push(`⚠️ ${sinPrecio.length} producto(s) sin precio de venta (no se podrán vender hasta ponerles precio en Catálogo): ${sinPrecio.slice(0,5).map(pycEsc).join(' · ')}${sinPrecio.length>5?'…':''}`);
-  if(col.precio>=0 || col.costo>=0) avisos.push('ℹ️ Precios y costos se redondean al sol entero (ej. 58.17 → 58, 25.57 → 26).');
+  if(col.precio>=0) avisos.push('ℹ️ El precio de venta se redondea a 10 céntimos (ej. 58.17 → 58.20, 56.11 → 56.10). El costo se guarda con 2 decimales.');
   if(col.stock<0) avisos.push('ℹ️ No hay columna de stock: los productos nuevos empezarán con stock 0.');
   impPlan = {nuevos, actualizar, errores};
 
@@ -5529,7 +5696,7 @@ async function impAnalizar(){
     + (errores.length?`<details style="font-size:12px;margin-bottom:8px"><summary style="cursor:pointer;color:var(--red)">Ver filas con errores</summary><div style="max-height:140px;overflow:auto;margin-top:4px">${errores.map(pycEsc).join('<br>')}</div></details>`:'');
   const muestra = [...nuevos.map(n=>({...n.dato, _t:'Nuevo'})), ...actualizar.map(a=>({...a.dato, precio:a.dato.precio??a.antes.precio, codigo:a.dato.codigo??a.antes.codigo, stock: ('stock' in a.dato)?a.dato.stock:a.antes.stock, _t:'Actualiza'}))].slice(0,25);
   document.getElementById('imp-preview').innerHTML = `<thead><tr><th></th><th>Cód. interno</th><th>Código de barras</th><th>Nombre</th><th>Precio</th><th>Costo</th><th>Stock</th><th>Marca</th></tr></thead><tbody>`
-    + muestra.map(m=>`<tr><td><span class="badge ${m._t==='Nuevo'?'badge-ok':'badge-info'}" style="font-size:10px">${m._t}</span></td><td style="font-family:monospace">${pycEsc(m.codigo_interno||'—')}</td><td style="font-family:monospace">${pycEsc(m.codigo||'—')}</td><td>${pycEsc(m.nombre)}</td><td>${m.precio?'S/ '+m.precio:'<span style="color:var(--red)">sin precio</span>'}</td><td>${m.costo!=null?'S/ '+m.costo:'—'}</td><td>${m.stock}</td><td>${pycEsc(m.categoria||'—')}</td></tr>`).join('')
+    + muestra.map(m=>`<tr><td><span class="badge ${m._t==='Nuevo'?'badge-ok':'badge-info'}" style="font-size:10px">${m._t}</span></td><td style="font-family:monospace">${pycEsc(m.codigo_interno||'—')}</td><td style="font-family:monospace">${pycEsc(m.codigo||'—')}</td><td>${pycEsc(m.nombre)}</td><td>${m.precio?'S/ '+pycM(m.precio):'<span style="color:var(--red)">sin precio</span>'}</td><td>${m.costo!=null?'S/ '+pycM(m.costo):'—'}</td><td>${m.stock}</td><td>${pycEsc(m.categoria||'—')}</td></tr>`).join('')
     + `</tbody>`;
   document.getElementById('imp-btn-confirmar').disabled = !(nuevos.length||actualizar.length);
 }
@@ -5570,7 +5737,7 @@ function renderCatalogoTabla(prendas){
     <tr data-txt="${pycEsc(((p.nombre||'')+' '+(p.codigo||'')+' '+(p.codigo_interno||'')).toLowerCase())}" data-cat="${pycEsc(p.categoria||'')}" data-sinprecio="${p.precio>0?'0':'1'}" data-sincodigo="${p.codigo?'0':'1'}">
       <td class="font-500">${pycEsc(p.nombre)}${p.codigo_interno?`<div class="text-hint" style="font-size:11px;font-family:monospace">${pycEsc(p.codigo_interno)}</div>`:''}</td>
       <td class="text-muted">${p.codigo?pycEsc(p.codigo):`<input class="cat-scan" data-id="${p.id}" placeholder="Escanear aquí" style="width:130px;padding:4px 8px;font-size:12px;border:1px dashed var(--border);border-radius:6px" onkeydown="if(event.key==='Enter'){event.preventDefault();pycAsignarCodigo(this);}">`}</td>
-      <td>${p.precio>0?'S/ '+p.precio:'<span class="badge badge-warn">⚠️ sin precio</span>'}${currentUser?.rol==='admin'?` <span class="text-hint">(costo S/${p.costo||0})</span>`:''}</td>
+      <td>${p.precio>0?'S/ '+pycM(p.precio):'<span class="badge badge-warn">⚠️ sin precio</span>'}${currentUser?.rol==='admin'?` <span class="text-hint">(costo S/${pycM(p.costo||0)})</span>`:''}</td>
       <td class="text-hint" style="max-width:220px;white-space:normal">${pycEsc(p.especificaciones||'')}</td>
       <td>${p.categoria||'—'}</td>
       <td><span class="badge ${(p.stock||0)<=STOCK_BAJO_LIMITE?'badge-warn':'badge-ok'}">${p.stock||0}</span></td>
@@ -5633,8 +5800,8 @@ async function guardarPrenda(){
   const data={
     nombre,
     codigo:document.getElementById('pr-codigo').value.trim()||null,
-    precio:Math.round(parseFloat(document.getElementById('pr-precio').value)||0),   // Punto y Compra: enteros
-    costo:Math.round(parseFloat(document.getElementById('pr-costo').value)||0),
+    precio:pycR2(parseFloat(document.getElementById('pr-precio').value)||0),
+    costo:pycR2(parseFloat(document.getElementById('pr-costo').value)||0),
     categoria:document.getElementById('pr-cat').value.trim()||null,
     especificaciones:document.getElementById('pr-espec').value.trim()||null,
     codigo_interno:document.getElementById('pr-codint').value.trim()||null,
@@ -5891,10 +6058,14 @@ async function loadDespacho(){
 }
 
 function despachoPasaFiltro(p){
+  const qd = document.getElementById('despacho-search')?.value||'';
+  if(qd && !pycBusca(qd, p.numero, p.clientes?.nombre, p.clientes?.telefono, p.clientes?.dni)) return false;
   if(despachoFiltro==='shalom' && !esTipoEnvio(p,'shalom')) return false;
   if(despachoFiltro==='motorizado' && !esTipoEnvio(p,'motorizado')) return false;
   if(despachoFiltro==='marvisur' && !esTipoEnvio(p,'marvisur')) return false;
   if(despachoFiltro==='recojo' && !esTipoEnvio(p,'recojo')) return false;
+  if(despachoFiltro==='olva' && !esTipoEnvio(p,'olva')) return false;
+  if(despachoFiltro==='otro' && !esTipoEnvio(p,'otro')) return false;
   if(despachoFiltro==='programados' && !p.fecha_programada) return false;
   if(despachoSoloUrgentes && !p.clientes?.envio_urgente_en) return false;
   return true;
@@ -6627,8 +6798,8 @@ function renderTrackingPage(ped){
   document.getElementById('trk-name').textContent=cl?.nombre||'Clienta';
   document.getElementById('trk-meta').innerHTML=`<span>${ped.creado_en?.slice(0,10)||''}</span><span>${pycEnvioLabel(ped.tipo_envio)}</span><span>${ped.distrito||''}</span>`;
   const banners={
-    pago_pendiente:{bg:'#FAEEDA',c:'#633806',lbl:'Pendiente de pago',sub:`Coordina tu pago por WhatsApp al 914 036 405 · Total productos S/${pycSubtotalCliente(ped)}`},
-    pago_parcial:{bg:'#FAEEDA',c:'#633806',lbl:'Pago parcial recibido',sub:`Abono S/${ped.monto_pagado} · coordina el saldo por WhatsApp al 914 036 405`},
+    pago_pendiente:{bg:'#FAEEDA',c:'#633806',lbl:'Pendiente de pago',sub:`Coordina tu pago por WhatsApp al 914 036 405 · Total productos S/${pycM(pycSubtotalCliente(ped))}`},
+    pago_parcial:{bg:'#FAEEDA',c:'#633806',lbl:'Pago parcial recibido',sub:`Abono S/${pycM(ped.monto_pagado)} · coordina el saldo por WhatsApp al 914 036 405`},
     pago_completo:{bg:'#E6F1FB',c:'#0C447C',lbl:'Pago confirmado',sub:'Tu pedido está en preparación'},
     empaquetado:{bg:'#E1F5EE',c:'#085041',lbl:'Pedido empaquetado',sub:'Listo para el próximo despacho'},
     en_camino:{bg:'#F1EFE8',c:'#2C2C2A',lbl:'Tu pedido va en camino',sub:`Código: ${ped.courier_codigo||'—'} · ${ped.distrito||''}`},
@@ -6643,7 +6814,7 @@ function renderTrackingPage(ped){
   const esMotorizado = (ped.tipo_envio||'').startsWith('motorizado');
   if(false){  // Punto y Compra: el costo de envío no se muestra al cliente
     notaEnvio.style.display='block';
-    notaEnvio.innerHTML = `🏍️ <strong>Recuerda:</strong> al recibir tu pedido, paga <strong>S/${ped.costo_envio}</strong> al motorizado — el envío se cobra directo en la entrega.`;
+    notaEnvio.innerHTML = `🏍️ <strong>Recuerda:</strong> al recibir tu pedido, paga <strong>S/${pycM(ped.costo_envio)}</strong> al motorizado — el envío se cobra directo en la entrega.`;
   } else {
     notaEnvio.style.display='none';
   }
@@ -6672,9 +6843,9 @@ function renderTrackingPage(ped){
   }).join('');
   const items = ped.carrito_items||[];
   document.getElementById('trk-items').innerHTML=
-    items.map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12.5px"><span>${it.prendas?.nombre||'Producto'} ${it.color?`<span style="color:var(--text3)">· ${it.color}</span>`:''}</span><span style="font-weight:500">S/${it.precio_unitario}</span></div>`).join('')+
+    items.map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12.5px"><span>${it.prendas?.nombre||'Producto'} ${it.color?`<span style="color:var(--text3)">· ${it.color}</span>`:''}</span><span style="font-weight:500">S/${pycM(it.precio_unitario)}</span></div>`).join('')+
     `<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:6px 0;border-bottom:0.5px solid var(--border)"><span>Envío</span><span>${pycEnvioLabel(ped.tipo_envio)}</span></div>`+
-    `<div style="display:flex;justify-content:space-between;margin-top:8px;font-weight:600;font-size:14px"><span>Total productos</span><span>S/${pycSubtotalCliente(ped)}</span></div>`;
+    `<div style="display:flex;justify-content:space-between;margin-top:8px;font-weight:600;font-size:14px"><span>Total productos</span><span>S/${pycM(pycSubtotalCliente(ped))}</span></div>`;
 }
 
 function feIrASeguimiento(){ renderTrackingPage(trackingPedidoData); }
@@ -7110,7 +7281,8 @@ function f5ShowPaso(n){
 
 function selCourier(tipo){
   f5Courier = tipo;
-  ['shalom','motorizado','marvisur','recojo'].forEach(k=>document.getElementById('opt-'+k).classList.toggle('selected', tipo===k));
+  ['shalom','motorizado','marvisur','recojo','olva','otro'].forEach(k=>document.getElementById('opt-'+k)?.classList.toggle('selected', tipo===k));
+  ['olva','otro'].forEach(k=>{ const el=document.getElementById('f5-'+k+'-info'); if(el) el.style.display = tipo===k?'block':'none'; });
   document.getElementById('f5-shalom-info').style.display = tipo==='shalom'?'block':'none';
   document.getElementById('f5-motor-info').style.display = tipo==='motorizado'?'block':'none';
   document.getElementById('f5-marvisur-info').style.display = tipo==='marvisur'?'block':'none';
@@ -7153,7 +7325,7 @@ function f5Next(){
     // Mostrar campos según courier
     document.getElementById('f5-campos-shalom').style.display = f5Courier==='shalom'?'block':'none';
     document.getElementById('f5-campos-motor').style.display = f5Courier==='motorizado'?'block':'none';
-    document.getElementById('f5-campos-marvisur').style.display = f5Courier==='marvisur'?'block':'none';
+    pycMostrarCamposModalidad('f5', f5Courier);
     f5ShowPaso(2);
 
   } else if(f5Paso === 2){
@@ -7175,10 +7347,7 @@ function f5Next(){
       if(!distrito){ errEl.textContent='Selecciona tu distrito.'; errEl.style.display='block'; return; }
       if(!dir){ errEl.textContent='Ingresa tu dirección exacta.'; errEl.style.display='block'; return; }
     }
-    if(f5Courier==='marvisur'){
-      if(!document.getElementById('f5-mv-ciudad').value.trim()){ errEl.textContent='Ingresa tu ciudad o provincia.'; errEl.style.display='block'; return; }
-      if(!document.getElementById('f5-mv-agencia').value.trim()){ errEl.textContent='Ingresa la agencia Marvisur de recojo.'; errEl.style.display='block'; return; }
-    }
+    { const dm = pycDatosModalidad('f5', f5Courier); if(dm && dm.err){ errEl.textContent=dm.err; errEl.style.display='block'; return; } }
     errEl.style.display='none';
     f5BuildResumen();
     f5ShowPaso(3);
@@ -7196,7 +7365,7 @@ function f5Next(){
     document.getElementById('f5-shalom-confirm').style.display='block';
     document.getElementById('f5-motor-pago').style.display='none';
     document.getElementById('f5-confirm-desc').textContent = f5Courier==='recojo'
-      ? 'Te avisaremos por WhatsApp cuando tu pedido esté listo para recoger en el showroom.'
+      ? 'Te esperamos en la tienda el día y la hora que elegiste. Te avisaremos por WhatsApp cuando tu pedido esté listo.'
       : 'Revisamos tus datos y te escribimos por WhatsApp para coordinar tu envío.';
     f5ShowPaso(5);
   }
@@ -7209,8 +7378,9 @@ function f5Back(){
 function f5DatosEntrega(){
   if(f5Courier==='motorizado') return { distrito: document.getElementById('f5-distrito').value, dir: document.getElementById('f5-direccion').value, ref: document.getElementById('f5-referencia')?.value||'' };
   if(f5Courier==='shalom'){ const a=f5GetAgenciaShalom(); return { distrito:a.ciudad, dir:a.agencia, ref:'' }; }
-  if(f5Courier==='marvisur') return { distrito: document.getElementById('f5-mv-ciudad').value.trim(), dir: document.getElementById('f5-mv-agencia').value.trim(), ref:'' };
-  return { distrito:'', dir:'Recojo en showroom', ref:'' };
+  const dm = pycDatosModalidad('f5', f5Courier);
+  if(dm && !dm.err) return dm;
+  return { distrito:'', dir:'', ref:'' };
 }
 function f5CostoEnvioActual(){
   const ped = trackingPedidoData;
@@ -7229,9 +7399,9 @@ function f5BuildResumen(){
   document.getElementById('f5-resumen-prendas').innerHTML = `
     <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#9C9A92;margin-bottom:8px">Productos</div>
     <div style="border:0.5px solid #E8E6E0;border-radius:8px;overflow:hidden">
-      ${items.map(it=>`<div class="f5-resumen-item" style="padding:7px 12px"><span>${it.prendas?.nombre||'Producto'} ${it.color?`<span style="color:#9C9A92">· ${it.color}</span>`:''}</span><span style="font-weight:500">S/ ${it.precio_unitario}</span></div>`).join('')}
+      ${items.map(it=>`<div class="f5-resumen-item" style="padding:7px 12px"><span>${it.prendas?.nombre||'Producto'} ${it.color?`<span style="color:#9C9A92">· ${it.color}</span>`:''}</span><span style="font-weight:500">S/ ${pycM(it.precio_unitario)}</span></div>`).join('')}
       <div class="f5-resumen-item" style="padding:7px 12px"><span>Envío</span><span style="font-weight:500">${pycEnvioLabel(f5Courier)}</span></div>
-      <div class="f5-total-row" style="padding:10px 12px"><span>Total productos</span><span>S/ ${subtotal}</span></div>
+      <div class="f5-total-row" style="padding:10px 12px"><span>Total productos</span><span>S/ ${pycM(subtotal)}</span></div>
     </div>`;
 
   const nombre = document.getElementById('f5-nombre').value;
@@ -7242,7 +7412,7 @@ function f5BuildResumen(){
     <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#9C9A92;margin-bottom:8px">Datos de entrega</div>
     <div style="line-height:1.7;font-size:12.5px;color:#1A1A18">
       <strong>${nombre}</strong> · ${tel}<br>
-      ${pycEnvioLabel(f5Courier)}<br>${f5Courier==='motorizado' ? `${dir}${distrito?', '+distrito:''}` : f5Courier==='recojo' ? 'Recojo en showroom' : `Agencia: ${dir}, ${distrito}`}
+      ${pycEnvioLabel(f5Courier)}<br>${f5Courier==='motorizado'||f5Courier==='olva' ? `${dir}${distrito?', '+distrito:''}` : f5Courier==='recojo' ? dir : `${dir}${distrito?', '+distrito:''}`}
     </div>`;
 }
 
@@ -7386,9 +7556,7 @@ async function rgMostrarExistente(cl){
   document.getElementById('rg-existente-wrap').style.display='block';
   document.getElementById('rg-ex-nombre').textContent = cl.nombre;
   const esShalom = !!cl.tipo_envio_preferido && cl.tipo_envio_preferido.startsWith('shalom');
-  document.getElementById('rg-ex-detalle').innerHTML = esShalom
-    ? `<strong>Shalom</strong><br>${cl.direccion||''} — ${cl.distrito||''}<br><span style="color:var(--text3)">WA: ${cl.telefono}</span>`
-    : `<strong>Motorizado</strong><br>${cl.direccion||''}${cl.referencia?', '+cl.referencia:''}<br>${cl.distrito||''}<br><span style="color:var(--text3)">WA: ${cl.telefono}</span>`;
+  document.getElementById('rg-ex-detalle').innerHTML = `<strong>${pycEnvioLabel(cl.tipo_envio_preferido)}</strong><br>${pycEsc(cl.direccion||'')}${cl.referencia?', '+pycEsc(cl.referencia):''}${cl.distrito?'<br>'+pycEsc(cl.distrito):''}<br><span style="color:var(--text3)">WA: ${cl.telefono}</span>`;
 
   // ¿Tiene algún pedido activo (no entregado ni cancelado) al que priorizar?
   try {
@@ -7464,8 +7632,8 @@ function rgMostrarFormNuevo(tel){
 
 function rgSelCourier(tipo){
   rgCourier = tipo;
-  document.getElementById('rg-opt-motorizado').style.borderColor = tipo==='motorizado' ? '#014590' : '#E5E3DC';
-  document.getElementById('rg-opt-shalom').style.borderColor = tipo==='shalom' ? '#014590' : '#E5E3DC';
+  ['motorizado','shalom','olva','marvisur','recojo','otro'].forEach(k=>{ const el=document.getElementById('rg-opt-'+k); if(el) el.style.borderColor = tipo===k ? '#014590' : '#E5E3DC'; });
+  pycMostrarCamposModalidad('rg', tipo);
   document.getElementById('rg-campos-motor').style.display = tipo==='motorizado' ? 'block' : 'none';
   document.getElementById('rg-campos-shalom').style.display = tipo==='shalom' ? 'block' : 'none';
 }
@@ -7480,7 +7648,7 @@ async function rgGuardar(){
   if(!nombre){ errEl.textContent='Ingresa tu nombre completo.'; errEl.style.display='block'; return; }
   if(tel.length < 9){ errEl.textContent='Ingresa tu número de WhatsApp (9 dígitos).'; errEl.style.display='block'; return; }
   if(!dni || dni.length < 8){ errEl.textContent='Ingresa tu DNI (8 dígitos).'; errEl.style.display='block'; return; }
-  if(!rgCourier){ errEl.textContent='Elige tipo de envío: Motorizado o Shalom.'; errEl.style.display='block'; return; }
+  if(!rgCourier){ errEl.textContent='Elige tu tipo de envío.'; errEl.style.display='block'; return; }
 
   let distrito, dir, ref='', costoEnv, tipoEnvio;
   if(rgCourier==='motorizado'){
@@ -7491,6 +7659,10 @@ async function rgGuardar(){
     tipoEnvio = 'motorizado';
     if(!distrito){ errEl.textContent='Selecciona tu distrito.'; errEl.style.display='block'; return; }
     if(!dir){ errEl.textContent='Ingresa tu dirección de entrega.'; errEl.style.display='block'; return; }
+  } else if(rgCourier!=='shalom'){
+    const dm = pycDatosModalidad('rg', rgCourier);
+    if(!dm || dm.err){ errEl.textContent=dm?dm.err:'Elige tu tipo de envío.'; errEl.style.display='block'; return; }
+    distrito = dm.distrito; dir = dm.dir; ref = dm.ref||''; costoEnv = 0; tipoEnvio = rgCourier;
   } else {
     const {agencia, ciudad} = rgGetAgenciaShalom();
     if(!agencia){ errEl.textContent='Busca y toca tu agencia Shalom de recojo (o escríbela en "No encuentro mi agencia").'; errEl.style.display='block'; return; }
@@ -7524,9 +7696,7 @@ async function rgGuardar(){
   if(rgModoBrasil){ try { await rgBrVincular(); } catch(e){ errEl.textContent='Error vinculando tu pedido: '+e.message; errEl.style.display='block'; return; } }
   document.getElementById('rg-form-wrap').style.display='none';
   document.getElementById('rg-confirm-wrap').style.display='block';
-  document.getElementById('rg-confirm-detalle').innerHTML = rgCourier==='shalom'
-    ? `<strong>${nombre}</strong><br>Shalom: ${dir}<br>${distrito}<br><span style="color:var(--text3)">WA: ${tel}</span>`
-    : `<strong>${nombre}</strong><br>${dir}${ref?', '+ref:''}<br>${distrito} · 🏍️ Motorizado<br><span style="color:var(--text3)">WA: ${tel}</span>`;
+  document.getElementById('rg-confirm-detalle').innerHTML = `<strong>${pycEsc(nombre)}</strong><br>${pycEnvioLabel(rgCourier)}<br>${pycEsc(dir)}${ref?', '+pycEsc(ref):''}${distrito?'<br>'+pycEsc(distrito):''}<br><span style="color:var(--text3)">WA: ${tel}</span>`;
 
   // ¿Ya tiene pedidos acumulados/activos? Si sí, ofrecer solicitar envío urgente
   const urgenteWrap = document.getElementById('rg-confirm-urgente-wrap');
@@ -7552,10 +7722,17 @@ function rgEditar(){
   if(rgClienteActual){
     document.getElementById('rg-nombre').value = rgClienteActual.nombre||'';
     document.getElementById('rg-dni').value = rgClienteActual.dni||'';
-    const esShalom = !!rgClienteActual.tipo_envio_preferido && rgClienteActual.tipo_envio_preferido.startsWith('shalom');
-    rgSelCourier(esShalom?'shalom':'motorizado');
+    const tPref = (rgClienteActual.tipo_envio_preferido||'motorizado').toLowerCase();
+    const esShalom = tPref.startsWith('shalom');
+    const tSel = ['olva','marvisur','recojo','otro'].find(k=>tPref.startsWith(k)) || (esShalom?'shalom':'motorizado');
+    rgSelCourier(tSel);
+    const setv=(id,v)=>{ const el=document.getElementById('rg-'+id); if(el) el.value=v||''; };
     if(esShalom){
       agPrefill('rg', rgClienteActual);
+    } else if(tSel==='olva'){ setv('ol-ciudad', rgClienteActual.distrito); setv('ol-direccion', rgClienteActual.direccion); setv('ol-referencia', rgClienteActual.referencia);
+    } else if(tSel==='marvisur'){ setv('mv-ciudad', rgClienteActual.distrito); setv('mv-agencia', rgClienteActual.direccion);
+    } else if(tSel==='otro'){ const [mod,...resto]=(rgClienteActual.direccion||'').split(' · '); setv('ot-modalidad', mod); setv('ot-direccion', resto.join(' · ')); setv('ot-ciudad', rgClienteActual.distrito); setv('ot-detalle', rgClienteActual.referencia);
+    } else if(tSel==='recojo'){ /* el cliente vuelve a elegir día y hora */
     } else {
       document.getElementById('rg-distrito').value = rgClienteActual.distrito||'';
       document.getElementById('rg-direccion').value = rgClienteActual.direccion||'';
@@ -7577,10 +7754,13 @@ let DB_cortes=[];
 let currentCorteItem=null;
 let currentCorteCliente=null;
 
-function filterCortes(f,el){
+function filterCortes(f,el,btnDia){
   corteFiltro=f;
   document.querySelectorAll('#pg-cortes .tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#pg-cortes .cortes-dia').forEach(b=>b.classList.remove('btn-primary'));
   if(el) el.classList.add('active');
+  if(btnDia) btnDia.classList.add('btn-primary');
+  if(!String(f).startsWith('f')){ const fi=document.getElementById('cortes-fecha'); if(fi) fi.value=''; }
   const search=document.getElementById('cortes-search');
   if(search) search.value='';
   loadCortes(f);
@@ -7591,7 +7771,7 @@ let cortesSoloPendientes = false;
 function filtrarCortes(q){
   q=(q||'').toLowerCase().trim();
   document.querySelectorAll('#cortes-lista [data-tel]').forEach(card=>{
-    const pasaTexto = !q || card.dataset.tel.includes(q);
+    const pasaTexto = pycBusca(q, card.dataset.tel, card.dataset.bus||'');
     const pasaPendiente = !cortesSoloPendientes || card.dataset.falta==='1';
     card.style.display = (pasaTexto && pasaPendiente) ? '' : 'none';
   });
@@ -7617,20 +7797,27 @@ async function loadCortes(f){
   try {
     // Traer items de carrito con info de clienta y prenda según rango
     const ahora=new Date();
-    let desde;
-    if(f==='hoy'){ desde=new Date(ahora); desde.setHours(0,0,0,0); }
+    let desde, hasta=null;
+    const dia0 = d=>{ const x=new Date(d); x.setHours(0,0,0,0); return x; };
+    const mas1 = d=>{ const x=new Date(d); x.setDate(x.getDate()+1); return x; };
+    if(f==='hoy'){ desde=dia0(ahora); }
+    else if(f==='ayer'){ hasta=dia0(ahora); desde=new Date(hasta); desde.setDate(desde.getDate()-1); }
+    else if(/^d[0-6]$/.test(f)){ desde=inicioSemanaLunes(ahora); desde.setHours(0,0,0,0); desde.setDate(desde.getDate()+parseInt(f[1])); hasta=mas1(desde); }
+    else if(/^f\d{4}-\d{2}-\d{2}$/.test(f)){ const [y,m,d]=f.slice(1).split('-').map(Number); desde=new Date(y,m-1,d); hasta=mas1(desde); }
     else if(f==='semana'){ desde=inicioSemanaLunes(ahora); }
     else if(f==='todos'){ desde=null; }
     else { desde=new Date(ahora.getFullYear(),ahora.getMonth(),1); }
+    const lbl=document.getElementById('cortes-rango-lbl');
+    if(lbl) lbl.textContent = desde ? ('Mostrando: '+desde.toLocaleDateString('es-PE',{weekday:'short',day:'2-digit',month:'2-digit'})+(hasta && (hasta-desde)<=86400000 ? '' : ' en adelante')) : 'Mostrando: todo';
 
     // Traemos TODO el historial (sin filtro de fecha) — el filtro de arriba solo decide
     // qué clientas aparecen en la lista; el saldo de cada una siempre se calcula completo,
     // para que nunca diga "Todo pagado" si en realidad debe algo de un mes anterior.
-    const todosItems = await dbGet(`carrito_items?estado_bolsa=neq.eliminado&select=*,prendas(nombre,precio),carritos(cliente_id,clientes(nombre,telefono))&order=agregado_en.desc`);
-    const itemsEnPeriodo = desde ? todosItems.filter(it=>new Date(it.agregado_en) >= desde) : todosItems;
+    const todosItems = await dbGet(`carrito_items?estado_bolsa=neq.eliminado&select=*,prendas(nombre,precio,codigo_interno),carritos(cliente_id,clientes(nombre,telefono,dni))&order=agregado_en.desc`);
+    const itemsEnPeriodo = desde ? todosItems.filter(it=>new Date(it.agregado_en) >= desde && (!hasta || new Date(it.agregado_en) < hasta)) : todosItems;
 
     // Total vendido y cobrado real del período (incluye abonos parciales, no solo prendas 100% confirmadas)
-    const totalVendido=itemsEnPeriodo.reduce((a,it)=>a+(it.precio_unitario||0),0);
+    const totalVendido=pycR2(itemsEnPeriodo.reduce((a,it)=>a+(it.precio_unitario||0),0));
     const totalPagado=itemsEnPeriodo.reduce((a,it)=>a+(it.monto_pagado||0),0);
     const pendiente=totalVendido-totalPagado;
     const pagadosCount=itemsEnPeriodo.filter(it=>it.estado_pago==='confirmado').length;
@@ -7638,15 +7825,15 @@ async function loadCortes(f){
 
     if(ocultarMontosCortes()){
       document.getElementById('cortes-metrics').innerHTML=`
-        <div class="metric"><div class="metric-val">${itemsEnPeriodo.length}</div><div class="metric-lbl">Prendas registradas</div></div>
+        <div class="metric"><div class="metric-val">${itemsEnPeriodo.length}</div><div class="metric-lbl">Productos registrados</div></div>
         <div class="metric" style="background:var(--green-light)"><div class="metric-val" style="color:var(--green)">${pagadosCount}</div><div class="metric-lbl">Pagadas</div></div>
         <div class="metric" style="background:var(--red-light)"><div class="metric-val" style="color:var(--red)">${pendientesCount}</div><div class="metric-lbl">Pendientes</div></div>`;
     } else {
       document.getElementById('cortes-metrics').innerHTML=`
-        <div class="metric"><div class="metric-val">S/ ${totalVendido.toFixed(0)}</div><div class="metric-lbl">Total vendido</div></div>
-        <div class="metric" style="background:var(--green-light)"><div class="metric-val" style="color:var(--green)">S/ ${totalPagado.toFixed(0)}</div><div class="metric-lbl">Cobrado</div></div>
-        <div class="metric" style="background:var(--red-light)"><div class="metric-val" style="color:var(--red)">S/ ${pendiente.toFixed(0)}</div><div class="metric-lbl">Pendiente</div></div>
-        <div class="metric"><div class="metric-val">${itemsEnPeriodo.length}</div><div class="metric-lbl">Prendas registradas</div></div>`;
+        <div class="metric"><div class="metric-val">S/ ${pycM(totalVendido)}</div><div class="metric-lbl">Total vendido</div></div>
+        <div class="metric" style="background:var(--green-light)"><div class="metric-val" style="color:var(--green)">S/ ${pycM(totalPagado)}</div><div class="metric-lbl">Cobrado</div></div>
+        <div class="metric" style="background:var(--red-light)"><div class="metric-val" style="color:var(--red)">S/ ${pycM(pendiente)}</div><div class="metric-lbl">Pendiente</div></div>
+        <div class="metric"><div class="metric-val">${itemsEnPeriodo.length}</div><div class="metric-lbl">Productos registrados</div></div>`;
     }
 
     DB_cortes=itemsEnPeriodo;
@@ -7665,7 +7852,7 @@ async function loadCortes(f){
     todosItems.forEach(it=>{
       const cl = it.carritos?.clientes;
       const key = cl?.telefono || `sin-tel-${cl?.nombre||it.id}`;
-      if(!gruposGlobal[key]) gruposGlobal[key] = { nombre: cl?.nombre||'Sin datos', telefono: cl?.telefono||'', items: [] };
+      if(!gruposGlobal[key]) gruposGlobal[key] = { nombre: cl?.nombre||'Sin datos', telefono: cl?.telefono||'', dni: cl?.dni||'', items: [] };
       gruposGlobal[key].items.push(it);
     });
 
@@ -7681,7 +7868,7 @@ async function loadCortes(f){
 
     const listaClientes = [...keysEnPeriodo].map(key=>{
       const g = gruposGlobal[key];
-      const vendido = g.items.reduce((a,it)=>a+(it.precio_unitario||0),0);
+      const vendido = pycR2(g.items.reduce((a,it)=>a+(it.precio_unitario||0),0));
       const pagado = g.items.reduce((a,it)=>a+(it.monto_pagado||0),0);
       return { key, ...g, vendido, pagado, falta: vendido-pagado };
     }).sort((a,b)=>{
@@ -7700,35 +7887,34 @@ async function loadCortes(f){
         const badgeLbl=estado==='confirmado'?'✓ Pagado':estado==='parcial'?'Parcial':'Pendiente';
         return `<tr>
           <td style="font-size:11.5px;color:var(--text3)">${fechaStr}</td>
-          <td>${it.prendas?.nombre||'—'}</td>
-          <td>${it.talla||'—'}</td>
-          <td>${it.color||'—'}</td>
-          ${ocultaMonto?'':`<td class="font-500">S/ ${it.precio_unitario||0}</td>`}
-          <td><span class="badge ${badgeCls}">${badgeLbl}</span>${(!ocultaMonto&&it.monto_pagado&&estado==='parcial')?`<div style="font-size:10px;color:var(--text3)">Abonó S/${it.monto_pagado}</div>`:''}</td>
+          <td>${it.prendas?.codigo_interno?`<span style="font-family:monospace;font-size:11.5px;color:var(--text2)">${pycEsc(it.prendas.codigo_interno)}</span> · `:''}${pycEsc(it.prendas?.nombre||'—')}</td>
+          <td>${pycEsc(it.especificacion||it.color||'—')}</td>
+          ${ocultaMonto?'':`<td class="font-500">S/ ${pycM(it.precio_unitario||0)}</td>`}
+          <td><span class="badge ${badgeCls}">${badgeLbl}</span>${(!ocultaMonto&&it.monto_pagado&&estado==='parcial')?`<div style="font-size:10px;color:var(--text3)">Abonó S/${pycM(it.monto_pagado)}</div>`:''}</td>
           ${ocultaMonto?'':`<td>${estado!=='confirmado'?`<button class="btn btn-xs" onclick="openPagoCorte('${it.id}','${(g.nombre||'').replace(/'/g,"\\'")}',${it.precio_unitario||0},'${estado}',${it.monto_pagado||0},false,'${it.carrito_id}')">Validar</button>`:`<button class="btn btn-xs" onclick="openPagoCorte('${it.id}','${(g.nombre||'').replace(/'/g,"\\'")}',${it.precio_unitario||0},'${estado}',${it.monto_pagado||0},true,'${it.carrito_id}')">Editar</button>`}</td>`}
         </tr>`;
       }).join('');
 
-      return `<div class="card mb-16" data-tel="${(g.telefono||'').toLowerCase()}" data-falta="${g.falta>0?'1':'0'}">
+      return `<div class="card mb-16" data-tel="${(g.telefono||'').toLowerCase()}" data-bus="${pycEsc([g.nombre,g.telefono,g.dni].filter(Boolean).join(' '))}" data-falta="${g.falta>0?'1':'0'}">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
           <div>
             <div style="font-weight:600;font-size:14px">${g.nombre}</div>
-            <div style="font-size:12px;color:var(--text2)">${g.telefono||'Sin teléfono'} · ${g.items.length} prenda${g.items.length!==1?'s':''}</div>
+            <div style="font-size:12px;color:var(--text2)">${g.telefono||'Sin teléfono'} · ${g.items.length} producto${g.items.length!==1?'s':''}</div>
           </div>
           ${ocultaMonto?'':(g.falta>0
-            ? `<button class="btn btn-sm btn-primary" onclick="abrirPagoCliente('${key_escape(g.key)}')">💰 Validar pago (S/${g.falta.toFixed(0)})</button>`
+            ? `<button class="btn btn-sm btn-primary" onclick="abrirPagoCliente('${key_escape(g.key)}')">💰 Validar pago (S/${pycM(g.falta)})</button>`
             : `<span class="badge badge-ok" style="padding:6px 12px;font-size:12px">✓ Todo pagado</span>`)}
         </div>
         ${ocultaMonto?'':`<div style="display:flex;gap:16px;margin-top:10px;font-size:12.5px;flex-wrap:wrap">
-          <span>Vendido: <strong>S/${g.vendido.toFixed(0)}</strong></span>
-          <span style="color:var(--green)">Pagado: <strong>S/${g.pagado.toFixed(0)}</strong></span>
-          <span style="color:${g.falta>0?'var(--red)':'var(--text3)'}">Falta: <strong>S/${g.falta.toFixed(0)}</strong></span>
+          <span>Vendido: <strong>S/${pycM(g.vendido)}</strong></span>
+          <span style="color:var(--green)">Pagado: <strong>S/${pycM(g.pagado)}</strong></span>
+          <span style="color:${g.falta>0?'var(--red)':'var(--text3)'}">Falta: <strong>S/${pycM(g.falta)}</strong></span>
         </div>`}
         <details style="margin-top:10px">
-          <summary style="cursor:pointer;font-size:12px;color:var(--text3)">Ver ${g.items.length} prenda${g.items.length!==1?'s':''}</summary>
+          <summary style="cursor:pointer;font-size:12px;color:var(--text3)">Ver ${g.items.length} producto${g.items.length!==1?'s':''}</summary>
           <div class="tbl-wrap" style="margin-top:8px">
             <table class="tbl">
-              <thead><tr><th>Fecha</th><th>Prenda</th><th>Talla</th><th>Color</th>${ocultaMonto?'':'<th>Monto</th>'}<th>Estado</th>${ocultaMonto?'':'<th></th>'}</tr></thead>
+              <thead><tr><th>Fecha</th><th>Código · Producto</th><th>Especificación</th>${ocultaMonto?'':'<th>Monto</th>'}<th>Estado</th>${ocultaMonto?'':'<th></th>'}</tr></thead>
               <tbody>${filasDetalle}</tbody>
             </table>
           </div>
@@ -7746,13 +7932,16 @@ function key_escape(k){ return String(k).replace(/'/g,"\\'"); }
 function abrirPagoCliente(key){
   const g = DB_cortesPorCliente[key];
   if(!g) return;
-  const vendido = g.items.reduce((a,it)=>a+(it.precio_unitario||0),0);
+  const vendido = pycR2(g.items.reduce((a,it)=>a+(it.precio_unitario||0),0));
   const pagado = g.items.reduce((a,it)=>a+(it.monto_pagado||0),0);
   const falta = vendido-pagado;
   currentCorteCliente = { key, nombre:g.nombre, telefono:g.telefono, items:g.items };
   document.getElementById('mpcli-title').textContent = `Validar pago — ${g.nombre}`;
   document.getElementById('mpcli-info').innerHTML = `
-    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Prendas</span><span class="font-500">${g.items.length}</span></div>
+    <div style="max-height:180px;overflow:auto;border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;margin-bottom:8px;font-size:12px">
+      ${[...g.items].sort((a,b)=>new Date(a.agregado_en)-new Date(b.agregado_en)).map(it=>{ const f=pycR2((it.precio_unitario||0)-(it.monto_pagado||0)); return `<div style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dashed var(--border)"><span>${it.prendas?.codigo_interno?`<span style="font-family:monospace">${pycEsc(it.prendas.codigo_interno)}</span> · `:''}${pycEsc(it.prendas?.nombre||'—')}</span><span style="white-space:nowrap">S/ ${pycM(it.precio_unitario)}${f>0?` <span style="color:var(--red)">(falta ${pycM(f)})</span>`:' ✓'}</span></div>`; }).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Productos</span><span class="font-500">${g.items.length}</span></div>
     <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Total vendido</span><span class="font-500">S/ ${vendido.toFixed(2)}</span></div>
     ${pagado>0?`<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Ya abonado</span><span style="color:var(--green)">S/ ${pagado.toFixed(2)}</span></div>`:''}
     <div style="display:flex;justify-content:space-between"><span>Falta cobrar</span><span style="color:${falta>0?'var(--red)':'var(--green)'}" class="font-500">S/ ${falta.toFixed(2)}</span></div>`;
@@ -7779,12 +7968,12 @@ async function confirmarPagoCliente(){
   const cambios = [];
   for(const it of pendientes){
     if(restante<=0) break;
-    const falta = (it.precio_unitario||0)-(it.monto_pagado||0);
-    const aplicar = Math.min(restante, falta);
-    const nuevoPagado = (it.monto_pagado||0)+aplicar;
+    const falta = pycR2((it.precio_unitario||0)-(it.monto_pagado||0));
+    const aplicar = pycR2(Math.min(restante, falta));
+    const nuevoPagado = pycR2((it.monto_pagado||0)+aplicar);
     const nuevoEstado = nuevoPagado>=(it.precio_unitario||0) ? 'confirmado' : 'parcial';
     cambios.push({ id: it.id, carrito_id: it.carrito_id, aplicar, monto_pagado: nuevoPagado, estado_pago: nuevoEstado });
-    restante -= aplicar;
+    restante = pycR2(restante - aplicar);
   }
   const sobrante = restante;
 
@@ -7850,17 +8039,17 @@ async function crearCorte(){
   try {
     const items=await dbGet(`carrito_items?agregado_en=gte.${new Date(inicio).toISOString()}&agregado_en=lte.${new Date(fin).toISOString()}&estado_bolsa=neq.eliminado&select=*,prendas(nombre,precio),carritos(cliente_id,clientes(nombre,telefono))&order=agregado_en.asc`);
     DB_cortes=items;
-    const total=items.reduce((a,it)=>a+(it.precio_unitario||0),0);
+    const total=pycR2(items.reduce((a,it)=>a+(it.precio_unitario||0),0));
     // Mostrar resultados del corte
     document.getElementById('cortes-metrics').innerHTML=`
       <div class="metric"><div class="metric-val">${items.length}</div><div class="metric-lbl">Prendas en corte</div></div>
-      <div class="metric"><div class="metric-val">S/ ${total}</div><div class="metric-lbl">Total a cuadrar</div></div>
+      <div class="metric"><div class="metric-val">S/ ${pycM(total)}</div><div class="metric-lbl">Total a cuadrar</div></div>
       <div class="metric" style="background:var(--amber-light)"><div class="metric-val" style="color:var(--amber-dark)">${nombre}</div><div class="metric-lbl">${new Date(inicio).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})} → ${new Date(fin).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})}</div></div>`;
     if(!items.length){ toast('Sin registros en ese rango horario'); return; }
     // Re-render tabla con ese filtro
     document.getElementById('cortes-lista').innerHTML=`
       <div style="background:var(--amber-light);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:10px;font-size:12px;color:var(--amber-dark)">
-        <strong>Corte:</strong> ${nombre} · ${items.length} prendas · S/${total} total
+        <strong>Corte:</strong> ${nombre} · ${items.length} prendas · S/${pycM(total)} total
       </div>
       <div class="tbl-wrap">
         <table class="tbl">
@@ -7870,12 +8059,12 @@ async function crearCorte(){
             const hora=new Date(it.agregado_en).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
             const estado=it.estado_pago||'pendiente';
             const badgeCls=estado==='confirmado'?'badge-ok':estado==='parcial'?'badge-warn':'badge-danger';
-            const badgeLbl=estado==='confirmado'?'✓ Pagado':estado==='parcial'?`Parcial (S/${it.monto_pagado})` :'Pendiente';
+            const badgeLbl=estado==='confirmado'?'✓ Pagado':estado==='parcial'?`Parcial (S/${pycM(it.monto_pagado)})` :'Pendiente';
             return `<tr>
               <td class="font-500">${hora}</td>
               <td><div>${cl?.nombre||'—'}</div><div class="text-hint" style="font-size:11px">${cl?.telefono||''}</div></td>
               <td>${it.prendas?.nombre||'—'} ${it.talla?'T-'+it.talla:''} ${it.color?'· '+it.color:''}</td>
-              <td class="font-500">S/ ${it.precio_unitario||0}</td>
+              <td class="font-500">S/ ${pycM(it.precio_unitario||0)}</td>
               <td><span class="badge ${badgeCls}">${badgeLbl}</span></td>
               <td>${estado!=='confirmado'?`<button class="btn btn-xs btn-primary" onclick="openPagoCorte('${it.id}','${cl?.nombre||''}',${it.precio_unitario||0},'${estado}',${it.monto_pagado||0})">Validar</button>`:`<button class="btn btn-xs" onclick="openPagoCorte('${it.id}','${cl?.nombre||''}',${it.precio_unitario||0},'${estado}',${it.monto_pagado||0},true)">✓ Editar</button>`}</td>
             </tr>`;
@@ -7901,9 +8090,9 @@ function openPagoCorte(itemId,nombre,monto,estadoActual,pagadoActual,esEdicion,c
 function mpcUpdateInfo(totalActual,pagadoActual){
   const falta=totalActual-(pagadoActual||0);
   document.getElementById('mpc-info').innerHTML=`
-    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Total prenda</span><span class="font-500">S/ ${totalActual}</span></div>
-    ${pagadoActual>0?`<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Ya abonado</span><span style="color:var(--green)">S/ ${pagadoActual}</span></div>`:''}
-    <div style="display:flex;justify-content:space-between"><span>Falta cobrar</span><span style="color:${falta>0?'var(--red)':'var(--green)'}" class="font-500">S/ ${falta}</span></div>`;
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Total prenda</span><span class="font-500">S/ ${pycM(totalActual)}</span></div>
+    ${pagadoActual>0?`<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Ya abonado</span><span style="color:var(--green)">S/ ${pycM(pagadoActual)}</span></div>`:''}
+    <div style="display:flex;justify-content:space-between"><span>Falta cobrar</span><span style="color:${falta>0?'var(--red)':'var(--green)'}" class="font-500">S/ ${pycM(falta)}</span></div>`;
 }
 
 function mpcRecalcularFalta(){
@@ -7942,7 +8131,7 @@ async function confirmarPagoCorte(){
 
       // 3. Recalcular total pagado del carrito sumando todos sus items confirmados
       const todosItems = await dbGet(`carrito_items?carrito_id=eq.${carritoId}&estado_bolsa=neq.eliminado&select=precio_unitario,estado_pago,monto_pagado`);
-      const totalCarrito = todosItems.reduce((a,it)=>a+(it.precio_unitario||0),0);
+      const totalCarrito = pycR2(todosItems.reduce((a,it)=>a+(it.precio_unitario||0),0));
       const totalPagadoCarrito = todosItems.reduce((a,it)=>a+(it.monto_pagado||0),0);
 
       // 4. Buscar pedido asociado a este carrito (cualquier estado activo)
@@ -8884,7 +9073,7 @@ async function brEtqCanvas(p){
   ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H); ctx.fillStyle='#000'; ctx.textBaseline='top';
   const c = p.cli||{};
   const tipo = String(c.tipo_envio_preferido||'').toLowerCase();
-  const esAgencia = tipo.startsWith('shalom') || tipo.startsWith('marvisur');
+  const esAgencia = tipo.startsWith('shalom') || tipo.startsWith('marvisur');  // Olva y Otro usan dirección completa
   const nProd = p.items.reduce((a,i)=>a+(i.cantidad||1),0);
   const tel = c.telefono ? rgBrNormTel(c.telefono) : '';
 
@@ -8921,7 +9110,7 @@ async function brEtqCanvas(p){
     {t:'CEL: '+(tel ? tel.replace(/(\d{3})(\d{3})(\d{3})/,'$1 $2 $3') : '—'), b:true, k:1.1},
   ];
   if(c.dni) bloques.push({t:'DNI: '+c.dni, b:true, k:1.1});
-  if(tipo.startsWith('recojo')) bloques.push({t:'Recojo en showroom', b:true, k:1});
+  if(tipo.startsWith('recojo')) bloques.push({t:c.direccion||'Recojo en tienda', b:true, k:1});
   else if(esAgencia){
     if(c.distrito) bloques.push({t:String(c.distrito).toUpperCase(), b:true, k:1});
     bloques.push({t:'Agencia: '+(c.direccion||'—'), b:false, k:1});
@@ -8953,7 +9142,8 @@ async function brEtqCanvas(p){
   lay.forEach(l=>{ if(l.y + l.size <= yMax+4){ ctx.font = `${l.b?'bold ':''}${l.size}px ${FONT}`; ctx.fillText(l.t, M, l.y); } });
 
   // 4) Pie: tipo de envío en un recuadro
-  const pie = tipo.startsWith('shalom') ? 'SHALOM' : tipo.startsWith('marvisur') ? 'MARVISUR' : tipo.startsWith('recojo') ? 'RECOJO SHOWROOM' : 'MOTORIZADO';
+  const pie = tipo.startsWith('shalom') ? 'SHALOM' : tipo.startsWith('marvisur') ? 'MARVISUR' : tipo.startsWith('olva') ? 'OLVA COURIER' : tipo.startsWith('recojo') ? 'RECOJO EN TIENDA'
+    : tipo.startsWith('otro') ? String((c.direccion||'OTRO').split(' · ')[0]).toUpperCase().slice(0,22) : 'MOTORIZADO';
   ctx.lineWidth=5; ctx.strokeStyle='#000'; ctx.strokeRect(M+2, H-FOOT-8, W-2*M-4, FOOT-4);
   let fsPie = 50; for(; fsPie>=28; fsPie-=2){ ctx.font = `bold ${fsPie}px ${FONT}`; if(ctx.measureText(pie).width <= W-2*M-40) break; }
   ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -9753,7 +9943,7 @@ async function renderAsistenciaAdmin(){
       <td class="font-500">${nombre}</td>
       <td>${s.completos}</td>
       <td>${s.medios}</td>
-      <td class="font-500" style="color:var(--green)">S/ ${total}</td>
+      <td class="font-500" style="color:var(--green)">S/ ${pycM(total)}</td>
     </tr>`;
   }).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:16px">Sin registros en este período</td></tr>`;
 
@@ -9775,7 +9965,7 @@ async function renderAsistenciaAdmin(){
       <table class="tbl">
         <thead><tr><th>Trabajadora</th><th>Días completos (S/${PAGO_DIA_COMPLETO})</th><th>Medios días (S/${PAGO_MEDIO_DIA})</th><th>Total a pagar</th></tr></thead>
         <tbody>${resumenFilas}</tbody>
-        ${usuariosConDatos.length>1?`<tfoot><tr style="font-weight:600"><td>Total general</td><td></td><td></td><td style="color:var(--green)">S/ ${totalGeneral}</td></tr></tfoot>`:''}
+        ${usuariosConDatos.length>1?`<tfoot><tr style="font-weight:600"><td>Total general</td><td></td><td></td><td style="color:var(--green)">S/ ${pycM(totalGeneral)}</td></tr></tfoot>`:''}
       </table>
     </div>
 
